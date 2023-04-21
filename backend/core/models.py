@@ -78,16 +78,11 @@ class Event(models.Model):
     additional_notes = models.TextField()
     facility = models.ForeignKey(Facility, on_delete=models.PROTECT, null=True)
     location = models.ForeignKey(Location, on_delete=models.PROTECT, null=True)
-    price_type = models.ManyToManyField(PriceType)
-    price_layer = models.ManyToManyField(PriceLayer)
     status = models.CharField(max_length=2, choices=STATUS_CHOICES, default='STATUS_PENDING')
     website_link = models.CharField(max_length=255)
     websales_link = models.CharField(max_length=255)
 
 
-
-    
-    
 class DateTime(models.Model):
     event = models.OneToOneField(Event, on_delete=models.CASCADE, primary_key=True, related_name='date_time') # related_name allows us to reference this in the reverse relationship.
     event_date = models.DateField(auto_now_add=False)
@@ -113,5 +108,18 @@ class PriceLayerPrice(models.Model):
     event = models.ManyToManyField(Event, related_name='price_layer_price')
     price_type = models.ForeignKey(PriceType, on_delete=models.PROTECT)
     price_layer = models.ForeignKey(PriceLayer, on_delete=models.PROTECT)
+
+class GLAccount(models.Model):
+    event = models.ManyToManyField(Event, related_name='gl_account')
+    price_layer = models.ForeignKey(PriceLayer, on_delete=models.PROTECT)
+    gl_account = models.CharField(max_length=255)
+    description = models.CharField(max_length=255)
+
+
+class Discount(models.Model):
+    event = models.ManyToManyField(Event, related_name='discount')
+    price_type = models.ForeignKey(PriceType, on_delete=models.PROTECT)
+    discount = models.CharField(max_length=255)
+    description = models.CharField(max_length=255)
     
     
