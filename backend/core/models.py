@@ -23,6 +23,13 @@ class Facility(models.Model):
     # Shows the name on the admin page and on the serializer page
     def __str__(self) -> str:
         return self.facility_name
+    
+class Location(models.Model): 
+    location_name = models.CharField(max_length=255)
+
+    # Shows the name on the admin page and on the serializer page
+    def __str__(self) -> str:
+        return self.location_name
 
     
 class Event(models.Model):
@@ -44,6 +51,20 @@ class Event(models.Model):
         (NO_CHOICE, 'No')
     ]
 
+    STATUS_ON_SALE = 'OS'
+    STATUS_PENDING = 'P'
+    STATUS_SETUP = 'S'
+    STATUS_ACTION_NEEDED = 'AN'
+    STATUS_CONCLUDED = 'C'
+
+    STATUS_CHOICES = [
+        (STATUS_ON_SALE, 'On Sale'),
+        (STATUS_PENDING, 'Pending'),
+        (STATUS_SETUP, 'Setup'),
+        (STATUS_ACTION_NEEDED, 'Action Needed'),
+        (STATUS_CONCLUDED, 'Concluded')
+    ]
+
     name = models.CharField(max_length=255)
     description = models.TextField()
     capacity = models.IntegerField()
@@ -56,26 +77,28 @@ class Event(models.Model):
     csi_notes = models.TextField()
     additional_notes = models.TextField()
     facility = models.ForeignKey(Facility, on_delete=models.PROTECT, null=True)
+    location = models.ForeignKey(Location, on_delete=models.PROTECT, null=True)
     price_type = models.ManyToManyField(PriceType)
     price_layer = models.ManyToManyField(PriceLayer)
+    status = models.CharField(max_length=2, choices=STATUS_CHOICES, default='STATUS_PENDING')
+    website_link = models.CharField(max_length=255)
+    websales_link = models.CharField(max_length=255)
 
 
-class Location(models.Model): 
-    event = models.ForeignKey(Event, on_delete=models.PROTECT)
-    location_name = models.CharField(max_length=255)
+
     
     
 class DateTime(models.Model):
     event = models.OneToOneField(Event, on_delete=models.CASCADE, primary_key=True, related_name='date_time') # related_name allows us to reference this in the reverse relationship.
     event_date = models.DateField(auto_now_add=False)
     event_time = models.TimeField()
+    event_end_time = models.TimeField()
     door_open = models.TimeField()
     door_close = models.TimeField()
-    sell_date = models.DateField(auto_now_add=False)
-    sell_time = models.TimeField()
+    sell_date = models.DateTimeField(auto_now_add=False)
     stop_date = models.DateTimeField(auto_now_add=False)
-    stop_time = models.TimeField()
     early_closure_time = models.TimeField()
+    on_sale_date = models.DateTimeField(auto_now_add=False)
 
 
 class TimeSlot(models.Model):
@@ -87,6 +110,8 @@ class TimeSlot(models.Model):
 
 class PriceLayerPrice(models.Model):
     price = models.IntegerField()
-    event = models.OneToOneField(Event, on_delete=models.CASCADE, related_name='price_layer_price')
-    price_type = models.ManyToManyField(PriceType)
-    price_layer = models.ManyToManyField(PriceLayer)
+    event = models.ManyToManyField(Event, related_name='price_layer_price')
+    price_type = models.ForeignKey(PriceType, on_delete=models.PROTECT)
+    price_layer = models.ForeignKey(PriceLayer, on_delete=models.PROTECT)
+    
+    
