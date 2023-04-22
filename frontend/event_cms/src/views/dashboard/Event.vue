@@ -45,7 +45,7 @@
                 <div class="column is-12">
                     <div class="box">
                         <h2 class="subtitle">Time Slots</h2>
-                        <table class="table is-fullwidth">
+                        <table class="table is-fullwidth is-striped">
                             <thead>
                                 <tr>
                                     <th>Time Slot</th>
@@ -67,7 +67,8 @@
                 <div class="column is-12">
                     <div class="box">
                         <h2 class="subtitle">Pricing</h2>
-                        <table class="table is-fullwidth">
+                        <div class="table-container">
+                        <table class="table is-fullwidth is-striped">
                     <thead>
                         <tr>
                             <th>Price Layer</th>
@@ -88,16 +89,18 @@
                             <tr>
                                 <td><strong>Total</strong></td>
                                 <td v-for="total in price_layer_sum"><strong>${{ total }}</strong></td>
+                                
                             </tr>
                         </tbody>
                         </table>
+                        </div>
                     </div>
                 </div>
 
                 <div class="column is-12">
                     <div class="box">
                         <h2 class="subtitle">Discounts</h2>
-                        <table class="table is-fullwidth">
+                        <table class="table is-fullwidth is-striped">
                             <thead>
                                 <tr>
                                     <th>Price Type</th>
@@ -119,7 +122,7 @@
                 <div class="column is-12">
                     <div class="box">
                         <h2 class="subtitle">GL Accounts</h2>
-                        <table class="table is-fullwidth">
+                        <table class="table is-fullwidth is-striped">
                             <thead>
                                 <tr>
                                     <th>Price Layer</th>
@@ -161,11 +164,19 @@
                     </div>
                 </div>
 
+                 
+                <div class="column is-12">
+                    <div class="box">
+                        <h2 class="subtitle">Additional Notes</h2>
+                        <p> {{ event.additional_notes }} </p>
+                    </div>
+                </div>
+
 
                 <div class="column is-12">
                     <div class="box">
                         <h2 class="subtitle">Web Links</h2>
-                        <table class="table is-fullwidth">
+                        <table class="table is-fullwidth is-striped">
                             <thead>
                                 <tr>
                                     <th>Description</th>
@@ -186,6 +197,8 @@
                         </table>  
                     </div>
                 </div>
+
+                
 
 
             </div>

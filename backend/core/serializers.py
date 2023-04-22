@@ -72,7 +72,7 @@ class EventSerializer(serializers.ModelSerializer):
     
     fields = ['name', 'description', 'capacity', 'held', 'entrance', 'gr_required', 'early_closure', 'csi_needed', 'csi_mandatory', 'csi_notes', 'facility',
               'location', 'date_time', 'timeslot_set', 'price_type', 'price_layer', 'price_layer_price', 'status', 'website_link', 'websales_link',
-              'gl_account', 'discount']
+              'gl_account', 'discount', 'additional_notes']
     
   def create(self, validated_data):
         date_data = validated_data.pop('date_time')

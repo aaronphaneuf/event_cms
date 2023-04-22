@@ -11,11 +11,13 @@
             </div>
 
             <div class="column is-12">
-                <table class="table is-fullwidth">
+                <table class="table is-fullwidth is-striped is-hoverable">
                     <thead>
                         <tr>
                             <th>Name</th>
                             <th>Date</th>
+                            <th>Status</th>
+                            <th>Analytics</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -24,6 +26,7 @@
                             v-bind:key="event.id">
                                 <td><router-link :to="{ name: 'Event', params: { id: event.id}}">{{event.name}}</router-link></td>
                                 <td>{{ event.date_time.event_date }}</td>
+                                <td> <button class="button is-success is-light">On Sale</button></td>
                         </tr>
                     </tbody>
                 </table>
