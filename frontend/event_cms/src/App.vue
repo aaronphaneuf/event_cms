@@ -28,8 +28,3 @@ export default {
   // And the end
   }
 </script>
-
-<style lang="scss">
-@import '../node_modules/bulma';
-</style>
-

@@ -35,7 +35,6 @@ class FacilitySerializer(serializers.ModelSerializer):
       model = Facility
       fields = ['facility_name']
 
-
 class DateTimeSerializer(serializers.ModelSerializer):
   class Meta:
     model = DateTime
@@ -70,7 +69,7 @@ class EventSerializer(serializers.ModelSerializer):
   class Meta:
     model = Event
     
-    fields = ['name', 'description', 'capacity', 'held', 'entrance', 'gr_required', 'early_closure', 'csi_needed', 'csi_mandatory', 'csi_notes', 'facility',
+    fields = ['id', 'name', 'description', 'capacity', 'held', 'entrance', 'gr_required', 'early_closure', 'csi_needed', 'csi_mandatory', 'csi_notes', 'facility',
               'location', 'date_time', 'timeslot_set', 'price_type', 'price_layer', 'price_layer_price', 'status', 'website_link', 'websales_link',
               'gl_account', 'discount', 'additional_notes']
     
@@ -81,6 +80,37 @@ class EventSerializer(serializers.ModelSerializer):
         DateTime.objects.create(event=event, **date_data)
         
         return event
+  
+
+class EditEventSerializer(serializers.ModelSerializer):
+  timeslot_set = TimeSlotSerializer(many=True, read_only=True)
+  date_time = DateTimeSerializer()
+  price_layer_price = PriceLayerPriceSerializer(many=True, read_only=True)
+  gl_account = GLAccountSerializer(many=True, read_only=True)
+  discount = DiscountSerializer(many=True, read_only=True)
+  
+  facility = FacilitySerializer(many=True, read_only=True, source="all_options")
+  #facility = serializers.PrimaryKeyRelatedField(queryset=Facility.objects.all())
+  #facility = FacilitySerializer()
+  
+  location = LocationSerializer()
+  price_type = PriceTypeSerializer(many=True, read_only=True)
+  price_layer = PriceLayerSerializer(many=True, read_only=True)
+  class Meta:
+    model = Event
+    
+    fields = ['id', 'name', 'description', 'capacity', 'held', 'entrance', 'gr_required', 'early_closure', 'csi_needed', 'csi_mandatory', 'csi_notes', 'facility',
+              'location', 'date_time', 'timeslot_set', 'price_type', 'price_layer', 'price_layer_price', 'status', 'website_link', 'websales_link',
+              'gl_account', 'discount', 'additional_notes']
+    
+  def create(self, validated_data):
+        date_data = validated_data.pop('date_time')
+        event = Event.objects.create(**validated_data)
+        # The event must be created first since the foreign key lives on the DateTime model. We need an event to insert. 
+        DateTime.objects.create(event=event, **date_data)
+        
+        return event
+
 
 class SimpleDateTimeSerializer(serializers.ModelSerializer):
   class Meta:

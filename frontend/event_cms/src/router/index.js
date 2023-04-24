@@ -8,6 +8,7 @@ import MyAccount from '../views/dashboard/MyAccount.vue'
 import Events from '../views/dashboard/Events.vue'
 import Event from '../views/dashboard/Event.vue'
 import AddEvent from '../views/dashboard/AddEvent.vue'
+import EditEvent from '../views/dashboard/EditEvent.vue'
 
 const routes = [
   {
@@ -61,6 +62,14 @@ const routes = [
     meta: { 
       requireLogin: true
     }
+},
+{
+  path: '/dashboard/editevent/:id',
+  name: 'EditEvent',
+  component: EditEvent,
+  meta: { 
+    requireLogin: true
+  }
 },
 ]
 

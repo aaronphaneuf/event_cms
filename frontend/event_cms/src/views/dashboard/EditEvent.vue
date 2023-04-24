@@ -1,26 +1,44 @@
 <template>
     <div class="container">
-    <section class="hero">
-  <div class="hero-body">
-    <p class="title">
-      {{ event.name }}
-    </p>
-    <p class="subtitle">
-      {{ event.description }}
-      <router-link :to="{ name: 'EditEvent', params: { id: '1'}}" class="button is-light">Edit</router-link>
-    </p>
-    
-  </div>
-</section>
+    <div class="columns is-multiline">
+   <div class="column is-12">
+   <div class="box">
+  <form @submit.prevent="submitForm">
+      <div class="field">
+                        <label>Name</label>
+                        <div class="control">
+                            <input type="text" class="input" v-model="event.name">
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <label>Description</label>
+                        <div class="control">
+                            <input type="text" class="input" v-model="event.description">
+                        </div>
+                    </div>
+                     </form>
+                     </div></div>
+</div>
         <div class="columns is-multiline">
             
 
                 <div class="column is-6">
                     <div class="box">
                         <h2 class="subtitle">Details</h2>
-                        <p><strong>Status </strong> {{ event.status }} </p>
-                        <p><strong>Location: </strong> {{ location_name }} </p>
-                        <p><strong>Facility: </strong> {{ facility_name }} </p>
+                        <div class="field">
+                        <label>Location</label>
+                        <div class="control">
+                            <input type="text" class="input" v-model="location_name">
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label>Facility</label>
+                        <div class="control">
+                            <input type="text" class="input" v-model="all_facilities">
+                        </div>
+                    </div>
+                        
                         <p><strong>Entrance: </strong> {{ event.entrance }} </p>
                         <p><strong>Capacity: </strong> {{ event.capacity }} </p>
                         <p><strong>Held: </strong> {{ event.held }} </p>
@@ -192,19 +210,21 @@
                                 <tr>
                                     <td>Websales:</td>
                                     <td>{{event.websales_link}}</td>
-                                    
                                 </tr>
                                 
                             </tbody>
                         </table>  
+                        
                     </div>
+                    
                 </div>
 
                 
 
-
+            
             </div>
     </div>
+    
 </template>
 
 <script>
@@ -218,7 +238,7 @@
                 date: '',
                 time_slots: '',
                 location_name: '',
-                facility_name: '',
+                
                 unique_prices: '',
                 unique_price_types: '',
                 unique_price_layers: '',
@@ -237,11 +257,11 @@
                 const EventID = this.$route.params.id
 
                 axios
-                    .get(`/api/v1/events/${EventID}/`)
+                    .get(`/api/v1/editevent/${EventID}/`)
                     .then(response => { 
                         this.event = response.data;
                         this.location_name = this.event.location.location_name;
-                        this.facility_name = this.event.facility.facility_name;
+                        
                         this.date = this.event.date_time;
                         this.time_slots = this.event.timeslot_set;
                         

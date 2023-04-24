@@ -27,6 +27,7 @@
                                 <td><router-link :to="{ name: 'Event', params: { id: event.id}}">{{event.name}}</router-link></td>
                                 <td>{{ event.date_time.event_date }}</td>
                                 <td> <button class="button is-success is-light">On Sale</button></td>
+                                <td><progress class="progress is-primary" value="15" max="100">15%</progress></td>
                         </tr>
                     </tbody>
                 </table>

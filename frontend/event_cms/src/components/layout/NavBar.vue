@@ -1,12 +1,18 @@
 <template>
-    <nav class="navbar is-dark">
-        <div class="navbar-brand">
-            <router-link to="/" class="navbar-item">
+    <nav class="navbar is-dark" role="navigation" aria-label="main navigation">
+  <div class="navbar-brand">
+    <router-link to="/" class="navbar-item">
                 <strong>Event CMS</strong>
             </router-link>
-        </div>
 
-        <div class="navbar-menu">
+    <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </a>
+  </div>
+
+  <div class="navbar-menu">
             <div class="navbar-end">
                 <router-link to="/dashboard/events" class="navbar-item">Events</router-link>
                 <div class="navbar-item">
@@ -23,7 +29,7 @@
                 </div>
             </div>
         </div>
-    </nav>
+</nav>
 
 </template>
 
