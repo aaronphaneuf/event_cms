@@ -93,12 +93,14 @@ class DateTime(models.Model):
     sell_date = models.DateTimeField(auto_now_add=False)
     stop_date = models.DateTimeField(auto_now_add=False)
     early_closure_time = models.TimeField()
-    on_sale_date = models.DateTimeField(auto_now_add=False)
 
 
 class TimeSlot(models.Model):
+    TIME_RANGE_CHOICES = [
+        ('6:00 - 6:30 AM', '0600'), ('6:30 - 7:00 AM', '0630')
+    ]
     event = models.ForeignKey(Event, on_delete=models.PROTECT)
-    time_range = models.CharField(max_length=255)
+    time_range = models.CharField(max_length=14, choices=TIME_RANGE_CHOICES, default='6:00 - 6:30 AM')
     capacity = models.IntegerField()
     held = models.IntegerField()
 

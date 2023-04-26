@@ -9,7 +9,8 @@
                 <router-link to="/dashboard/events/add">Add New Event</router-link>
                 
             </div>
-
+            <div class="column is-12">
+            <div class="box">
             <div class="column is-12">
                 <table class="table is-fullwidth is-striped is-hoverable">
                     <thead>
@@ -32,6 +33,8 @@
                     </tbody>
                 </table>
             </div>
+        </div>
+        </div>
         </div>
     </div>
 </template>

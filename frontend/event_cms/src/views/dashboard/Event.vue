@@ -39,7 +39,6 @@
                         <p><strong>Stop Sell Date: </strong> {{ date.stop_date }} </p>
                         <p><strong>Doors Open: </strong> {{ date.door_open }} </p>
                         <p><strong>Doors Close: </strong> {{ date.door_close }} </p>
-                        <p><strong>On Sale Date: </strong> {{ date.on_sale_date }} </p>
                     </div>
                 </div>
 

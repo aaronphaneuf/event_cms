@@ -14,7 +14,7 @@
                     <div class="field">
                         <label>Description</label>
                         <div class="control">
-                            <input type="text" class="input" v-model="event.description">
+                            <textarea class="textarea" v-model="event.description"></textarea>
                         </div>
                     </div>
                      </form>
@@ -29,35 +29,98 @@
                         <div class="field">
                         <label>Location</label>
                         <div class="control">
-                            <input type="text" class="input" v-model="location_name">
+                            <div class="select">
+                                <select v-model="location_name">
+                                <option>Unknown</option>
+                                <option v-for="location in all_locations">
+                                    {{location.location_name}}
+                                    </option>
+                                </select>
+                            </div>
                         </div>
                     </div>
+
                     <div class="field">
                         <label>Facility</label>
                         <div class="control">
-                            <input type="text" class="input" v-model="all_facilities">
+                            <div class="select">
+                                <select v-model="event.facility">>
+                                <option>Unknown</option>
+                                <option v-for="facility in all_facilities">
+                                    {{facility.facility_name}}
+                                    </option>
+                                </select>
+                            </div>
                         </div>
                     </div>
+
+                    <div class="field">
+                        <label>Facility</label>
+                        <div class="control">
+                            <div class="select">
+                                <select v-model="event.entrance">>
+                                <option>North Entrance</option>
+                                <option>South Entrance</option>
+                                <option>West Entrance</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="field">
+                    <label>Capacity</label>
+                    <input class="input" type="text" placeholder="Text input">
+                    </div>
+
+                    <div class="field">
+                    <label>Held</label>
+                    <input class="input" type="text" placeholder="Text input">
+                    </div>
                         
-                        <p><strong>Entrance: </strong> {{ event.entrance }} </p>
-                        <p><strong>Capacity: </strong> {{ event.capacity }} </p>
-                        <p><strong>Held: </strong> {{ event.held }} </p>
-                        <p><strong>GR Required? </strong> {{ event.gr_required }} </p>
-                        <p><strong>Early Closure? </strong> {{ event.early_closure }} </p>
+                    <div class="field">
+                    <label>GR Required?</label>
+                    <label class="radio">
+                        <input type="radio" name="test">
+                        Yes
+                    </label>
+                    <label class="radio">
+                        <input type="radio" name="test">
+                        No
+                    </label>
+                    </div>
+
+                    <div class="field">
+                    <label>Early Closure?</label>
+                    <label class="radio">
+                        <input type="radio" name="answer">
+                        Yes
+                    </label>
+                    <label class="radio">
+                        <input type="radio" name="answer">
+                        No
+                    </label>
+                    </div>
                     </div>
                 </div>
 
                 <div class="column is-6">
                     <div class="box">
-                        <h2 class="subtitle">Dates & Times</h2>
-                        <p><strong>Date(s): </strong> {{ date.event_date }} </p>
-                        <p><strong>Event Start Time: </strong> {{ date.event_time }} </p>
-                        <p><strong>Event End Time: </strong> {{ date.event_time }} </p>
-                        <p><strong>Start Sell Date: </strong> {{ date.sell_date }} </p>
-                        <p><strong>Stop Sell Date: </strong> {{ date.stop_date }} </p>
-                        <p><strong>Doors Open: </strong> {{ date.door_open }} </p>
-                        <p><strong>Doors Close: </strong> {{ date.door_close }} </p>
-                        <p><strong>On Sale Date: </strong> {{ date.on_sale_date }} </p>
+                    <h2 class="subtitle">Dates & Times</h2>
+                        <label>Event Date(s)</label>
+                        <input type="date">
+                        <label>Event Start Time: </label>
+                        <input type="date" data-type="time">
+                        <label>Event End Time: </label>
+                        <input type="date" data-type="time">
+                        <label>Start Sell Date:</label>
+                        <input type="date" data-type="datetime">
+                        <label>Stop Sell Date:</label>
+                        <input type="date" data-type="datetime">
+                        <label>Doors Open: </label>
+                        <input type="date" data-type="time">
+                        <label>Doors Close: </label>
+                        <input type="date" data-type="time">
                     </div>
                 </div>
 
@@ -74,12 +137,23 @@
                             </thead>
                             <tbody>
                                 <tr v-for="slot in time_slots">
-                                    <td>{{slot.time_range}}</td>
-                                    <td>{{slot.capacity }}</td>
-                                    <td>{{slot.held }}</td>
+                                    <td><div class="select">
+                                        <select v-model="slot.time_range">
+                                        <option>{{slot.time_range}}</option>
+                                        <option v-for="choice in time_slot_choices">{{choice}}</option>
+                                        </select>
+                                    </div></td>
+                                    <td><input type="text" class="input" v-model="slot.capacity"></td>
+                                    <td><input type="text" class="input" v-model="slot.held"></td>
                                 </tr>
+                                <div class="form-group">
+                                    <button @click="addTimeSlot" type="button" class="button is-primary is-small">Add Time Slot</button>
+                                </div>
+                                                            
                             </tbody>
+                            
                         </table>  
+                        
                     </div>
                 </div>
 
@@ -228,15 +302,23 @@
 </template>
 
 <script>
+
     import axios from 'axios'
+    import bulmaCalendar from '../../../node_modules/bulma-calendar/dist/js/bulma-calendar.min.js'
+
+    
 
     export default { 
         name: 'Event',
         data() { 
             return { 
                 event: {},
+                all_facilities: [],
+                all_locations: [],
+                bulma_date: new Date(),
                 date: '',
                 time_slots: '',
+                time_slot_choices: ['6:00 - 6:30 AM', '6:30 - 7:00 AM'],
                 location_name: '',
                 
                 unique_prices: '',
@@ -246,15 +328,49 @@
             }
         },
 
-        // This is to get the data from Django
+        
         mounted() { 
             this.getEvent()
+
+        // Bulma calendar custom import
+
+            const calendar = bulmaCalendar.attach(this.$refs.calendarTrigger, {
+                startDate: this.bulma_date,
+            })[0]
+            calendar.on('select', e => (this.bulma_date = e.start || null))
+            
         },
+
+            computed: {
+        niceDate() {
+        if (this.bulma_date) {
+            return this.bulma_date.toLocaleDateString()
+        }
+        }
+    },
         methods: { 
+
+            // Button to add a time slot
+            addTimeSlot () {
+                    this.time_slots.push({
+                    })
+                    },
+
+            submit () {
+                const data = {
+                    addTimeSlot: this.time_slots
+                }
+                alert(JSON.stringify(data, null, 2))
+                },
+
+            // This is to get the data from Django
+
             async getEvent() { 
                 this.$store.commit('setIsLoading', true)
 
                 const EventID = this.$route.params.id
+
+                
 
                 axios
                     .get(`/api/v1/editevent/${EventID}/`)
@@ -302,8 +418,27 @@
                         console.log(error)
                     })
 
-                this.$store.commit('setIsLoading', false)
-            }
-        }
+                axios
+                .get('api/v1/facility/')
+                .then(response => { 
+                    this.all_facilities = response.data.reverse()
+                })
+                .catch(error => { 
+                    console.log(error)
+                })
+
+                axios
+                .get('api/v1/location/')
+                .then(response => { 
+                    this.all_locations = response.data.reverse()
+                })
+                .catch(error => { 
+                    console.log(error)
+                })
+            this.$store.commit('setIsLoading', false)
+            },
+            },
+
+            
     }
 </script>

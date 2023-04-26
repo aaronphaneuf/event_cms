@@ -1,7 +1,43 @@
 
 
-@import "../../node_modules/bulma";
+
+
+
+
+// Set your brand colors
+$purple: #8246AF;
+$beige-lighter: #EFF0EB;
+$brown: #757763;
+$beige-light: #D0D1CD;
+
+
+// Update Bulma's global variables
+$primary: $purple;
+$grey-dark: $brown;
+$grey-light: $beige-light;
+$widescreen-enabled: false;
+$fullhd-enabled: false;
+
+// Update some of Bulma's component variables
+$body-background-color: $beige-lighter;
+
+
+
 
 body {
     font-size: 0.95em; 
 }
+
+
+@import "../../node_modules/bulma";
+@import "../../node_modules/bulma-calendar";
+
+
+
+// Still need to change these. The link is also the arrow on drop-down lists.
+$pink: #FA7C91;
+
+
+$link: $pink;
+
+

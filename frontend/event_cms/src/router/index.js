@@ -9,6 +9,7 @@ import Events from '../views/dashboard/Events.vue'
 import Event from '../views/dashboard/Event.vue'
 import AddEvent from '../views/dashboard/AddEvent.vue'
 import EditEvent from '../views/dashboard/EditEvent.vue'
+import Test from '../views/dashboard/Test.vue'
 
 const routes = [
   {
@@ -67,6 +68,14 @@ const routes = [
   path: '/dashboard/editevent/:id',
   name: 'EditEvent',
   component: EditEvent,
+  meta: { 
+    requireLogin: true
+  }
+},
+{
+  path: '/dashboard/test/:id',
+  name: 'Test',
+  component: Test,
   meta: { 
     requireLogin: true
   }

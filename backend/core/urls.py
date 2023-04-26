@@ -6,6 +6,8 @@ router = routers.DefaultRouter()
 router.register(r'events', views.EventViewSet, basename='events')
 router.register(r'simple_events', views.SimpleEventViewSet, basename='simple_events')
 router.register(r'editevent', views.EditEventViewSet, basename='editevent')
+router.register(r'facility', views.FacilityViewSet, basename='facility')
+router.register(r'location', views.LocationViewSet, basename='location')
 
 
 urlpatterns = [ 
