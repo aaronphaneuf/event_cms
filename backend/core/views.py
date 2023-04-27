@@ -1,6 +1,6 @@
 from django.shortcuts import render
-from .models import Event, Facility, Location
-from .serializers import EventSerializer, TimeSlotSerializer, DateTimeSerializer, SimpleEventSerializer, EditEventSerializer, FacilitySerializer, LocationSerializer
+from .models import Event, Facility, Location, PriceType
+from .serializers import *
 from rest_framework import viewsets
 
 class EventViewSet(viewsets.ModelViewSet):
@@ -22,3 +22,11 @@ class FacilityViewSet(viewsets.ModelViewSet):
 class LocationViewSet(viewsets.ModelViewSet):
   queryset = Location.objects.all()
   serializer_class = LocationSerializer
+
+class PriceTypeViewSet(viewsets.ModelViewSet):
+  queryset = PriceType.objects.all()
+  serializer_class = PriceTypeSerializer
+
+class PriceLayerViewSet(viewsets.ModelViewSet):
+  queryset = PriceLayer.objects.all()
+  serializer_class = PriceLayerSerializer
