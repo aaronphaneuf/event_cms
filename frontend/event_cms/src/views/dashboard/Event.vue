@@ -74,19 +74,12 @@
                                     <th>COGS</th>
                                     <th>Total</th>
                                 </tr>
-                                
                             </thead>
-                            
                             <tbody>
-                            
-                              
-                                <tr v-for="(price, y) in event.prices"> 
-                                
+                                <tr v-for="(price, y) in event.prices">
                                     <td v-for="x in price">{{x}}
-                                    
                                     </td>
                                     <td><strong>${{prices_sum[y]}}</strong></td>
-                                    
                                 </tr>
                             </tbody>
                         </table>
@@ -188,7 +181,6 @@
         </div>
     </div>
 </template>
-
 <script>
     import axios from 'axios'
 

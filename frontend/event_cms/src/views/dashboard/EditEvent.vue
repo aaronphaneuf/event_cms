@@ -1,338 +1,290 @@
 <template>
-   
-    <div class="columns is-multiline">
-   <div class="column is-12">
-   <div class="box">
-  <form @submit.prevent="submitForm">
-      <div class="field">
-                        <label>Name</label>
-                        <div class="control">
-                            <input type="text" class="input" v-model="event.name">
-                        </div>
-                    </div>
-
-                    <div class="field">
-                        <label>Description</label>
-                        <div class="control">
-                            <textarea class="textarea" v-model="event.description"></textarea>
-                        </div>
-                    </div>
-                     </form>
-                     </div></div>
-</div>
+    <div class="container">
         <div class="columns is-multiline">
-            
-
-                <div class="column is-6">
-                    <div class="box">
-                        <h2 class="subtitle">Details</h2>
+            <div class="column is-12">
+                <div class="box">
+                    <form @submit.prevent="submitForm">
                         <div class="field">
+                            <label>Name</label>
+                            <div class="control">
+                                <input type="text" class="input" v-model="event.name">
+                            </div>
+                        </div>
+                        <div class="field">
+                            <label>Description</label>
+                            <div class="control">
+                                <textarea class="textarea" v-model="event.description"></textarea>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="columns is-multiline">
+            <div class="column is-6">
+                <div class="box">
+                    <h2 class="subtitle">Details</h2>
+                    <div class="field">
                         <label>Location</label>
                         <div class="control">
                             <div class="select">
                                 <select v-model="location_name">
-                                <option>Unknown</option>
-                                <option v-for="location in all_locations">
-                                    {{location.location_name}}
+                                    <option>Unknown</option>
+                                    <option v-for="location in all_locations">
+                                        {{location.location_name}}
                                     </option>
                                 </select>
                             </div>
                         </div>
                     </div>
-
                     <div class="field">
                         <label>Facility</label>
                         <div class="control">
                             <div class="select">
-                                <select v-model="event.facility">>
-                                <option>Unknown</option>
-                                <option v-for="facility in all_facilities">
-                                    {{facility.facility_name}}
+                                <select v-model="event.facility">
+                                    >
+                                    <option>Unknown</option>
+                                    <option v-for="facility in all_facilities">
+                                        {{facility.facility_name}}
                                     </option>
                                 </select>
                             </div>
                         </div>
                     </div>
-
                     <div class="field">
                         <label>Facility</label>
                         <div class="control">
                             <div class="select">
-                                <select v-model="event.entrance">>
-                                <option>North Entrance</option>
-                                <option>South Entrance</option>
-                                <option>West Entrance</option>
+                                <select v-model="event.entrance">
+                                    >
+                                    <option>North Entrance</option>
+                                    <option>South Entrance</option>
+                                    <option>West Entrance</option>
                                 </select>
                             </div>
                         </div>
                     </div>
-
-
                     <div class="field">
-                    <label>Capacity</label>
-                    <input class="input" type="text" placeholder="Text input">
+                        <label>Capacity</label>
+                        <input class="input" type="text" placeholder="Text input">
                     </div>
-
                     <div class="field">
-                    <label>Held</label>
-                    <input class="input" type="text" placeholder="Text input">
+                        <label>Held</label>
+                        <input class="input" type="text" placeholder="Text input">
                     </div>
-                        
                     <div class="field">
-                    <label>GR Required?</label>
-                    <label class="radio">
+                        <label>GR Required?</label>
+                        <label class="radio">
                         <input type="radio" name="test">
                         Yes
-                    </label>
-                    <label class="radio">
+                        </label>
+                        <label class="radio">
                         <input type="radio" name="test">
                         No
-                    </label>
+                        </label>
                     </div>
-
                     <div class="field">
-                    <label>Early Closure?</label>
-                    <label class="radio">
+                        <label>Early Closure?</label>
+                        <label class="radio">
                         <input type="radio" name="answer">
                         Yes
-                    </label>
-                    <label class="radio">
+                        </label>
+                        <label class="radio">
                         <input type="radio" name="answer">
                         No
-                    </label>
-                    </div>
+                        </label>
                     </div>
                 </div>
-
-                <div class="column is-6">
-                    <div class="box">
+            </div>
+            <div class="column is-6">
+                <div class="box">
                     <h2 class="subtitle">Dates & Times</h2>
-                        <label>Event Date(s)</label>
-                        <input type="date">
-                        <label>Event Start Time: </label>
-                        <input type="date" data-type="time">
-                        <label>Event End Time: </label>
-                        <input type="date" data-type="time">
-                        <label>Start Sell Date:</label>
-                        <input type="date" data-type="datetime">
-                        <label>Stop Sell Date:</label>
-                        <input type="date" data-type="datetime">
-                        <label>Doors Open: </label>
-                        <input type="date" data-type="time">
-                        <label>Doors Close: </label>
-                        <input type="date" data-type="time">
-                    </div>
+                    <label>Event Date(s)</label>
+                    <input type="date">
+                    <label>Event Start Time: </label>
+                    <input type="date" data-type="time">
+                    <label>Event End Time: </label>
+                    <input type="date" data-type="time">
+                    <label>Start Sell Date:</label>
+                    <input type="date" data-type="datetime">
+                    <label>Stop Sell Date:</label>
+                    <input type="date" data-type="datetime">
+                    <label>Doors Open: </label>
+                    <input type="date" data-type="time">
+                    <label>Doors Close: </label>
+                    <input type="date" data-type="time">
                 </div>
-
-                <div class="column is-12">
-                    <div class="box">
-                        <h2 class="subtitle">Time Slots</h2>
-                        <table class="table is-fullwidth is-striped">
-                            <thead>
-                                <tr>
-                                    <th>Time Slot</th>
-                                    <th>Cap</th>
-                                    <th>Held</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr v-for="slot in time_slots">
-                                    <td><div class="select">
+            </div>
+            <div class="column is-12">
+                <div class="box">
+                    <h2 class="subtitle">Time Slots</h2>
+                    <table class="table is-fullwidth is-striped">
+                        <thead>
+                            <tr>
+                                <th>Time Slot</th>
+                                <th>Cap</th>
+                                <th>Held</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="slot in time_slots">
+                                <td>
+                                    <div class="select">
                                         <select v-model="slot.time_range">
-                                        <option>{{slot.time_range}}</option>
-                                        <option v-for="choice in time_slot_choices">{{choice}}</option>
+                                            <option>{{slot.time_range}}</option>
+                                            <option v-for="choice in time_slot_choices">{{choice}}</option>
                                         </select>
-                                    </div></td>
-                                    <td><input type="text" class="input" v-model="slot.capacity"></td>
-                                    <td><input type="text" class="input" v-model="slot.held"></td>
-                                </tr>
-                                <div class="form-group">
-                                    <button @click="addTimeSlot" type="button" class="button is-primary is-small">Add Time Slot</button>
-                                </div>
-                                                            
-                            </tbody>
-                            
-                        </table>  
-                        
-                    </div>
+                                    </div>
+                                </td>
+                                <td><input type="text" class="input" v-model="slot.capacity"></td>
+                                <td><input type="text" class="input" v-model="slot.held"></td>
+                            </tr>
+                            <div class="form-group">
+                                <button @click="addTimeSlot" type="button" class="button is-primary is-small">Add Time Slot</button>
+                            </div>
+                        </tbody>
+                    </table>
                 </div>
-
-                <div class="column is-12">
-                    <div class="box">
-                        <h2 class="subtitle">Pricing</h2>
-                        <div class="table-container">
-                        <table class="table is-fullwidth is-striped">
-                     <thead>
-      <tr>
-        <th></th>
-        <th v-for="(column, columnIndex) in columns" :key="columnIndex">{{column}}</th>
-        
-      </tr>
-      
-    </thead>
-    
-    <tbody>
-      <tr v-for="(record, rowIndex) in records" :key="rowIndex">
-        <td>{{record.name ? record.name : record.row}}</td>
-        <td v-for="(detail, index) in record.details" :key="index">
-          <input type="text" class="input" v-model="detail.value">
-        </td>
-      </tr>
-      <tr>
-        <td><strong>Total</strong></td>
-        <td v-for="(column, index) in columns" :key="index">
-          <strong>${{ columnSums[column] }}</strong>
-        </td>
-      </tr>
-    </tbody>
-
-     <div class="select" style="display: inline-block; vertical-align: middle;" >
-    <select v-model="selectedName">
-      <option v-for="name in names" :key="name" :value="name">{{ name }}</option>
-         
-    </select>
-</div>
-<div style="display: inline-block;">
-    <button @click="addRow" class="button is-primary is-small">Add Row</button>
-</div>
-  
-
-  <div class="select" style="display: inline-block; vertical-align: middle;">
-  <select v-model="selectedColumn">
-    <option v-for="name in names" :key="name" :value="name">{{ name }}</option>
-  </select>
-</div>
-<div style="display: inline-block;">
-  <button @click="addColumn" class="button is-primary is-small">Add Column</button>
-</div>
-
-
-
-
-  </table>
-
- 
-
-   
-                        </div>
-                    </div>
-                </div>
-
-                <div class="column is-12">
-                    <div class="box">
-                        <h2 class="subtitle">Discounts</h2>
+            </div>
+            <div class="column is-12">
+                <div class="box">
+                    <h2 class="subtitle">Pricing</h2>
+                    <div class="table-container">
                         <table class="table is-fullwidth is-striped">
                             <thead>
                                 <tr>
-                                    <th>Price Type</th>
-                                    <th>Discount</th>
-                                    <th>Description</th>
+                                    <th></th>
+                                    <th v-for="(column, columnIndex) in columns" :key="columnIndex">{{column}}</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr v-for="discount in event.discount">
-                                    <td>{{discount.price_type}}</td>
-                                    <td>{{discount.discount }}</td>
-                                    <td>{{discount.description }}</td>
+                                <tr v-for="(record, rowIndex) in records" :key="rowIndex">
+                                    <td>{{record.name ? record.name : record.row}}</td>
+                                    <td v-for="(detail, index) in record.details" :key="index">
+                                        <input type="text" class="input" v-model="detail.value">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Total</strong></td>
+                                    <td v-for="(column, index) in columns" :key="index">
+                                        <strong>${{ columnSums[column] }}</strong>
+                                    </td>
                                 </tr>
                             </tbody>
-                        </table>  
+                            <div class="select" style="display: inline-block; vertical-align: middle;" >
+                                <select v-model="selectedName">
+                                    <option v-for="name in names" :key="name" :value="name">{{ name }}</option>
+                                </select>
+                            </div>
+                            <div style="display: inline-block;">
+                                <button @click="addRow" class="button is-primary is-small">Add Row</button>
+                            </div>
+                            <div class="select" style="display: inline-block; vertical-align: middle;">
+                                <select v-model="selectedColumn">
+                                    <option v-for="name in names" :key="name" :value="name">{{ name }}</option>
+                                </select>
+                            </div>
+                            <div style="display: inline-block;">
+                                <button @click="addColumn" class="button is-primary is-small">Add Column</button>
+                            </div>
+                        </table>
                     </div>
                 </div>
-
-                <div class="column is-12">
-                    <div class="box">
-                        <h2 class="subtitle">GL Accounts</h2>
-                        <table class="table is-fullwidth is-striped">
-                            <thead>
-                                <tr>
-                                    <th>Price Layer</th>
-                                    <th>GL Account</th>
-                                    <th>Description</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr v-for="account in event.gl_account">
-                                    <td>{{account.price_layer}}</td>
-                                    <td>{{account.gl_account }}</td>
-                                    <td>{{account.description }}</td>
-                                </tr>
-                            </tbody>
-                        </table>  
-                    </div>
+            </div>
+            <div class="column is-12">
+                <div class="box">
+                    <h2 class="subtitle">Discounts</h2>
+                    <table class="table is-fullwidth is-striped">
+                        <thead>
+                            <tr>
+                                <th>Price Type</th>
+                                <th>Discount</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="discount in event.discount">
+                                <td>{{discount.price_type}}</td>
+                                <td>{{discount.discount }}</td>
+                                <td>{{discount.description }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
-
-
-                <div class="column is-12">
-                    <div class="box">
-                        <h2 class="subtitle">CSI</h2>
-                        <table class="table is-fullwidth">
-                            <thead>
-                                <tr>
-                                    <th>CSI Needed?</th>
-                                    <th>CSI Mandatory?</th>
-                                    <th>Notes</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>{{event.csi_needed}}</td>
-                                    <td>{{event.csi_mandatory}}</td>
-                                    <td>{{event.csi_notes}}</td>
-                                </tr>
-                            </tbody>
-                        </table>  
-                    </div>
+            </div>
+            <div class="column is-12">
+                <div class="box">
+                    <h2 class="subtitle">GL Accounts</h2>
+                    <table class="table is-fullwidth is-striped">
+                        <thead>
+                            <tr>
+                                <th>Price Layer</th>
+                                <th>GL Account</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="account in event.gl_account">
+                                <td>{{account.price_layer}}</td>
+                                <td>{{account.gl_account }}</td>
+                                <td>{{account.description }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
-
-                 
-                <div class="column is-12">
-                    <div class="box">
-                        <h2 class="subtitle">Additional Notes</h2>
-                        <p> {{ event.additional_notes }} </p>
-                    </div>
+            </div>
+            <div class="column is-12">
+                <div class="box">
+                    <h2 class="subtitle">CSI</h2>
+                    <table class="table is-fullwidth">
+                        <thead>
+                            <tr>
+                                <th>CSI Needed?</th>
+                                <th>CSI Mandatory?</th>
+                                <th>Notes</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>{{event.csi_needed}}</td>
+                                <td>{{event.csi_mandatory}}</td>
+                                <td>{{event.csi_notes}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
-
-
-                <div class="column is-12">
-                    <div class="box">
-                        <h2 class="subtitle">Web Links</h2>
-                        <table class="table is-fullwidth is-striped">
-                            <thead>
-                                <tr>
-                                    <th>Description</th>
-                                    <th>Link</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>Website:</td>
-                                    <td>{{event.website_link}}</td>
-                                </tr>
-                                <tr>
-                                    <td>Websales:</td>
-                                    <td>{{event.websales_link}}</td>
-                                </tr>
-                                
-                            </tbody>
-                        </table>  
-
-
-
-     
-
-  
-                        
-                    </div>
-                    
+            </div>
+            <div class="column is-12">
+                <div class="box">
+                    <h2 class="subtitle">Additional Notes</h2>
+                    <p> {{ event.additional_notes }} </p>
                 </div>
-
-                
-
-            
-          
+            </div>
+            <div class="column is-12">
+                <div class="box">
+                    <h2 class="subtitle">Web Links</h2>
+                    <table class="table is-fullwidth is-striped">
+                        <thead>
+                            <tr>
+                                <th>Description</th>
+                                <th>Link</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Website:</td>
+                                <td>{{event.website_link}}</td>
+                            </tr>
+                            <tr>
+                                <td>Websales:</td>
+                                <td>{{event.websales_link}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
     </div>
-    
 </template>
 
 <script>
