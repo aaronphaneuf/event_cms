@@ -18,16 +18,17 @@
                             <th>Name</th>
                             <th>Date</th>
                             <th>Status</th>
-                            <th>Analytics</th>
+                            <th>Days Until Event</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr
-                            v-for="event in events"
+                            v-for="(event, y) in events"
                             v-bind:key="event.id">
                                 <td><router-link :to="{ name: 'Event', params: { id: event.id}}">{{event.name}}</router-link></td>
                                 <td>{{ event.date_time.event_date }}</td>
                                 <td> <button class="button is-success is-light">On Sale</button></td>
+                                <td>{{dates[y]}}</td>
                                 <td><progress class="progress is-primary" value="15" max="100">15%</progress></td>
                         </tr>
                     </tbody>
@@ -46,7 +47,12 @@
         name: 'Events',
         data() { 
             return { 
-                events: []
+                events: [],
+                today: '',
+                dates: [],
+
+                
+
             }
         },
         mounted() { 
@@ -60,12 +66,30 @@
                     .get('api/v1/simple_events/')
                     .then(response => { 
                         this.events = response.data
+
+                        this.today = new Date()//.toISOString().split('T')[0];
+                        
+                        this.dates = this.events.map(({ date_time }) => Math.ceil((new Date(date_time.event_date) - this.today)/(1000 * 60 * 60 * 24)))
+
+                        
+
+                        for (let i = 0; i < this.dates.length; i++) {
+                            if (this.dates[i] > 0) {
+                                
+                            } else {
+                                this.dates[i] = 0;
+                            }
+                            }
+
+                        
+
                     })
                     .catch(error => { 
                         console.log(error)
                     })
 
-
+                
+                    
                 this.$store.commit('setIsLoading', false)
             }
         }

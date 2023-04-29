@@ -162,30 +162,58 @@
                         <h2 class="subtitle">Pricing</h2>
                         <div class="table-container">
                         <table class="table is-fullwidth is-striped">
-                    <thead>
-                        <tr>
-                            <th>Price Layer</th>
-                            <th v-for="price in unique_price_types">
-                                {{ price }}
-                            </th>
-                        </tr>
-                    </thead>
-                        <tbody>
-                            <tr v-for="layer in unique_price_layers">
-                                <td>{{ layer }}</td>
-                                <td v-for="(x, y) in unique_prices">
-                                    <p v-for="(a, b) in unique_prices">
-                                        <p v-if="x.price_layer[b] == layer">${{x.price[b]}}</p>
-                                    </p>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td><strong>Total</strong></td>
-                                <td v-for="total in price_layer_sum"><strong>${{ total }}</strong></td>
-                                
-                            </tr>
-                        </tbody>
-                        </table>
+                     <thead>
+      <tr>
+        <th></th>
+        <th v-for="(column, columnIndex) in columns" :key="columnIndex">{{column}}</th>
+        
+      </tr>
+      
+    </thead>
+    
+    <tbody>
+      <tr v-for="(record, rowIndex) in records" :key="rowIndex">
+        <td>{{record.name ? record.name : record.row}}</td>
+        <td v-for="(detail, index) in record.details" :key="index">
+          <input type="text" class="input" v-model="detail.value">
+        </td>
+      </tr>
+      <tr>
+        <td><strong>Total</strong></td>
+        <td v-for="(column, index) in columns" :key="index">
+          <strong>${{ columnSums[column] }}</strong>
+        </td>
+      </tr>
+    </tbody>
+
+     <div class="select" style="display: inline-block; vertical-align: middle;" >
+    <select v-model="selectedName">
+      <option v-for="name in names" :key="name" :value="name">{{ name }}</option>
+         
+    </select>
+</div>
+<div style="display: inline-block;">
+    <button @click="addRow" class="button is-primary is-small">Add Row</button>
+</div>
+  
+
+  <div class="select" style="display: inline-block; vertical-align: middle;">
+  <select v-model="selectedColumn">
+    <option v-for="name in names" :key="name" :value="name">{{ name }}</option>
+  </select>
+</div>
+<div style="display: inline-block;">
+  <button @click="addColumn" class="button is-primary is-small">Add Column</button>
+</div>
+
+
+
+
+  </table>
+
+ 
+
+   
                         </div>
                     </div>
                 </div>
@@ -288,6 +316,12 @@
                                 
                             </tbody>
                         </table>  
+
+
+
+     
+
+  
                         
                     </div>
                     
@@ -321,16 +355,33 @@
                 time_slot_choices: ['6:00 - 6:30 AM', '6:30 - 7:00 AM'],
                 location_name: '',
                 
+                
+                
                 unique_prices: '',
                 unique_price_types: '',
                 unique_price_layers: '',
                 price_layer_sum: '',
+
+                columns: '',//["A", "B", "C", "D"],
+                rows: '',//["1", "2", "3", "4"],
+                records: [],
+                new_prices: [],
+
+                names: ["John", "Jane", "Bob", "Alice"],
+                selectedName: "",
+                selectedColumn: "",
             }
         },
 
         
         mounted() { 
-            this.getEvent()
+            this.getEvent();
+           
+
+           
+
+
+            
 
         // Bulma calendar custom import
 
@@ -346,7 +397,20 @@
         if (this.bulma_date) {
             return this.bulma_date.toLocaleDateString()
         }
-        }
+        },
+
+        columnSums() {
+      const sums = {};
+
+      this.columns.forEach(column => {
+        sums[column] = this.records.reduce((acc, record) => {
+          const detail = record.details.find(detail => detail.column === column);
+          return acc + Number(detail.value);
+        }, 0);
+      });
+
+      return sums;
+    }
     },
         methods: { 
 
@@ -356,12 +420,51 @@
                     })
                     },
 
+            // Button to add a time slot
+
             submit () {
                 const data = {
                     addTimeSlot: this.time_slots
                 }
                 alert(JSON.stringify(data, null, 2))
                 },
+
+
+            addRow() {
+      const newRow = {
+        row: this.selectedName,
+        
+        details: []
+      };
+      this.columns.forEach(column => {
+        newRow.details.push({
+          column: column,
+          value: 0
+        });
+      });
+      this.records.push(newRow);
+    },
+
+
+addColumn() {
+      const newColumn = {
+        
+        column: this.selectedColumn,
+      };
+      this.columns.push(this.selectedColumn);
+      this.records.forEach(record => {
+        record.details.push({
+          column: this.selectedColumn,
+          value: 0
+        });
+      });
+    },
+
+       
+  
+            
+
+         
 
             // This is to get the data from Django
 
@@ -382,10 +485,35 @@
                         this.time_slots = this.event.timeslot_set;
                         
                         // Assign unique values to use as the pricing table column headers
-                        this.unique_price_types = [... new Set(this.event.price_layer_price.map(x=>x.price_type))];
+                        this.columns = [... new Set(this.event.price_layer_price.map(x=>x.price_type))];
 
                         // Assign unique values to use as the pricing table column rows
-                        this.unique_price_layers = [... new Set(this.event.price_layer_price.map(x=>x.price_layer))];
+                        this.rows = [... new Set(this.event.price_layer_price.map(x=>x.price_layer))];
+
+                        //testing rows and columns
+
+
+            
+                        
+
+            this.rows.forEach(row => {
+                this.records.push({
+                    row: row,
+                    details: []
+                });
+                })
+            
+            this.records.forEach(record => {
+                this.columns.forEach(column => {
+                    record.details.push({
+                    column: column,
+                    value: 0
+                    });
+                });
+                });
+
+
+                        
 
                         // Combine something like Object{price:56, price_layer: 'Ticket Price', price_type: 'Adult 18+'}
                         // And something like Object{price:40, price_layer: 'Food', price_type: 'Adult 18+'}
@@ -412,6 +540,31 @@
                         // Get the sum of each array in 'unique_prices'
                         const sum = (a, b) => Number(a) + Number(b);
                         this.price_layer_sum = this.unique_prices.map(({ price }) => price.reduce(sum));
+
+
+
+                        for (let i = 0; i < this.event.price_layer_price.length; i++) {
+                            const myObject = this.event.price_layer_price[i];
+                            const row = myObject.price_layer;
+                            const column = myObject.price_type;
+                            const value = myObject.price;
+                            
+                            let record = this.new_prices.find(record => record.row === row);
+                            
+                            if (!record) {
+                                record = {
+                                row,
+                                details: []
+                                };
+                                
+                                this.new_prices.push(record);
+                            }
+                            
+                            record.details.push({
+                                column,
+                                value
+                            });
+                            }
                         
                     })
                     .catch(error => { 
