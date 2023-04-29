@@ -1,13 +1,9 @@
-// Leads.vue
-
 <template>
-    <div class="container">
+    
         <div class="columns is-multiline">
             <div class="columns is-multiline">
                 <h1 class="title">Events</h1>
-
                 <router-link to="/dashboard/events/add">Add New Event</router-link>
-                
             </div>
             <div class="column is-12">
             <div class="box">
@@ -35,15 +31,13 @@
                 </table>
             </div>
         </div>
-        </div>
-        </div>
+    </div>
     </div>
 </template>
-
 <script>
     import axios from 'axios'
 
-    export default { 
+    export default {
         name: 'Events',
         data() { 
             return { 
@@ -55,11 +49,11 @@
 
             }
         },
-        mounted() { 
+        mounted() {
             this.getEvents()
         },
-        methods: { 
-            async getEvents() { 
+        methods: {
+            async getEvents() {
                 this.$store.commit('setIsLoading', true)
 
                 axios
@@ -84,7 +78,7 @@
                         
 
                     })
-                    .catch(error => { 
+                    .catch(error => {
                         console.log(error)
                     })
 

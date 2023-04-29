@@ -111,6 +111,16 @@ class PriceLayerPrice(models.Model):
     price_type = models.ForeignKey(PriceType, on_delete=models.PROTECT)
     price_layer = models.ForeignKey(PriceLayer, on_delete=models.PROTECT)
 
+class Price(models.Model):
+    event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name='prices')
+    price_type = models.ForeignKey(PriceType, on_delete=models.PROTECT)
+    price_1 = models.FloatField()
+    price_2 = models.FloatField()
+    price_3 = models.FloatField()
+    price_4 = models.FloatField()
+    price_5 = models.FloatField()
+    price_6 = models.FloatField()
+
 class GLAccount(models.Model):
     event = models.ManyToManyField(Event, related_name='gl_account')
     price_layer = models.ForeignKey(PriceLayer, on_delete=models.PROTECT)
