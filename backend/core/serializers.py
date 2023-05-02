@@ -99,17 +99,13 @@ class EditEventSerializer(serializers.ModelSerializer):
   price_layer_price = PriceLayerPriceSerializer(many=True, read_only=True)
   gl_account = GLAccountSerializer(many=True, read_only=True)
   discount = DiscountSerializer(many=True, read_only=True)
-  prices = PriceSerializer(many=True)
   
-  #facility = FacilitySerializer(Facility.objects.all(), read_only=True, source="all_options")#, read_only=True, source="all_options") #,read_only=True, 
-  #facility = serializers.PrimaryKeyRelatedField(queryset=Facility.objects.all())
-  facility = FacilitySerializer()
-  #facility = ListCategoryProvider(many=True)
   
-  location = LocationSerializer()
   price_type = PriceTypeSerializer(many=True, read_only=True)
   price_layer = PriceLayerSerializer(many=True, read_only=True)
 
+  location = serializers.CharField(source='location.location_name')
+  facility = serializers.CharField(source='facility.facility_name')
  
   class Meta:
     model = Event
@@ -117,7 +113,7 @@ class EditEventSerializer(serializers.ModelSerializer):
     
     fields = ['id', 'name', 'description', 'capacity', 'held', 'entrance', 'gr_required', 'early_closure', 'csi_needed', 'csi_mandatory', 'csi_notes', 
               'location', 'date_time', 'timeslot_set', 'price_type', 'price_layer', 'price_layer_price', 'status', 'website_link', 'websales_link', 'facility',
-              'gl_account', 'discount', 'additional_notes', 'prices']
+              'gl_account', 'discount', 'additional_notes']
     
     
   def create(self, validated_data):
@@ -127,6 +123,22 @@ class EditEventSerializer(serializers.ModelSerializer):
         DateTime.objects.create(event=event, **date_data)
         return event
 
+  def update(self, instance, validated_data):
+        instance.name = validated_data.get('name', instance.name)
+        instance.description = validated_data.get('description', instance.description)
+        instance.capacity = validated_data.get('capacity', instance.capacity)
+        instance.held = validated_data.get('held', instance.held)
+        instance.entrance = validated_data.get('entrance', instance.entrance)
+        location_name = validated_data.get('location', {}).get('location_name')
+        if location_name:
+            location, _ = Location.objects.get_or_create(location_name=location_name)
+            instance.location = location
+        facility_name = validated_data.get('facility', {}).get('facility_name')
+        if facility_name:
+            facility, _ = Facility.objects.get_or_create(facility_name=facility_name)
+            instance.facility = facility
+        instance.save()
+        return instance
 
 class SimpleDateTimeSerializer(serializers.ModelSerializer):
   class Meta:

@@ -33,9 +33,9 @@ class Location(models.Model):
 
     
 class Event(models.Model):
-    NORTH_ENTRANCE = 'N'
-    SOUTH_ENTRANCE = 'S'
-    WEST_ENTRANCE = 'W'
+    NORTH_ENTRANCE = 'North Entrance'
+    SOUTH_ENTRANCE = 'South Entrance'
+    WEST_ENTRANCE = 'West Entrance'
 
     ENTRANCE_CHOICES = [
         (NORTH_ENTRANCE, 'North'),
@@ -43,12 +43,12 @@ class Event(models.Model):
         (WEST_ENTRANCE, 'West')
     ]
 
-    YES_CHOICE = 'Y'
-    NO_CHOICE = 'N'
+    YES_CHOICE = 'Yes'
+    NO_CHOICE = 'No'
 
     YES_OR_NO_CHOICES = [
-        (YES_CHOICE, 'Yes'),
-        (NO_CHOICE, 'No')
+        (YES_CHOICE, 'Y'),
+        (NO_CHOICE, 'N')
     ]
 
     STATUS_ON_SALE = 'OS'
@@ -69,11 +69,11 @@ class Event(models.Model):
     description = models.TextField()
     capacity = models.IntegerField()
     held = models.IntegerField()
-    entrance = models.CharField(max_length=1, choices=ENTRANCE_CHOICES, default='NORTH_ENTRANCE')
-    gr_required = models.CharField(max_length=1, choices=YES_OR_NO_CHOICES, default='NO_CHOICE')
-    early_closure = models.CharField(max_length=1, choices=YES_OR_NO_CHOICES, default='NO_CHOICE')
-    csi_needed = models.CharField(max_length=1, choices=YES_OR_NO_CHOICES, default='NO_CHOICE')
-    csi_mandatory = models.CharField(max_length=1, choices=YES_OR_NO_CHOICES, default='NO_CHOICE')
+    entrance = models.CharField(max_length=14, choices=ENTRANCE_CHOICES, default='NORTH_ENTRANCE')
+    gr_required = models.CharField(max_length=3, choices=YES_OR_NO_CHOICES, default='NO_CHOICE')
+    early_closure = models.CharField(max_length=3, choices=YES_OR_NO_CHOICES, default='NO_CHOICE')
+    csi_needed = models.CharField(max_length=3, choices=YES_OR_NO_CHOICES, default='NO_CHOICE')
+    csi_mandatory = models.CharField(max_length=3, choices=YES_OR_NO_CHOICES, default='NO_CHOICE')
     csi_notes = models.TextField()
     additional_notes = models.TextField()
     facility = models.ForeignKey(Facility, on_delete=models.PROTECT, null=True)
@@ -107,7 +107,7 @@ class TimeSlot(models.Model):
 
 class PriceLayerPrice(models.Model):
     price = models.IntegerField()
-    event = models.ManyToManyField(Event, related_name='price_layer_price')
+    event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name='price_layer_price')
     price_type = models.ForeignKey(PriceType, on_delete=models.PROTECT)
     price_layer = models.ForeignKey(PriceLayer, on_delete=models.PROTECT)
 

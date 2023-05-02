@@ -4,6 +4,12 @@
             <div class="column is-12">
                 <div class="box">
                     <form @submit.prevent="submitForm">
+                    <div class="field">
+                            <div class="control">
+                                <button class="button is-primary">Submit</button>
+                            </div>
+                        </div>
+                        </form>
                         <div class="field">
                             <label>Name</label>
                             <div class="control">
@@ -16,7 +22,7 @@
                                 <textarea class="textarea" v-model="event.description"></textarea>
                             </div>
                         </div>
-                    </form>
+                    
                 </div>
             </div>
         </div>
@@ -28,8 +34,7 @@
                         <label>Location</label>
                         <div class="control">
                             <div class="select">
-                                <select v-model="location_name">
-                                    <option>Unknown</option>
+                                <select v-model="event.location">
                                     <option v-for="location in all_locations">
                                         {{location.location_name}}
                                     </option>
@@ -42,8 +47,6 @@
                         <div class="control">
                             <div class="select">
                                 <select v-model="event.facility">
-                                    >
-                                    <option>Unknown</option>
                                     <option v-for="facility in all_facilities">
                                         {{facility.facility_name}}
                                     </option>
@@ -52,11 +55,10 @@
                         </div>
                     </div>
                     <div class="field">
-                        <label>Facility</label>
+                        <label>Entrance</label>
                         <div class="control">
                             <div class="select">
                                 <select v-model="event.entrance">
-                                    >
                                     <option>North Entrance</option>
                                     <option>South Entrance</option>
                                     <option>West Entrance</option>
@@ -66,34 +68,33 @@
                     </div>
                     <div class="field">
                         <label>Capacity</label>
-                        <input class="input" type="text" placeholder="Text input">
+                        <input class="input" type="number" v-model="event.capacity">
                     </div>
                     <div class="field">
                         <label>Held</label>
-                        <input class="input" type="text" placeholder="Text input">
+                        <input class="input" type="number" v-model="event.held">
                     </div>
                     <div class="field">
-                        <label>GR Required?</label>
-                        <label class="radio">
-                        <input type="radio" name="test">
-                        Yes
-                        </label>
-                        <label class="radio">
-                        <input type="radio" name="test">
-                        No
-                        </label>
+                    <label>GR Required</label>
+                        <div class="control">
+                            <div class="select">
+                                <select v-model="event.gr_required">
+                                    <option>Yes</option>
+                                    <option>No</option>
+                                </select>
+                            </div>
+                        </div>
+                    <label>Early Closure</label>
+                        <div class="control">
+                            <div class="select">
+                                <select v-model="event.early_closure">
+                                    <option>Yes</option>
+                                    <option>No</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
-                    <div class="field">
-                        <label>Early Closure?</label>
-                        <label class="radio">
-                        <input type="radio" name="answer">
-                        Yes
-                        </label>
-                        <label class="radio">
-                        <input type="radio" name="answer">
-                        No
-                        </label>
-                    </div>
+                    
                 </div>
             </div>
             <div class="column is-6">
@@ -173,20 +174,21 @@
                             </tbody>
                             <div class="select" style="display: inline-block; vertical-align: middle;" >
                                 <select v-model="selectedName">
-                                    <option v-for="name in names" :key="name" :value="name">{{ name }}</option>
+                                    <option v-for="name in all_pricetypes" :key="name" :value="name.name">{{ name.name }}</option>
                                 </select>
                             </div>
                             <div style="display: inline-block;">
-                                <button @click="addRow" class="button is-primary is-small">Add Row</button>
+                                <button @click="addRow" class="button is-primary is-small">Add Price Type</button>
                             </div>
                             <div class="select" style="display: inline-block; vertical-align: middle;">
                                 <select v-model="selectedColumn">
-                                    <option v-for="name in names" :key="name" :value="name">{{ name }}</option>
+                                    <option v-for="name in all_pricelayers" :key="name" :value="name.name">{{ name.name }}</option>
                                 </select>
                             </div>
                             <div style="display: inline-block;">
-                                <button @click="addColumn" class="button is-primary is-small">Add Column</button>
+                                <button @click="addColumn" class="button is-primary is-small">Add Price Layer</button>
                             </div>
+                            
                         </table>
                     </div>
                 </div>
@@ -204,7 +206,13 @@
                         </thead>
                         <tbody>
                             <tr v-for="discount in event.discount">
-                                <td>{{discount.price_type}}</td>
+                                <td>
+                                    <div class="select">
+                                        <select v-model="event.discount.description">
+                                            <option v-for="name in all_pricetypes" :key="name" :value="name.name">{{ name.name }}</option>
+                                        </select>
+                                    </div>
+                                </td>
                                 <td>{{discount.discount }}</td>
                                 <td>{{discount.description }}</td>
                             </tr>
@@ -301,11 +309,12 @@
                 event: {},
                 all_facilities: [],
                 all_locations: [],
+                all_pricetypes: [],
+                all_pricelayers: [],
                 bulma_date: new Date(),
                 date: '',
                 time_slots: '',
                 time_slot_choices: ['6:00 - 6:30 AM', '6:30 - 7:00 AM'],
-                location_name: '',
                 
                 
                 
@@ -412,6 +421,9 @@ addColumn() {
       });
     },
 
+
+
+
        
   
             
@@ -431,7 +443,7 @@ addColumn() {
                     .get(`/api/v1/editevent/${EventID}/`)
                     .then(response => { 
                         this.event = response.data;
-                        this.location_name = this.event.location.location_name;
+                       
                         
                         this.date = this.event.date_time;
                         this.time_slots = this.event.timeslot_set;
@@ -464,6 +476,9 @@ addColumn() {
                 });
                 });
 
+                
+                
+
 
                         
 
@@ -479,6 +494,8 @@ addColumn() {
                                     }
                                     return value;
                                 }, {}));
+
+                        
 
                         // Convert any left over into an array for both price and price_layer
                         this.unique_prices.forEach(el => 
@@ -523,26 +540,55 @@ addColumn() {
                         console.log(error)
                     })
 
-                axios
-                .get('api/v1/facility/')
-                .then(response => { 
-                    this.all_facilities = response.data.reverse()
-                })
-                .catch(error => { 
-                    console.log(error)
-                })
+                Promise.all([
+                    axios.get('api/v1/facility/'),
+                    axios.get('api/v1/location/'),
+                    axios.get('api/v1/pricetype/'),
+                    axios.get('api/v1/pricelayer/')
+                    ])
+                    .then(([facilityResponse, locationResponse, pricetypeResponse, pricelayerResponse]) => {
+                    this.all_facilities = facilityResponse.data.reverse();
+                    this.all_locations = locationResponse.data.reverse();
+                    this.all_pricetypes = pricetypeResponse.data.reverse();
+                    this.all_pricelayers = pricelayerResponse.data.reverse();
+                    })
+                    .catch(error => {
+                    console.log(error);
+                    });
 
-                axios
-                .get('api/v1/location/')
-                .then(response => { 
-                    this.all_locations = response.data.reverse()
-                })
-                .catch(error => { 
-                    console.log(error)
-                })
             this.$store.commit('setIsLoading', false)
             },
+
+            async submitForm() { 
+                this.$store.commit('setIsLoading', true)
+                const payload = { 
+                    name: this.event.name,
+                    description: this.event.description,
+                    location: this.event.location,
+                    facility: this.event.facility,
+                    capacity: this.event.capacity,
+                    held: this.event.held,
+                    entrance: this.event.entrance,
+                    gr_required: this.event.gr_required,
+                    early_closure: this.event.early_closure,
+                    
+                }
+                await axios
+                    .patch('/api/v1/editevent/1/', payload)
+                    .then(response => { 
+                        console.log(response)
+                        this.$router.push( this.$router.go() )
+                    })
+                    .catch(error => { 
+                        console.log(error)
+                    })
+
+                this.$store.commit('setIsLoading', false)
             },
+            },
+
+
+            
 
             
     }

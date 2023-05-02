@@ -1,10 +1,12 @@
 <template>
     <div class="container">
-        <div class="columns is-multiline">
-            <div class="columns is-multiline">
+    <section class="hero">
+            <div class="hero-body">
                 <h1 class="title">Events</h1>
-                <router-link to="/dashboard/events/add">Add New Event</router-link>
+                <router-link to="/dashboard/events/add" class="button is-primary is-small">Add New Event</router-link>
             </div>
+        </section>
+        <div class="columns is-multiline">
             <div class="column is-12">
                 <div class="box">
                     <div class="column is-12">
