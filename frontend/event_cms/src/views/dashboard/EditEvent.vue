@@ -65,7 +65,9 @@
                                 </select>
                             </div>
                         </div>
+                     
                     </div>
+                    
                     <div class="field">
                         <label>Capacity</label>
                         <input class="input" type="number" v-model="event.capacity">
@@ -101,28 +103,32 @@
                 <div class="box">
                     <h2 class="subtitle">Dates & Times</h2>
                     <label>Event Date(s)</label>
-                    <input type="date">
-                    <label>Event Start Time: </label>
-                    <input type="date" data-type="time">
+                    <input type="date" v-model="event_date">
+                    <label>Event Start Time:</label>
+                    <input type="text" data-type="time" v-model="event_time" ref="calendarTrigger2" >
                     <label>Event End Time: </label>
-                    <input type="date" data-type="time">
-                    <label>Start Sell Date:</label>
-                    <input type="date" data-type="datetime">
+                    <input type="text" data-type="time" v-model="event_end_time" ref="calendarTrigger3">
+                     <label>Start Sell Date: </label>
+                    <input type="text" data-type="datetime" v-model="sell_date" ref="calendarTrigger4">
                     <label>Stop Sell Date:</label>
-                    <input type="date" data-type="datetime">
+                    <input type="text" data-type="datetime" v-model="stop_date" ref="calendarTrigger5">
                     <label>Doors Open: </label>
-                    <input type="date" data-type="time">
+                    <input type="text" data-type="time" v-model="door_open" ref="calendarTrigger6">
                     <label>Doors Close: </label>
-                    <input type="date" data-type="time">
+                    <input type="text" data-type="time"  v-model="door_close" ref="calendarTrigger7">
+                    <label>Early Closure Time: </label>
+                    <input type="text" data-type="time"  v-model="early_closure_time" ref="calendarTrigger8">
                 </div>
             </div>
             <div class="column is-12">
                 <div class="box">
                     <h2 class="subtitle">Time Slots</h2>
+                    
                     <table class="table is-fullwidth is-striped">
                         <thead>
                             <tr>
                                 <th>Time Slot</th>
+                                
                                 <th>Cap</th>
                                 <th>Held</th>
                             </tr>
@@ -294,11 +300,11 @@
         </div>
     </div>
 </template>
-
 <script>
 
     import axios from 'axios'
     import bulmaCalendar from '../../../node_modules/bulma-calendar/dist/js/bulma-calendar.min.js'
+    
 
     
 
@@ -306,16 +312,29 @@
         name: 'Event',
         data() { 
             return { 
+                
                 event: {},
                 all_facilities: [],
                 all_locations: [],
                 all_pricetypes: [],
                 all_pricelayers: [],
-                bulma_date: new Date(),
+                //bulma_date: new Date(),
                 date: '',
                 time_slots: '',
                 time_slot_choices: ['6:00 - 6:30 AM', '6:30 - 7:00 AM'],
+
                 
+                selectedDate: null,
+                selectedTime: null,
+
+                event_date: null,
+                event_time: null,
+                event_end_time: null,
+                door_open: null,
+                door_close: null,
+                sell_date: null,
+                stop_date: null,
+                early_closure_time: null,
                 
                 
                 unique_prices: '',
@@ -328,7 +347,7 @@
                 records: [],
                 new_prices: [],
 
-                names: ["John", "Jane", "Bob", "Alice"],
+                
                 selectedName: "",
                 selectedColumn: "",
             }
@@ -337,28 +356,144 @@
         
         mounted() { 
             this.getEvent();
-           
-
-           
-
 
             
+          
+  const calendar1 = bulmaCalendar.attach(this.$refs.calendarTrigger1, {
+    startDate: "2023-04-13",
+  })[0];
+  calendar1.on('select', e => {
+    this.event_date = e.data.datePicker._date.start ? e.data.datePicker._date.start.toLocaleDateString() : null;
+    console.log(this.event_date)
+  });
 
-        // Bulma calendar custom import
+  
+  const calendar2 = bulmaCalendar.attach(this.$refs.calendarTrigger2, {
+  startTime: "01:00",
+})[0];
+calendar2.on('select', e => {
+  this.event_time = e.data.timePicker._time.start ? new Date(e.data.timePicker._time.start).toLocaleTimeString() : null;
+  console.log('selected time:', this.event_time);
+});
 
-            const calendar = bulmaCalendar.attach(this.$refs.calendarTrigger, {
-                startDate: this.bulma_date,
-            })[0]
-            calendar.on('select', e => (this.bulma_date = e.start || null))
-            
-        },
+const calendar3 = bulmaCalendar.attach(this.$refs.calendarTrigger3, {
+  startTime: "05:00",
+})[0];
+calendar3.on('select', e => {
+  this.event_end_time = e.data.timePicker._time.start ? new Date(e.data.timePicker._time.start).toLocaleTimeString() : null;
+  console.log('selected time:', this.event_end_time);
+});
 
-            computed: {
-        niceDate() {
-        if (this.bulma_date) {
-            return this.bulma_date.toLocaleDateString()
-        }
-        },
+const calendar4 = bulmaCalendar.attach(this.$refs.calendarTrigger4, {  
+  startTime: "06:00",
+})[0];
+calendar4.on('select', e => {
+    const date = e.data.datePicker._date.start ? e.data.datePicker._date.start.toLocaleDateString() : null;
+    const time = e.data.timePicker._time.start ? new Date(e.data.timePicker._time.start).toLocaleTimeString() : null;
+    const datetime = date && time ? `${date} ${time}` : null;
+    this.sell_date = datetime;
+   
+console.log(datetime); // logs something like "5/4/2023 3:45:00 PM"
+});
+
+const calendar5 = bulmaCalendar.attach(this.$refs.calendarTrigger5, {  
+  startTime: "06:00",
+})[0];
+calendar5.on('select', e => {
+    const date = e.data.datePicker._date.start ? e.data.datePicker._date.start.toLocaleDateString() : null;
+    const time = e.data.timePicker._time.start ? new Date(e.data.timePicker._time.start).toLocaleTimeString() : null;
+    const datetime = date && time ? `${date} ${time}` : null;
+    this.stop_date = datetime;
+   
+console.log(this.stop_date); // logs something like "5/4/2023 3:45:00 PM"
+});
+
+
+const calendar6 = bulmaCalendar.attach(this.$refs.calendarTrigger6, {
+  startTime: "05:00",
+})[0];
+calendar6.on('select', e => {
+  this.door_open = e.data.timePicker._time.start ? new Date(e.data.timePicker._time.start).toLocaleTimeString() : null;
+  console.log('selected time:', this.door_open);
+});
+
+const calendar7 = bulmaCalendar.attach(this.$refs.calendarTrigger7, {
+  startTime: "05:00",
+})[0];
+calendar7.on('select', e => {
+  this.door_close = e.data.timePicker._time.start ? new Date(e.data.timePicker._time.start).toLocaleTimeString() : null;
+  console.log('selected time:', this.door_close);
+});
+
+const calendar8 = bulmaCalendar.attach(this.$refs.calendarTrigger8, {
+  startTime: "05:00",
+})[0];
+calendar8.on('select', e => {
+  this.early_closure_time = e.data.timePicker._time.start ? new Date(e.data.timePicker._time.start).toLocaleTimeString() : null;
+  console.log('selected time:', this.early_closure_time);
+});
+
+
+
+  
+
+//  calendar2.on('select', e => {
+//   const selectedTime = e.data.datePicker._time;
+//   console.log('selected time:', selectedTime);
+//   this.event_time = selectedTime;
+
+           
+
+//         const input = this.$refs.dateInput // assuming the ref name is "dateInput"
+//   console.log('input element:', input)
+//   const calendar = bulmaCalendar.attach(input, {
+//     startDate: this.event_date
+//   })[0]
+//   console.log('bulma-calendar instance:', calendar)
+//   calendar.on('select', e => {
+//   console.log('e:', e)
+//   const selectedDate = e.data.datePicker._date.start ? e.data.datePicker._date.start.toLocaleDateString() : null
+//   console.log('selected date:', selectedDate)
+//   this.selectedDate = selectedDate
+// })
+},
+
+// watch: {
+//   event_date: function(newVal, oldVal) {
+//     const input = document.getElementById('dateInput');
+//     const calendar1 = bulmaCalendar.attach(input, {
+//       startDate: newVal
+//     })[0];
+//     calendar1.on('select', e => {
+//       const selectedDate = e.data.datePicker._date.start ? e.data.datePicker._date.start.toLocaleDateString() : null;
+//       console.log('selected date:', selectedDate);
+//       this.selectedDate = selectedDate;
+//     });
+//   },
+//  event_time: function(newVal, oldVal) {
+//   console.log('event_time watcher triggered!');
+//   console.log('newVal:', newVal);
+//   console.log('oldVal:', oldVal);
+//   const input2 = document.getElementById('timeInput');
+//   const calendar2 = bulmaCalendar.attach(input2, {
+//     startDate: newVal
+//   })[0];
+//   calendar2.on('select', e => {
+//     const selectedTime = e.data.datePicker._date.start ? e.data.datePicker._date.start.toLocaleTimeString('en-US', {hour12: false}) : null;
+//     console.log('selected time:', selectedTime);
+//     this.selectedTime = selectedTime;
+//   });
+// }
+//   },
+
+
+
+computed: {
+   
+
+        
+
+        
 
         columnSums() {
       const sums = {};
@@ -446,7 +581,12 @@ addColumn() {
                        
                         
                         this.date = this.event.date_time;
+                       
+                        
+
+                        this.event_date = this.event.date_time.event_date;
                         this.time_slots = this.event.timeslot_set;
+                        this.event_date = this.date.event_date
                         
                         // Assign unique values to use as the pricing table column headers
                         this.columns = [... new Set(this.event.price_layer_price.map(x=>x.price_type))];
@@ -571,6 +711,7 @@ addColumn() {
                     entrance: this.event.entrance,
                     gr_required: this.event.gr_required,
                     early_closure: this.event.early_closure,
+                    event_date: this.date.event_date,
                     
                 }
                 await axios

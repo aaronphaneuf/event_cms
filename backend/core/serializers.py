@@ -129,6 +129,8 @@ class EditEventSerializer(serializers.ModelSerializer):
         instance.capacity = validated_data.get('capacity', instance.capacity)
         instance.held = validated_data.get('held', instance.held)
         instance.entrance = validated_data.get('entrance', instance.entrance)
+        instance.gr_required = validated_data.get('gr_required', instance.gr_required)
+        instance.early_closure = validated_data.get('early_closure', instance.early_closure)
         location_name = validated_data.get('location', {}).get('location_name')
         if location_name:
             location, _ = Location.objects.get_or_create(location_name=location_name)
