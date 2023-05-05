@@ -333,7 +333,9 @@
                 door_open: null,
                 door_close: null,
                 sell_date: null,
+                sell_time: null,
                 stop_date: null,
+                stop_time: null,
                 early_closure_time: null,
                 
                 
@@ -357,138 +359,114 @@
         mounted() { 
             this.getEvent();
 
-            
-          
-  const calendar1 = bulmaCalendar.attach(this.$refs.calendarTrigger1, {
-    startDate: "2023-04-13",
-  })[0];
-  calendar1.on('select', e => {
-    this.event_date = e.data.datePicker._date.start ? e.data.datePicker._date.start.toLocaleDateString() : null;
-    console.log(this.event_date)
-  });
+        // const calendar1 = bulmaCalendar.attach(this.$refs.calendarTrigger1, {
+        //     startDate: "2023-04-13",
+        // })[0];
+        // calendar1.on('select', e => {
+        //     this.event_date = e.data.datePicker._date.start ? e.data.datePicker._date.start.toLocaleDateString() : null;
+        //     console.log(this.event_date)
+        // });
 
-  
-  const calendar2 = bulmaCalendar.attach(this.$refs.calendarTrigger2, {
-  startTime: "01:00",
-})[0];
-calendar2.on('select', e => {
-  this.event_time = e.data.timePicker._time.start ? new Date(e.data.timePicker._time.start).toLocaleTimeString() : null;
-  console.log('selected time:', this.event_time);
-});
+        // const calendar2 = bulmaCalendar.attach(this.$refs.calendarTrigger2, {
+        // startTime: "01:00",
+        // })[0];
+        // calendar2.on('select', e => {
+        // this.event_time = e.data.timePicker._time.start ? new Date(e.data.timePicker._time.start).toLocaleTimeString() : null;
+        // console.log('selected time:', this.event_time);
+        // });
 
-const calendar3 = bulmaCalendar.attach(this.$refs.calendarTrigger3, {
-  startTime: "05:00",
-})[0];
-calendar3.on('select', e => {
-  this.event_end_time = e.data.timePicker._time.start ? new Date(e.data.timePicker._time.start).toLocaleTimeString() : null;
-  console.log('selected time:', this.event_end_time);
-});
+        // const calendar3 = bulmaCalendar.attach(this.$refs.calendarTrigger3, {
+        // startTime: "05:00",
+        // })[0];
+        // calendar3.on('select', e => {
+        // this.event_end_time = e.data.timePicker._time.start ? new Date(e.data.timePicker._time.start).toLocaleTimeString() : null;
+        // console.log('selected time:', this.event_end_time);
+        // });
 
-const calendar4 = bulmaCalendar.attach(this.$refs.calendarTrigger4, {  
-  startTime: "06:00",
-})[0];
-calendar4.on('select', e => {
-    const date = e.data.datePicker._date.start ? e.data.datePicker._date.start.toLocaleDateString() : null;
-    const time = e.data.timePicker._time.start ? new Date(e.data.timePicker._time.start).toLocaleTimeString() : null;
-    const datetime = date && time ? `${date} ${time}` : null;
-    this.sell_date = datetime;
-   
-console.log(datetime); // logs something like "5/4/2023 3:45:00 PM"
-});
+        // const calendar4 = bulmaCalendar.attach(this.$refs.calendarTrigger4, {  
+        // startTime: "06:00",
+        // })[0];
+        // calendar4.on('select', e => {
+        //     const date = e.data.datePicker._date.start ? e.data.datePicker._date.start.toLocaleDateString() : null;
+        //     const time = e.data.timePicker._time.start ? new Date(e.data.timePicker._time.start).toLocaleTimeString() : null;
+        //     const datetime = date && time ? `${date} ${time}` : null;
+        //     this.sell_date = datetime;
+        
+        // console.log(datetime); // logs something like "5/4/2023 3:45:00 PM"
+        // });
 
-const calendar5 = bulmaCalendar.attach(this.$refs.calendarTrigger5, {  
-  startTime: "06:00",
-})[0];
-calendar5.on('select', e => {
-    const date = e.data.datePicker._date.start ? e.data.datePicker._date.start.toLocaleDateString() : null;
-    const time = e.data.timePicker._time.start ? new Date(e.data.timePicker._time.start).toLocaleTimeString() : null;
-    const datetime = date && time ? `${date} ${time}` : null;
-    this.stop_date = datetime;
-   
-console.log(this.stop_date); // logs something like "5/4/2023 3:45:00 PM"
-});
+        // const calendar5 = bulmaCalendar.attach(this.$refs.calendarTrigger5, {  
+        // startTime: "06:00",
+        // })[0];
+        // calendar5.on('select', e => {
+        //     const date = e.data.datePicker._date.start ? e.data.datePicker._date.start.toLocaleDateString() : null;
+        //     const time = e.data.timePicker._time.start ? new Date(e.data.timePicker._time.start).toLocaleTimeString() : null;
+        //     const datetime = date && time ? `${date} ${time}` : null;
+        //     this.stop_date = datetime;
+        
+        // console.log(this.stop_date); // logs something like "5/4/2023 3:45:00 PM"
+        // });
 
+        // const calendar6 = bulmaCalendar.attach(this.$refs.calendarTrigger6, {
+        // startTime: "05:00",
+        // })[0];
+        // calendar6.on('select', e => {
+        // this.door_open = e.data.timePicker._time.start ? new Date(e.data.timePicker._time.start).toLocaleTimeString() : null;
+        // console.log('selected time:', this.door_open);
+        // });
 
-const calendar6 = bulmaCalendar.attach(this.$refs.calendarTrigger6, {
-  startTime: "05:00",
-})[0];
-calendar6.on('select', e => {
-  this.door_open = e.data.timePicker._time.start ? new Date(e.data.timePicker._time.start).toLocaleTimeString() : null;
-  console.log('selected time:', this.door_open);
-});
+        // const calendar7 = bulmaCalendar.attach(this.$refs.calendarTrigger7, {
+        // startTime: "05:00",
+        // })[0];
+        // calendar7.on('select', e => {
+        // this.door_close = e.data.timePicker._time.start ? new Date(e.data.timePicker._time.start).toLocaleTimeString() : null;
+        // console.log('selected time:', this.door_close);
+        // });
 
-const calendar7 = bulmaCalendar.attach(this.$refs.calendarTrigger7, {
-  startTime: "05:00",
-})[0];
-calendar7.on('select', e => {
-  this.door_close = e.data.timePicker._time.start ? new Date(e.data.timePicker._time.start).toLocaleTimeString() : null;
-  console.log('selected time:', this.door_close);
-});
+        // const calendar8 = bulmaCalendar.attach(this.$refs.calendarTrigger8, {
+        // startTime: "05:00",
+        // })[0];
+        // calendar8.on('select', e => {
+        // this.early_closure_time = e.data.timePicker._time.start ? new Date(e.data.timePicker._time.start).toLocaleTimeString() : null;
+        // console.log('selected time:', this.early_closure_time);
+        // });
+         },
 
-const calendar8 = bulmaCalendar.attach(this.$refs.calendarTrigger8, {
-  startTime: "05:00",
-})[0];
-calendar8.on('select', e => {
-  this.early_closure_time = e.data.timePicker._time.start ? new Date(e.data.timePicker._time.start).toLocaleTimeString() : null;
-  console.log('selected time:', this.early_closure_time);
-});
-
-
-
-  
-
-//  calendar2.on('select', e => {
-//   const selectedTime = e.data.datePicker._time;
-//   console.log('selected time:', selectedTime);
-//   this.event_time = selectedTime;
-
-           
-
-//         const input = this.$refs.dateInput // assuming the ref name is "dateInput"
-//   console.log('input element:', input)
-//   const calendar = bulmaCalendar.attach(input, {
-//     startDate: this.event_date
-//   })[0]
-//   console.log('bulma-calendar instance:', calendar)
-//   calendar.on('select', e => {
-//   console.log('e:', e)
-//   const selectedDate = e.data.datePicker._date.start ? e.data.datePicker._date.start.toLocaleDateString() : null
-//   console.log('selected date:', selectedDate)
-//   this.selectedDate = selectedDate
-// })
-},
-
-// watch: {
-//   event_date: function(newVal, oldVal) {
-//     const input = document.getElementById('dateInput');
-//     const calendar1 = bulmaCalendar.attach(input, {
-//       startDate: newVal
-//     })[0];
-//     calendar1.on('select', e => {
-//       const selectedDate = e.data.datePicker._date.start ? e.data.datePicker._date.start.toLocaleDateString() : null;
-//       console.log('selected date:', selectedDate);
-//       this.selectedDate = selectedDate;
-//     });
-//   },
-//  event_time: function(newVal, oldVal) {
-//   console.log('event_time watcher triggered!');
-//   console.log('newVal:', newVal);
-//   console.log('oldVal:', oldVal);
-//   const input2 = document.getElementById('timeInput');
-//   const calendar2 = bulmaCalendar.attach(input2, {
-//     startDate: newVal
-//   })[0];
-//   calendar2.on('select', e => {
-//     const selectedTime = e.data.datePicker._date.start ? e.data.datePicker._date.start.toLocaleTimeString('en-US', {hour12: false}) : null;
-//     console.log('selected time:', selectedTime);
-//     this.selectedTime = selectedTime;
-//   });
-// }
-//   },
+        watch: {
+  start_date(newVal) {
+    if (this.calendar1) {
+      this.calendar1.setStartDate(newVal);
+    }
+    if (this.calendar4) {
+      this.calendar4.setStartDate(newVal);
+      this.calendar4.setStartTime(this.sell_time);
+    }
+    if (this.calendar5) {
+      this.calendar5.setStartDate(newVal);
+      this.calendar5.setStartTime(this.stop_time);
+    }
+  },
+  start_time(newVal) {
+    if (this.calendar2) {
+      this.calendar2.setStartTime(newVal);
+    }
+    if (this.calendar3) {
+      this.calendar3.setStartDate(newVal);
+    }
+    if (this.calendar6) {
+      this.calendar6.setStartTime(newVal);
+    }
+     if (this.calendar7) {
+      this.calendar7.setStartTime(newVal);
+    }
+    if (this.calendar8) {
+      this.calendar8.setStartTime(newVal);
+    }
+  },
+  },
 
 
-
-computed: {
+        computed: {
    
 
         
@@ -581,20 +559,68 @@ addColumn() {
                        
                         
                         this.date = this.event.date_time;
-                       
                         
 
                         this.event_date = this.event.date_time.event_date;
                         this.time_slots = this.event.timeslot_set;
+
                         this.event_date = this.date.event_date
+
+
+                        const [event_start_hour, event_start_minute] = this.date.event_time.split(':');
+                        this.event_time = `${event_start_hour}:${event_start_minute}`;
+
+                        const [event_end_hour, event_end_minute] = this.date.event_end_time.split(':');
+                        this.event_end_time = `${event_end_hour}:${event_end_minute}`;
+
+                        const start_sell_date = this.date.sell_date;
+                        const start_sell_time = start_sell_date.split("T")[1].slice(0, -1); // extract time after "T" and remove trailing "Z"
+                        const [sell_hour, sell_minute] = start_sell_time.split(":"); // split time into hours and minutes
+                        this.sell_time = `${sell_hour}:${sell_minute}`;
+                        this.sell_date = start_sell_date.split("T")[0];
+
+                        const end_sell_date = this.date.stop_date;
+                        const end_sell_time = end_sell_date.split("T")[1].slice(0, -1); // extract time after "T" and remove trailing "Z"
+                        const [end_hour, end_minute] = end_sell_time.split(":"); // split time into hours and minutes
+                        this.stop_time = `${end_hour}:${end_minute}`;
+                        this.stop_date = end_sell_date.split("T")[0];
+
+                        const [door_open_hour, door_open_minute] = this.date.door_open.split(':');
+                        this.door_open = `${door_open_hour}:${door_open_minute}`;
                         
+                        const [door_close_hour, door_close_minute] = this.date.door_close.split(':');
+                        this.door_close = `${door_close_hour}:${door_close_minute}`;
+
+                        const [early_closure_hour, early_closure_minute] = this.date.early_closure_time.split(':');
+                        this.early_closure_time = `${early_closure_hour}:${early_closure_minute}`;
+                        
+
+
+
                         // Assign unique values to use as the pricing table column headers
                         this.columns = [... new Set(this.event.price_layer_price.map(x=>x.price_type))];
 
                         // Assign unique values to use as the pricing table column rows
                         this.rows = [... new Set(this.event.price_layer_price.map(x=>x.price_layer))];
 
+
+
+                        this.initCalendar();
+
+
+                        
+
+
+
+
+
+
+
+
                         //testing rows and columns
+
+
+                    
 
 
             
@@ -673,6 +699,8 @@ addColumn() {
                                 column,
                                 value
                             });
+
+                            
                             }
                         
                     })
@@ -698,6 +726,98 @@ addColumn() {
 
             this.$store.commit('setIsLoading', false)
             },
+
+
+
+
+
+            initCalendar() {
+    this.calendar1 = bulmaCalendar.attach(this.$refs.calendarTrigger1, {
+      startDate: this.event_date,
+    })[0];
+    this.calendar1.on('select', e => {
+      this.event_date = e.data.datePicker._date.start ? e.data.datePicker._date.start.toLocaleDateString() : null;
+      console.log(this.event_date);
+    });
+
+    this.calendar2 = bulmaCalendar.attach(this.$refs.calendarTrigger2, {
+      startTime: this.event_time,
+    })[0];
+    this.calendar2.on('select', e => {
+      this.event_time = e.data.timePicker._time.start ? new Date(e.data.timePicker._time.start).toLocaleTimeString() : null;
+      console.log(this.event_time);
+    });
+
+    this.calendar3 = bulmaCalendar.attach(this.$refs.calendarTrigger3, {
+      startTime: this.event_end_time,
+    })[0];
+    this.calendar3.on('select', e => {
+      this.event_end_time = e.data.timePicker._time.start ? new Date(e.data.timePicker._time.start).toLocaleTimeString() : null;
+      console.log(this.event_end_time);
+    });
+
+    this.calendar4 = bulmaCalendar.attach(this.$refs.calendarTrigger4, {
+      startDate: this.sell_date,
+      startTime: this.sell_time,
+    })[0];
+    this.calendar4.on('select', e => {
+      const date = e.data.datePicker._date.start ? e.data.datePicker._date.start.toLocaleDateString() : null;
+      const time = e.data.timePicker._time.start ? new Date(e.data.timePicker._time.start).toLocaleTimeString() : null;
+      const datetime = date && time ? `${date} ${time}` : null;
+      this.sell_date = datetime;
+      console.log(this.sell_date);
+    });
+
+    this.calendar5 = bulmaCalendar.attach(this.$refs.calendarTrigger5, {
+      startDate: this.stop_date,
+      startTime: this.stop_time,
+    })[0];
+    this.calendar5.on('select', e => {
+      const date = e.data.datePicker._date.start ? e.data.datePicker._date.start.toLocaleDateString() : null;
+      const time = e.data.timePicker._time.start ? new Date(e.data.timePicker._time.start).toLocaleTimeString() : null;
+      const datetime = date && time ? `${date} ${time}` : null;
+      this.stop_date = datetime;
+      console.log(this.stop_date);
+    });
+
+    this.calendar6 = bulmaCalendar.attach(this.$refs.calendarTrigger6, {
+      startTime: this.door_open,
+    })[0];
+    this.calendar6.on('select', e => {
+      this.door_open = e.data.timePicker._time.start ? new Date(e.data.timePicker._time.start).toLocaleTimeString() : null;
+      console.log(this.door_open);
+    });
+
+    this.calendar7 = bulmaCalendar.attach(this.$refs.calendarTrigger7, {
+      startTime: this.door_close,
+    })[0];
+    this.calendar7.on('select', e => {
+      this.door_close = e.data.timePicker._time.start ? new Date(e.data.timePicker._time.start).toLocaleTimeString() : null;
+      console.log(this.door_close);
+    });
+
+    this.calendar8 = bulmaCalendar.attach(this.$refs.calendarTrigger8, {
+      startTime: this.early_closure_time,
+    })[0];
+    this.calendar8.on('select', e => {
+      this.early_closure_time = e.data.timePicker._time.start ? new Date(e.data.timePicker._time.start).toLocaleTimeString() : null;
+      console.log(this.early_closure_time);
+    });
+
+    
+  },
+
+// const calendar5 = bulmaCalendar.attach(this.$refs.calendarTrigger5, {  
+//         startTime: "06:00",
+//         })[0];
+//         calendar5.on('select', e => {
+//             const date = e.data.datePicker._date.start ? e.data.datePicker._date.start.toLocaleDateString() : null;
+//             const time = e.data.timePicker._time.start ? new Date(e.data.timePicker._time.start).toLocaleTimeString() : null;
+//             const datetime = date && time ? `${date} ${time}` : null;
+//             this.stop_date = datetime;
+        
+//         console.log(this.stop_date); // logs something like "5/4/2023 3:45:00 PM"
+//         });
 
             async submitForm() { 
                 this.$store.commit('setIsLoading', true)
