@@ -1,5 +1,6 @@
 from rest_framework import serializers, generics
 from .models import *
+from datetime import datetime
 
 class DiscountSerializer(serializers.ModelSerializer):
   price_type = serializers.StringRelatedField()
@@ -44,11 +45,24 @@ class FacilitySerializer(serializers.ModelSerializer):
 
 
 class DateTimeSerializer(serializers.ModelSerializer):
+  event = serializers.PrimaryKeyRelatedField(read_only=True)
+  event_date = serializers.DateField()
+
+  # def to_representation(self, instance):
+  #       # Convert datetime object to a string in the format 'YYYY-MM-DD'
+  #       event_date = instance.event_date.strftime('%Y-%m-%d')
+  #       return {
+  #           'event': instance.event.id,
+  #           'event_date': event_date
+  #       }
+
+  # This is messing it up. Not sure why. 
+
   class Meta:
     model = DateTime
     fields =  ['event', 'event_date' ,'event_time', 'event_end_time', 'door_open', 'door_close', 'sell_date', 'stop_date', 'early_closure_time'
     ]
-    read_only_fields = ['event']
+    #read_only_fields = ['event']
 
 class PriceTypeSerializer(serializers.ModelSerializer):
   class Meta:
@@ -122,6 +136,10 @@ class EditEventSerializer(serializers.ModelSerializer):
         # The event must be created first since the foreign key lives on the DateTime model. We need an event to insert. 
         DateTime.objects.create(event=event, **date_data)
         return event
+  
+
+  def get_date_time(self, obj):
+        return {'event_date': obj.date_time.strftime('%Y-%m-%d %H:%M:%S')}
 
   def update(self, instance, validated_data):
         instance.name = validated_data.get('name', instance.name)
@@ -131,7 +149,9 @@ class EditEventSerializer(serializers.ModelSerializer):
         instance.entrance = validated_data.get('entrance', instance.entrance)
         instance.gr_required = validated_data.get('gr_required', instance.gr_required)
         instance.early_closure = validated_data.get('early_closure', instance.early_closure)
+        #instance.date_time = validated_data.get('date_time', instance.date_time)
         location_name = validated_data.get('location', {}).get('location_name')
+        
         if location_name:
             location, _ = Location.objects.get_or_create(location_name=location_name)
             instance.location = location
@@ -140,7 +160,18 @@ class EditEventSerializer(serializers.ModelSerializer):
             facility, _ = Facility.objects.get_or_create(facility_name=facility_name)
             instance.facility = facility
         instance.save()
+
+        # Update the DateTime model
+        date_time_data = validated_data.get('date_time')
+        if date_time_data:
+            event_date = date_time_data.get('event_date')
+            if event_date:
+                date_str = event_date.strftime('%Y-%m-%d')
+                instance.date_time.event_date = datetime.strptime(date_str, '%Y-%m-%d')
+            instance.date_time.save()
+
         return instance
+  
 
 class SimpleDateTimeSerializer(serializers.ModelSerializer):
   class Meta:

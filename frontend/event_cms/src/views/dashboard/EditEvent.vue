@@ -302,555 +302,433 @@
 </template>
 <script>
 
-    import axios from 'axios'
-    import bulmaCalendar from '../../../node_modules/bulma-calendar/dist/js/bulma-calendar.min.js'
-    
+   import axios from 'axios'
+import bulmaCalendar from '../../../node_modules/bulma-calendar/dist/js/bulma-calendar.min.js'
 
-    
 
-    export default { 
-        name: 'Event',
-        data() { 
-            return { 
-                
-                event: {},
-                all_facilities: [],
-                all_locations: [],
-                all_pricetypes: [],
-                all_pricelayers: [],
-                //bulma_date: new Date(),
-                date: '',
-                time_slots: '',
-                time_slot_choices: ['6:00 - 6:30 AM', '6:30 - 7:00 AM'],
+export default {
+    name: 'Event',
+    data() {
+        return {
 
-                
-                selectedDate: null,
-                selectedTime: null,
+            event: {},
+            all_facilities: [],
+            all_locations: [],
+            all_pricetypes: [],
+            all_pricelayers: [],
+            //bulma_date: new Date(),
+            date: '',
+            time_slots: '',
+            time_slot_choices: ['6:00 - 6:30 AM', '6:30 - 7:00 AM'],
 
-                event_date: null,
-                event_time: null,
-                event_end_time: null,
-                door_open: null,
-                door_close: null,
-                sell_date: null,
-                sell_time: null,
-                stop_date: null,
-                stop_time: null,
-                early_closure_time: null,
-                
-                
-                unique_prices: '',
-                unique_price_types: '',
-                unique_price_layers: '',
-                price_layer_sum: '',
 
-                columns: '',//["A", "B", "C", "D"],
-                rows: '',//["1", "2", "3", "4"],
-                records: [],
-                new_prices: [],
+            selectedDate: null,
+            selectedTime: null,
 
-                
-                selectedName: "",
-                selectedColumn: "",
+            event_date: null,
+            event_time: null,
+            event_end_time: null,
+            door_open: null,
+            door_close: null,
+            sell_date: null,
+            sell_time: null,
+            stop_date: null,
+            stop_time: null,
+            early_closure_time: null,
+
+
+            unique_prices: '',
+            unique_price_types: '',
+            unique_price_layers: '',
+            price_layer_sum: '',
+
+            columns: '', //["A", "B", "C", "D"],
+            rows: '', //["1", "2", "3", "4"],
+            records: [],
+            new_prices: [],
+
+
+            selectedName: "",
+            selectedColumn: "",
+        }
+    },
+
+
+    mounted() {
+        this.getEvent();
+    },
+
+    watch: {
+        start_date(newVal) {
+            if (this.calendar1) {
+                this.calendar1.setStartDate(newVal);
+            }
+            if (this.calendar4) {
+                this.calendar4.setStartDate(newVal);
+                this.calendar4.setStartTime(this.sell_time);
+            }
+            if (this.calendar5) {
+                this.calendar5.setStartDate(newVal);
+                this.calendar5.setStartTime(this.stop_time);
             }
         },
-
-        
-        mounted() { 
-            this.getEvent();
-
-        // const calendar1 = bulmaCalendar.attach(this.$refs.calendarTrigger1, {
-        //     startDate: "2023-04-13",
-        // })[0];
-        // calendar1.on('select', e => {
-        //     this.event_date = e.data.datePicker._date.start ? e.data.datePicker._date.start.toLocaleDateString() : null;
-        //     console.log(this.event_date)
-        // });
-
-        // const calendar2 = bulmaCalendar.attach(this.$refs.calendarTrigger2, {
-        // startTime: "01:00",
-        // })[0];
-        // calendar2.on('select', e => {
-        // this.event_time = e.data.timePicker._time.start ? new Date(e.data.timePicker._time.start).toLocaleTimeString() : null;
-        // console.log('selected time:', this.event_time);
-        // });
-
-        // const calendar3 = bulmaCalendar.attach(this.$refs.calendarTrigger3, {
-        // startTime: "05:00",
-        // })[0];
-        // calendar3.on('select', e => {
-        // this.event_end_time = e.data.timePicker._time.start ? new Date(e.data.timePicker._time.start).toLocaleTimeString() : null;
-        // console.log('selected time:', this.event_end_time);
-        // });
-
-        // const calendar4 = bulmaCalendar.attach(this.$refs.calendarTrigger4, {  
-        // startTime: "06:00",
-        // })[0];
-        // calendar4.on('select', e => {
-        //     const date = e.data.datePicker._date.start ? e.data.datePicker._date.start.toLocaleDateString() : null;
-        //     const time = e.data.timePicker._time.start ? new Date(e.data.timePicker._time.start).toLocaleTimeString() : null;
-        //     const datetime = date && time ? `${date} ${time}` : null;
-        //     this.sell_date = datetime;
-        
-        // console.log(datetime); // logs something like "5/4/2023 3:45:00 PM"
-        // });
-
-        // const calendar5 = bulmaCalendar.attach(this.$refs.calendarTrigger5, {  
-        // startTime: "06:00",
-        // })[0];
-        // calendar5.on('select', e => {
-        //     const date = e.data.datePicker._date.start ? e.data.datePicker._date.start.toLocaleDateString() : null;
-        //     const time = e.data.timePicker._time.start ? new Date(e.data.timePicker._time.start).toLocaleTimeString() : null;
-        //     const datetime = date && time ? `${date} ${time}` : null;
-        //     this.stop_date = datetime;
-        
-        // console.log(this.stop_date); // logs something like "5/4/2023 3:45:00 PM"
-        // });
-
-        // const calendar6 = bulmaCalendar.attach(this.$refs.calendarTrigger6, {
-        // startTime: "05:00",
-        // })[0];
-        // calendar6.on('select', e => {
-        // this.door_open = e.data.timePicker._time.start ? new Date(e.data.timePicker._time.start).toLocaleTimeString() : null;
-        // console.log('selected time:', this.door_open);
-        // });
-
-        // const calendar7 = bulmaCalendar.attach(this.$refs.calendarTrigger7, {
-        // startTime: "05:00",
-        // })[0];
-        // calendar7.on('select', e => {
-        // this.door_close = e.data.timePicker._time.start ? new Date(e.data.timePicker._time.start).toLocaleTimeString() : null;
-        // console.log('selected time:', this.door_close);
-        // });
-
-        // const calendar8 = bulmaCalendar.attach(this.$refs.calendarTrigger8, {
-        // startTime: "05:00",
-        // })[0];
-        // calendar8.on('select', e => {
-        // this.early_closure_time = e.data.timePicker._time.start ? new Date(e.data.timePicker._time.start).toLocaleTimeString() : null;
-        // console.log('selected time:', this.early_closure_time);
-        // });
-         },
-
-        watch: {
-  start_date(newVal) {
-    if (this.calendar1) {
-      this.calendar1.setStartDate(newVal);
-    }
-    if (this.calendar4) {
-      this.calendar4.setStartDate(newVal);
-      this.calendar4.setStartTime(this.sell_time);
-    }
-    if (this.calendar5) {
-      this.calendar5.setStartDate(newVal);
-      this.calendar5.setStartTime(this.stop_time);
-    }
-  },
-  start_time(newVal) {
-    if (this.calendar2) {
-      this.calendar2.setStartTime(newVal);
-    }
-    if (this.calendar3) {
-      this.calendar3.setStartDate(newVal);
-    }
-    if (this.calendar6) {
-      this.calendar6.setStartTime(newVal);
-    }
-     if (this.calendar7) {
-      this.calendar7.setStartTime(newVal);
-    }
-    if (this.calendar8) {
-      this.calendar8.setStartTime(newVal);
-    }
-  },
-  },
+        start_time(newVal) {
+            if (this.calendar2) {
+                this.calendar2.setStartTime(newVal);
+            }
+            if (this.calendar3) {
+                this.calendar3.setStartDate(newVal);
+            }
+            if (this.calendar6) {
+                this.calendar6.setStartTime(newVal);
+            }
+            if (this.calendar7) {
+                this.calendar7.setStartTime(newVal);
+            }
+            if (this.calendar8) {
+                this.calendar8.setStartTime(newVal);
+            }
+        },
+    },
 
 
-        computed: {
-   
+    computed: {
 
-        
-
-        
 
         columnSums() {
-      const sums = {};
+            const sums = {};
 
-      this.columns.forEach(column => {
-        sums[column] = this.records.reduce((acc, record) => {
-          const detail = record.details.find(detail => detail.column === column);
-          return acc + Number(detail.value);
-        }, 0);
-      });
+            this.columns.forEach(column => {
+                sums[column] = this.records.reduce((acc, record) => {
+                    const detail = record.details.find(detail => detail.column === column);
+                    return acc + Number(detail.value);
+                }, 0);
+            });
 
-      return sums;
-    }
+            return sums;
+        }
     },
-        methods: { 
+    methods: {
 
-            // Button to add a time slot
-            addTimeSlot () {
-                    this.time_slots.push({
-                    })
-                    },
+        // Button to add a time slot
+        addTimeSlot() {
+            this.time_slots.push({})
+        },
 
-            // Button to add a time slot
+        // Button to add a time slot
 
-            submit () {
-                const data = {
-                    addTimeSlot: this.time_slots
-                }
-                alert(JSON.stringify(data, null, 2))
-                },
-
-
-            addRow() {
-      const newRow = {
-        row: this.selectedName,
-        
-        details: []
-      };
-      this.columns.forEach(column => {
-        newRow.details.push({
-          column: column,
-          value: 0
-        });
-      });
-      this.records.push(newRow);
-    },
+        submit() {
+            const data = {
+                addTimeSlot: this.time_slots
+            }
+            alert(JSON.stringify(data, null, 2))
+        },
 
 
-addColumn() {
-      const newColumn = {
-        
-        column: this.selectedColumn,
-      };
-      this.columns.push(this.selectedColumn);
-      this.records.forEach(record => {
-        record.details.push({
-          column: this.selectedColumn,
-          value: 0
-        });
-      });
-    },
+        addRow() {
+            const newRow = {
+                row: this.selectedName,
+
+                details: []
+            };
+            this.columns.forEach(column => {
+                newRow.details.push({
+                    column: column,
+                    value: 0
+                });
+            });
+            this.records.push(newRow);
+        },
 
 
+        addColumn() {
+            const newColumn = {
+
+                column: this.selectedColumn,
+            };
+            this.columns.push(this.selectedColumn);
+            this.records.forEach(record => {
+                record.details.push({
+                    column: this.selectedColumn,
+                    value: 0
+                });
+            });
+        },
 
 
-       
-  
-            
+        // This is to get the data from Django
 
-         
+        async getEvent() {
+            this.$store.commit('setIsLoading', true)
 
-            // This is to get the data from Django
-
-            async getEvent() { 
-                this.$store.commit('setIsLoading', true)
-
-                const EventID = this.$route.params.id
-
-                
-
-                axios
-                    .get(`/api/v1/editevent/${EventID}/`)
-                    .then(response => { 
-                        this.event = response.data;
-                       
-                        
-                        this.date = this.event.date_time;
-                        
-
-                        this.event_date = this.event.date_time.event_date;
-                        this.time_slots = this.event.timeslot_set;
-
-                        this.event_date = this.date.event_date
+            const EventID = this.$route.params.id
 
 
-                        const [event_start_hour, event_start_minute] = this.date.event_time.split(':');
-                        this.event_time = `${event_start_hour}:${event_start_minute}`;
-
-                        const [event_end_hour, event_end_minute] = this.date.event_end_time.split(':');
-                        this.event_end_time = `${event_end_hour}:${event_end_minute}`;
-
-                        const start_sell_date = this.date.sell_date;
-                        const start_sell_time = start_sell_date.split("T")[1].slice(0, -1); // extract time after "T" and remove trailing "Z"
-                        const [sell_hour, sell_minute] = start_sell_time.split(":"); // split time into hours and minutes
-                        this.sell_time = `${sell_hour}:${sell_minute}`;
-                        this.sell_date = start_sell_date.split("T")[0];
-
-                        const end_sell_date = this.date.stop_date;
-                        const end_sell_time = end_sell_date.split("T")[1].slice(0, -1); // extract time after "T" and remove trailing "Z"
-                        const [end_hour, end_minute] = end_sell_time.split(":"); // split time into hours and minutes
-                        this.stop_time = `${end_hour}:${end_minute}`;
-                        this.stop_date = end_sell_date.split("T")[0];
-
-                        const [door_open_hour, door_open_minute] = this.date.door_open.split(':');
-                        this.door_open = `${door_open_hour}:${door_open_minute}`;
-                        
-                        const [door_close_hour, door_close_minute] = this.date.door_close.split(':');
-                        this.door_close = `${door_close_hour}:${door_close_minute}`;
-
-                        const [early_closure_hour, early_closure_minute] = this.date.early_closure_time.split(':');
-                        this.early_closure_time = `${early_closure_hour}:${early_closure_minute}`;
-                        
+            axios
+                .get(`/api/v1/editevent/${EventID}/`)
+                .then(response => {
+                    this.event = response.data;
 
 
-
-                        // Assign unique values to use as the pricing table column headers
-                        this.columns = [... new Set(this.event.price_layer_price.map(x=>x.price_type))];
-
-                        // Assign unique values to use as the pricing table column rows
-                        this.rows = [... new Set(this.event.price_layer_price.map(x=>x.price_layer))];
+                    this.date = this.event.date_time;
 
 
+                    this.event_date = this.event.date_time.event_date;
+                    this.time_slots = this.event.timeslot_set;
 
-                        this.initCalendar();
-
-
-                        
-
+                    this.event_date = this.date.event_date
 
 
+                    const [event_start_hour, event_start_minute] = this.date.event_time.split(':');
+                    this.event_time = `${event_start_hour}:${event_start_minute}`;
 
+                    const [event_end_hour, event_end_minute] = this.date.event_end_time.split(':');
+                    this.event_end_time = `${event_end_hour}:${event_end_minute}`;
 
+                    const start_sell_date = this.date.sell_date;
+                    const start_sell_time = start_sell_date.split("T")[1].slice(0, -1);
+                    const [sell_hour, sell_minute] = start_sell_time.split(":");
+                    this.sell_time = `${sell_hour}:${sell_minute}`;
+                    this.sell_date = start_sell_date.split("T")[0];
 
+                    const end_sell_date = this.date.stop_date;
+                    const end_sell_time = end_sell_date.split("T")[1].slice(0, -1);
+                    const [end_hour, end_minute] = end_sell_time.split(":");
+                    this.stop_time = `${end_hour}:${end_minute}`;
+                    this.stop_date = end_sell_date.split("T")[0];
 
+                    const [door_open_hour, door_open_minute] = this.date.door_open.split(':');
+                    this.door_open = `${door_open_hour}:${door_open_minute}`;
 
-                        //testing rows and columns
+                    const [door_close_hour, door_close_minute] = this.date.door_close.split(':');
+                    this.door_close = `${door_close_hour}:${door_close_minute}`;
 
+                    const [early_closure_hour, early_closure_minute] = this.date.early_closure_time.split(':');
+                    this.early_closure_time = `${early_closure_hour}:${early_closure_minute}`;
+                    
 
                     
 
 
-            
-                        
+                    // Assign unique values to use as the pricing table column headers
+                    this.columns = [...new Set(this.event.price_layer_price.map(x => x.price_type))];
 
-            this.rows.forEach(row => {
-                this.records.push({
-                    row: row,
-                    details: []
-                });
-                })
-            
-            this.records.forEach(record => {
-                this.columns.forEach(column => {
-                    record.details.push({
-                    column: column,
-                    value: 0
+                    // Assign unique values to use as the pricing table column rows
+                    this.rows = [...new Set(this.event.price_layer_price.map(x => x.price_layer))];
+
+
+                    this.initCalendar();
+
+
+                    //testing rows and columns
+
+
+                    this.rows.forEach(row => {
+                        this.records.push({
+                            row: row,
+                            details: []
+                        });
+                    })
+
+                    this.records.forEach(record => {
+                        this.columns.forEach(column => {
+                            record.details.push({
+                                column: column,
+                                value: 0
+                            });
+                        });
                     });
-                });
-                });
-
-                
-                
 
 
-                        
-
-                        // Combine something like Object{price:56, price_layer: 'Ticket Price', price_type: 'Adult 18+'}
-                        // And something like Object{price:40, price_layer: 'Food', price_type: 'Adult 18+'}
-                        // Into Object{price_type: 'Adult 18+, price_layer: {0: "Ticket Price", 1: "Food"}, price: {0: 56, 1:40} }
-                        this.unique_prices = Object.values(this.event.price_layer_price.reduce((value, object) => {
-                            if (value[object.price_type]) {
+                    // Combine something like Object{price:56, price_layer: 'Ticket Price', price_type: 'Adult 18+'}
+                    // And something like Object{price:40, price_layer: 'Food', price_type: 'Adult 18+'}
+                    // Into Object{price_type: 'Adult 18+, price_layer: {0: "Ticket Price", 1: "Food"}, price: {0: 56, 1:40} }
+                    this.unique_prices = Object.values(this.event.price_layer_price.reduce((value, object) => {
+                        if (value[object.price_type]) {
                             ['price_layer'].forEach(key => value[object.price_type][key] = (value[object.price_type][key] + "," + object[key]).split(","));
-                            ['price'].forEach(key => value[object.price_type][key] = (value[object.price_type][key] + "," + object[key] ).split(","));
-                                    } else {
-                                        value[object.price_type] = { ...object };
-                                    }
-                                    return value;
-                                }, {}));
-
-                        
-
-                        // Convert any left over into an array for both price and price_layer
-                        this.unique_prices.forEach(el => 
-                            (Array.isArray(el.price) ? el.price : [el.price]).forEach(
-                                price => el.price = (Array.isArray(el.price) ? el.price : [el.price])))
-
-                        this.unique_prices.forEach(el => 
-                            (Array.isArray(el.price_layer) ? el.price_layer : [el.price_layer]).forEach(
-                                price => el.price_layer = (Array.isArray(el.price_layer) ? el.price_layer : [el.price_layer])))
-
-                        // Get the sum of each array in 'unique_prices'
-                        const sum = (a, b) => Number(a) + Number(b);
-                        this.price_layer_sum = this.unique_prices.map(({ price }) => price.reduce(sum));
+                            ['price'].forEach(key => value[object.price_type][key] = (value[object.price_type][key] + "," + object[key]).split(","));
+                        } else {
+                            value[object.price_type] = {
+                                ...object
+                            };
+                        }
+                        return value;
+                    }, {}));
 
 
+                    // Convert any left over into an array for both price and price_layer
+                    this.unique_prices.forEach(el =>
+                        (Array.isArray(el.price) ? el.price : [el.price]).forEach(
+                            price => el.price = (Array.isArray(el.price) ? el.price : [el.price])))
 
-                        for (let i = 0; i < this.event.price_layer_price.length; i++) {
-                            const myObject = this.event.price_layer_price[i];
-                            const row = myObject.price_layer;
-                            const column = myObject.price_type;
-                            const value = myObject.price;
-                            
-                            let record = this.new_prices.find(record => record.row === row);
-                            
-                            if (!record) {
-                                record = {
+                    this.unique_prices.forEach(el =>
+                        (Array.isArray(el.price_layer) ? el.price_layer : [el.price_layer]).forEach(
+                            price => el.price_layer = (Array.isArray(el.price_layer) ? el.price_layer : [el.price_layer])))
+
+                    // Get the sum of each array in 'unique_prices'
+                    const sum = (a, b) => Number(a) + Number(b);
+                    this.price_layer_sum = this.unique_prices.map(({
+                        price
+                    }) => price.reduce(sum));
+
+
+                    for (let i = 0; i < this.event.price_layer_price.length; i++) {
+                        const myObject = this.event.price_layer_price[i];
+                        const row = myObject.price_layer;
+                        const column = myObject.price_type;
+                        const value = myObject.price;
+
+                        let record = this.new_prices.find(record => record.row === row);
+
+                        if (!record) {
+                            record = {
                                 row,
                                 details: []
-                                };
-                                
-                                this.new_prices.push(record);
-                            }
-                            
-                            record.details.push({
-                                column,
-                                value
-                            });
+                            };
 
-                            
-                            }
-                        
-                    })
-                    .catch(error => { 
-                        console.log(error)
-                    })
+                            this.new_prices.push(record);
+                        }
 
-                Promise.all([
+                        record.details.push({
+                            column,
+                            value
+                        });
+
+
+                    }
+
+                })
+                .catch(error => {
+                    console.log(error)
+                })
+
+            Promise.all([
                     axios.get('api/v1/facility/'),
                     axios.get('api/v1/location/'),
                     axios.get('api/v1/pricetype/'),
                     axios.get('api/v1/pricelayer/')
-                    ])
-                    .then(([facilityResponse, locationResponse, pricetypeResponse, pricelayerResponse]) => {
+                ])
+                .then(([facilityResponse, locationResponse, pricetypeResponse, pricelayerResponse]) => {
                     this.all_facilities = facilityResponse.data.reverse();
                     this.all_locations = locationResponse.data.reverse();
                     this.all_pricetypes = pricetypeResponse.data.reverse();
                     this.all_pricelayers = pricelayerResponse.data.reverse();
-                    })
-                    .catch(error => {
+                })
+                .catch(error => {
                     console.log(error);
-                    });
+                });
 
             this.$store.commit('setIsLoading', false)
-            },
+        },
+
+
+        initCalendar() {
+            this.calendar1 = bulmaCalendar.attach(this.$refs.calendarTrigger1, {
+                startDate: this.event_date,
+            })[0];
+            this.calendar1.on('select', e => {
+                this.event_date = e.data.datePicker._date.start ? e.data.datePicker._date.start.toLocaleDateString() : null;
+                console.log(this.event_date);
+            });
+
+            this.calendar2 = bulmaCalendar.attach(this.$refs.calendarTrigger2, {
+                startTime: this.event_time,
+            })[0];
+            this.calendar2.on('select', e => {
+                this.event_time = e.data.timePicker._time.start ? new Date(e.data.timePicker._time.start).toLocaleTimeString() : null;
+                console.log(this.event_time);
+            });
+
+            this.calendar3 = bulmaCalendar.attach(this.$refs.calendarTrigger3, {
+                startTime: this.event_end_time,
+            })[0];
+            this.calendar3.on('select', e => {
+                this.event_end_time = e.data.timePicker._time.start ? new Date(e.data.timePicker._time.start).toLocaleTimeString() : null;
+                console.log(this.event_end_time);
+            });
+
+            this.calendar4 = bulmaCalendar.attach(this.$refs.calendarTrigger4, {
+                startDate: this.sell_date,
+                startTime: this.sell_time,
+            })[0];
+            this.calendar4.on('select', e => {
+                const date = e.data.datePicker._date.start ? e.data.datePicker._date.start.toLocaleDateString() : null;
+                const time = e.data.timePicker._time.start ? new Date(e.data.timePicker._time.start).toLocaleTimeString() : null;
+                const datetime = date && time ? `${date} ${time}` : null;
+                this.sell_date = datetime;
+                console.log(this.sell_date);
+            });
+
+            this.calendar5 = bulmaCalendar.attach(this.$refs.calendarTrigger5, {
+                startDate: this.stop_date,
+                startTime: this.stop_time,
+            })[0];
+            this.calendar5.on('select', e => {
+                const date = e.data.datePicker._date.start ? e.data.datePicker._date.start.toLocaleDateString() : null;
+                const time = e.data.timePicker._time.start ? new Date(e.data.timePicker._time.start).toLocaleTimeString() : null;
+                const datetime = date && time ? `${date} ${time}` : null;
+                this.stop_date = datetime;
+                console.log(this.stop_date);
+            });
+
+            this.calendar6 = bulmaCalendar.attach(this.$refs.calendarTrigger6, {
+                startTime: this.door_open,
+            })[0];
+            this.calendar6.on('select', e => {
+                this.door_open = e.data.timePicker._time.start ? new Date(e.data.timePicker._time.start).toLocaleTimeString() : null;
+                console.log(this.door_open);
+            });
+
+            this.calendar7 = bulmaCalendar.attach(this.$refs.calendarTrigger7, {
+                startTime: this.door_close,
+            })[0];
+            this.calendar7.on('select', e => {
+                this.door_close = e.data.timePicker._time.start ? new Date(e.data.timePicker._time.start).toLocaleTimeString() : null;
+                console.log(this.door_close);
+            });
+
+            this.calendar8 = bulmaCalendar.attach(this.$refs.calendarTrigger8, {
+                startTime: this.early_closure_time,
+            })[0];
+            this.calendar8.on('select', e => {
+                this.early_closure_time = e.data.timePicker._time.start ? new Date(e.data.timePicker._time.start).toLocaleTimeString() : null;
+                console.log(this.early_closure_time);
+            });
+        },
 
 
 
-
-
-            initCalendar() {
-    this.calendar1 = bulmaCalendar.attach(this.$refs.calendarTrigger1, {
-      startDate: this.event_date,
-    })[0];
-    this.calendar1.on('select', e => {
-      this.event_date = e.data.datePicker._date.start ? e.data.datePicker._date.start.toLocaleDateString() : null;
-      console.log(this.event_date);
-    });
-
-    this.calendar2 = bulmaCalendar.attach(this.$refs.calendarTrigger2, {
-      startTime: this.event_time,
-    })[0];
-    this.calendar2.on('select', e => {
-      this.event_time = e.data.timePicker._time.start ? new Date(e.data.timePicker._time.start).toLocaleTimeString() : null;
-      console.log(this.event_time);
-    });
-
-    this.calendar3 = bulmaCalendar.attach(this.$refs.calendarTrigger3, {
-      startTime: this.event_end_time,
-    })[0];
-    this.calendar3.on('select', e => {
-      this.event_end_time = e.data.timePicker._time.start ? new Date(e.data.timePicker._time.start).toLocaleTimeString() : null;
-      console.log(this.event_end_time);
-    });
-
-    this.calendar4 = bulmaCalendar.attach(this.$refs.calendarTrigger4, {
-      startDate: this.sell_date,
-      startTime: this.sell_time,
-    })[0];
-    this.calendar4.on('select', e => {
-      const date = e.data.datePicker._date.start ? e.data.datePicker._date.start.toLocaleDateString() : null;
-      const time = e.data.timePicker._time.start ? new Date(e.data.timePicker._time.start).toLocaleTimeString() : null;
-      const datetime = date && time ? `${date} ${time}` : null;
-      this.sell_date = datetime;
-      console.log(this.sell_date);
-    });
-
-    this.calendar5 = bulmaCalendar.attach(this.$refs.calendarTrigger5, {
-      startDate: this.stop_date,
-      startTime: this.stop_time,
-    })[0];
-    this.calendar5.on('select', e => {
-      const date = e.data.datePicker._date.start ? e.data.datePicker._date.start.toLocaleDateString() : null;
-      const time = e.data.timePicker._time.start ? new Date(e.data.timePicker._time.start).toLocaleTimeString() : null;
-      const datetime = date && time ? `${date} ${time}` : null;
-      this.stop_date = datetime;
-      console.log(this.stop_date);
-    });
-
-    this.calendar6 = bulmaCalendar.attach(this.$refs.calendarTrigger6, {
-      startTime: this.door_open,
-    })[0];
-    this.calendar6.on('select', e => {
-      this.door_open = e.data.timePicker._time.start ? new Date(e.data.timePicker._time.start).toLocaleTimeString() : null;
-      console.log(this.door_open);
-    });
-
-    this.calendar7 = bulmaCalendar.attach(this.$refs.calendarTrigger7, {
-      startTime: this.door_close,
-    })[0];
-    this.calendar7.on('select', e => {
-      this.door_close = e.data.timePicker._time.start ? new Date(e.data.timePicker._time.start).toLocaleTimeString() : null;
-      console.log(this.door_close);
-    });
-
-    this.calendar8 = bulmaCalendar.attach(this.$refs.calendarTrigger8, {
-      startTime: this.early_closure_time,
-    })[0];
-    this.calendar8.on('select', e => {
-      this.early_closure_time = e.data.timePicker._time.start ? new Date(e.data.timePicker._time.start).toLocaleTimeString() : null;
-      console.log(this.early_closure_time);
-    });
-
+        async submitForm() {
+            this.$store.commit('setIsLoading', true)
+            const payload = {
+                name: this.event.name,
+                description: this.event.description,
+                location: this.event.location,
+                facility: this.event.facility,
+                capacity: this.event.capacity,
+                held: this.event.held,
+                entrance: this.event.entrance,
+                gr_required: this.event.gr_required,
+                early_closure: this.event.early_closure,
+                
+                date_time: {"event_date": "2023-04-15"}
     
-  },
 
-// const calendar5 = bulmaCalendar.attach(this.$refs.calendarTrigger5, {  
-//         startTime: "06:00",
-//         })[0];
-//         calendar5.on('select', e => {
-//             const date = e.data.datePicker._date.start ? e.data.datePicker._date.start.toLocaleDateString() : null;
-//             const time = e.data.timePicker._time.start ? new Date(e.data.timePicker._time.start).toLocaleTimeString() : null;
-//             const datetime = date && time ? `${date} ${time}` : null;
-//             this.stop_date = datetime;
-        
-//         console.log(this.stop_date); // logs something like "5/4/2023 3:45:00 PM"
-//         });
+            }
+            await axios
+                .patch('/api/v1/editevent/1/', payload)
+                .then(response => {
+                    console.log(response)
+                    this.$router.push(this.$router.go())
+                })
+                .catch(error => {
+                    console.log(error)
+                })
 
-            async submitForm() { 
-                this.$store.commit('setIsLoading', true)
-                const payload = { 
-                    name: this.event.name,
-                    description: this.event.description,
-                    location: this.event.location,
-                    facility: this.event.facility,
-                    capacity: this.event.capacity,
-                    held: this.event.held,
-                    entrance: this.event.entrance,
-                    gr_required: this.event.gr_required,
-                    early_closure: this.event.early_closure,
-                    event_date: this.date.event_date,
-                    
-                }
-                await axios
-                    .patch('/api/v1/editevent/1/', payload)
-                    .then(response => { 
-                        console.log(response)
-                        this.$router.push( this.$router.go() )
-                    })
-                    .catch(error => { 
-                        console.log(error)
-                    })
-
-                this.$store.commit('setIsLoading', false)
-            },
-            },
+            this.$store.commit('setIsLoading', false)
+        },
+    },
 
 
-            
-
-            
-    }
+}
 </script>
