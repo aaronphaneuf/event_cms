@@ -143,12 +143,17 @@
                                         </select>
                                     </div>
                                 </td>
-                                <td><input type="text" class="input" v-model="slot.capacity"></td>
-                                <td><input type="text" class="input" v-model="slot.held"></td>
+                                <td><input type="number" class="input" v-model="slot.capacity"></td>
+                                <td><input type="number" class="input" v-model="slot.held"></td>
                             </tr>
+                            <tr><td><strong>Total</strong></td><td><strong>{{ capacity_held_total.capacity }}</strong></td><td><strong>{{ capacity_held_total.held }}</strong></td></tr>
+                            <div v-if="showError" class="notification is-danger">
+                                Capacity and held values do not match above in the 'Details' section.
+                            </div>
                             <div class="form-group">
                                 <button @click="addTimeSlot" type="button" class="button is-primary is-small">Add Time Slot</button>
                             </div>
+                            
                         </tbody>
                     </table>
                 </div>
@@ -312,6 +317,9 @@ export default {
         return {
 
             event: {},
+
+            showError: false,
+
             all_facilities: [],
             all_locations: [],
             all_pricetypes: [],
@@ -319,8 +327,8 @@ export default {
             //bulma_date: new Date(),
             date: '',
             time_slots: '',
-            time_slot_choices: ['6:00 - 6:30 AM', '6:30 - 7:00 AM'],
-
+            time_slot_choices: [    '6:00 - 6:30 AM',    '6:30 - 7:00 AM',    '7:00 - 7:30 AM',    '7:30 - 8:00 AM',    '8:00 - 8:30 AM',    '8:30 - 9:00 AM',    '9:00 - 9:30 AM',    '9:30 - 10:00 AM',    '10:00 - 10:30 AM',    '10:30 - 11:00 AM',    '11:00 - 11:30 AM',    '11:30 - 12:00 PM',    '12:00 - 12:30 PM',    '12:30 - 1:00 PM',    '1:00 - 1:30 PM',    '1:30 - 2:00 PM',    '2:00 - 2:30 PM',    '2:30 - 3:00 PM',    '3:00 - 3:30 PM',    '3:30 - 4:00 PM',    '4:00 - 4:30 PM',    '4:30 - 5:00 PM',    '5:00 - 5:30 PM',    '5:30 - 6:00 PM',    '6:00 - 6:30 PM',    '6:30 - 7:00 PM',    '7:00 - 7:30 PM',    '7:30 - 8:00 PM',    '8:00 - 8:30 PM',    '8:30 - 9:00 PM',    '9:00 - 9:30 PM',    '9:30 - 10:00 PM',    '10:00 - 10:30 PM',    '10:30 - 11:00 PM',    '11:00 - 11:30 PM',    '11:30 - 12:00 AM',    '12:00 - 12:30 AM'],
+            capacity_held_total: { capacity: 0, held: 0 },
 
             selectedDate: null,
             selectedTime: null,
@@ -398,6 +406,21 @@ export default {
                 this.calendar8.setStartTime(newVal);
             }
         },
+
+        time_slots: {
+    handler: function(newVal) {
+      let totalCapacity = 0
+      let totalHeld = 0
+      newVal.forEach(slot => {
+        totalCapacity += slot.capacity
+        totalHeld += slot.held
+      })
+      this.capacity_held_total = { capacity: totalCapacity, held: totalHeld }
+    },
+    deep: true
+  },
+
+
         
     },
 
@@ -416,7 +439,11 @@ export default {
             });
 
             return sums;
-        }
+        },
+
+            
+
+
     },
     methods: {
 
@@ -596,8 +623,8 @@ export default {
 
                         if (!record) {
                             record = {
-                                row,
-                                details: []
+                            row,
+                            details: []
                             };
 
                             this.new_prices.push(record);
@@ -608,8 +635,15 @@ export default {
                             value
                         });
 
-
-                    }
+                        // Check if there's a match in records and update the value
+                        const recordToUpdate = this.records.find(record => record.row === row && record.details.some(detail => detail.column === column));
+                        if (recordToUpdate) {
+                            const detailToUpdate = recordToUpdate.details.find(detail => detail.column === column);
+                            if (detailToUpdate) {
+                            detailToUpdate.value = value;
+                            }
+                        }
+                        }
 
                 })
                 .catch(error => {
@@ -719,6 +753,16 @@ export default {
 
         async submitForm() {
             this.$store.commit('setIsLoading', true)
+            // validate capacity and held values
+     if (this.capacity_held_total.capacity !== this.event.capacity ||
+      this.capacity_held_total.held !== this.event.held) {
+    try {
+      this.showError = true;
+    } catch (error) {
+      // display error message in UI
+      console.error(error.message);
+    }
+  } else {
             const payload = {
                 name: this.event.name,
                 description: this.event.description,
@@ -736,7 +780,8 @@ export default {
                             "stop_date": this.stop_date.includes(":") ? this.stop_date : this.date.stop_date,
                             "door_open": this.door_open,
                             "door_close": this.door_close,
-                            "early_closure_time": this.early_closure_time,}
+                            "early_closure_time": this.early_closure_time,},
+                timeslot_set: this.time_slots,
     
 
             }
@@ -750,7 +795,7 @@ export default {
                     console.log(error)
                 })
 
-            this.$store.commit('setIsLoading', false)
+            this.$store.commit('setIsLoading', false) }
         },
     },
 

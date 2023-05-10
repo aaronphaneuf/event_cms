@@ -130,7 +130,7 @@ class EventSerializer(serializers.ModelSerializer):
   
 
 class EditEventSerializer(serializers.ModelSerializer):
-  timeslot_set = TimeSlotSerializer(many=True, read_only=True)
+  timeslot_set = TimeSlotSerializer(many=True)
   date_time = DateTimeSerializer()
   price_layer_price = PriceLayerPriceSerializer(many=True, read_only=True)
   gl_account = GLAccountSerializer(many=True, read_only=True)
@@ -194,6 +194,23 @@ class EditEventSerializer(serializers.ModelSerializer):
                 if field_value is not None:
                     setattr(instance.date_time, field_name, field_value)
             instance.date_time.save()
+
+        # Update the TimeSlot model
+        timeslot_set_data = validated_data.get('timeslot_set')
+        if timeslot_set_data:
+            for timeslot_data in timeslot_set_data:
+                time_range = timeslot_data['time_range']
+                try:
+                    # Try to get an existing TimeSlot object with the same time_range
+                    timeslot = instance.timeslot_set.get(time_range=time_range)
+                except TimeSlot.DoesNotExist:
+                    # If no existing object was found, create a new one
+                    timeslot = TimeSlot(event=instance, time_range=time_range)
+                # Update the capacity and held fields of the TimeSlot object
+                timeslot.capacity = timeslot_data['capacity']
+                timeslot.held = timeslot_data['held']
+                timeslot.save()
+
         return instance
   
 
