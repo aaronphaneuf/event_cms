@@ -47,22 +47,44 @@ class FacilitySerializer(serializers.ModelSerializer):
 class DateTimeSerializer(serializers.ModelSerializer):
   event = serializers.PrimaryKeyRelatedField(read_only=True)
   event_date = serializers.DateField()
+  event_time = serializers.TimeField()
+  event_end_time = serializers.TimeField()
+  door_open = serializers.TimeField()
+  door_close = serializers.TimeField()
+  sell_date = serializers.DateTimeField()
+  stop_date = serializers.DateTimeField()
+  early_closure_time = serializers.TimeField()
 
-  # def to_representation(self, instance):
-  #       # Convert datetime object to a string in the format 'YYYY-MM-DD'
-  #       event_date = instance.event_date.strftime('%Y-%m-%d')
-  #       return {
-  #           'event': instance.event.id,
-  #           'event_date': event_date
-  #       }
+  def to_representation(self, instance):
+        # Convert datetime object to a string in the format 'YYYY-MM-DD'
+        event_date = instance.event_date.strftime('%Y-%m-%d')
+        event_time = instance.event_time.strftime('%H:%M')
+        event_end_time = instance.event_end_time.strftime('%H:%M')
+        door_open = instance.door_open.strftime('%H:%M')
+        door_close = instance.door_close.strftime('%H:%M')
+        sell_date = instance.sell_date.strftime('%Y-%m-%d %H:%M')
+        stop_date = instance.stop_date.strftime('%Y-%m-%d %H:%M')
+        early_closure_time = instance.early_closure_time.strftime('%H:%M')
 
-  # This is messing it up. Not sure why. 
+        return {
+            'event': instance.event.id,
+            'event_date': event_date,
+            'event_time': event_time,
+            'event_end_time': event_end_time,
+            'door_open': door_open,
+            'door_close': door_close,
+            'sell_date': sell_date,
+            'stop_date': stop_date,
+            'early_closure_time': early_closure_time,
+        }
+
+  
 
   class Meta:
     model = DateTime
     fields =  ['event', 'event_date' ,'event_time', 'event_end_time', 'door_open', 'door_close', 'sell_date', 'stop_date', 'early_closure_time'
     ]
-    #read_only_fields = ['event']
+   
 
 class PriceTypeSerializer(serializers.ModelSerializer):
   class Meta:
@@ -164,12 +186,14 @@ class EditEventSerializer(serializers.ModelSerializer):
         # Update the DateTime model
         date_time_data = validated_data.get('date_time')
         if date_time_data:
-            event_date = date_time_data.get('event_date')
-            if event_date:
-                date_str = event_date.strftime('%Y-%m-%d')
-                instance.date_time.event_date = datetime.strptime(date_str, '%Y-%m-%d')
+            date_time_fields = ['event_date', 'event_time', 'event_end_time',
+                                'sell_date', 'stop_date', 'door_open',
+                                'door_close', 'early_closure_time']
+            for field_name in date_time_fields:
+                field_value = date_time_data.get(field_name)
+                if field_value is not None:
+                    setattr(instance.date_time, field_name, field_value)
             instance.date_time.save()
-
         return instance
   
 

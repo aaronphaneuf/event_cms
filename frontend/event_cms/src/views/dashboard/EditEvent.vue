@@ -363,15 +363,24 @@ export default {
             if (this.calendar1) {
                 this.calendar1.setStartDate(newVal);
             }
+            // if (this.calendar4) {
+            //     this.calendar4.setStartDateTime(newVal);
+            //     //this.calendar4.setStartTime(this.sell_date);
             if (this.calendar4) {
                 this.calendar4.setStartDate(newVal);
-                this.calendar4.setStartTime(this.sell_time);
+                
             }
+            // }
             if (this.calendar5) {
                 this.calendar5.setStartDate(newVal);
-                this.calendar5.setStartTime(this.stop_time);
-            }
+                //this.calendar5.setStartTime(this.stop_time)
+        }
+            
         },
+        // sell_date(newVal) {
+        // if (this.calendar4) {
+        //     this.calendar4.setStartDate('2023-05-12 10:30');
+        // }},
         start_time(newVal) {
             if (this.calendar2) {
                 this.calendar2.setStartTime(newVal);
@@ -389,6 +398,7 @@ export default {
                 this.calendar8.setStartTime(newVal);
             }
         },
+        
     },
 
 
@@ -479,32 +489,36 @@ export default {
                     this.event_date = this.date.event_date
 
 
-                    const [event_start_hour, event_start_minute] = this.date.event_time.split(':');
-                    this.event_time = `${event_start_hour}:${event_start_minute}`;
+                    //const [event_start_hour, event_start_minute] = this.date.event_time.split(':');
+                    this.event_time = this.date.event_time;
 
-                    const [event_end_hour, event_end_minute] = this.date.event_end_time.split(':');
-                    this.event_end_time = `${event_end_hour}:${event_end_minute}`;
+                    //const [event_end_hour, event_end_minute] = this.date.event_end_time.split(':');
+                    this.event_end_time = this.date.event_end_time;
 
-                    const start_sell_date = this.date.sell_date;
-                    const start_sell_time = start_sell_date.split("T")[1].slice(0, -1);
-                    const [sell_hour, sell_minute] = start_sell_time.split(":");
-                    this.sell_time = `${sell_hour}:${sell_minute}`;
-                    this.sell_date = start_sell_date.split("T")[0];
+                    // const start_sell_date = this.date.sell_date;
+                    // const start_sell_time = start_sell_date.split("T")[1].slice(0, -1);
+                    // const [sell_hour, sell_minute] = start_sell_time.split(":");
+                    // this.sell_time = `${sell_hour}:${sell_minute}`;
+                    const sell_date_temp = new Date(this.date.sell_date);
+                    this.sell_date = sell_date_temp.toLocaleDateString();
+                    this.sell_time = sell_date_temp.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', hour12: false});
 
-                    const end_sell_date = this.date.stop_date;
-                    const end_sell_time = end_sell_date.split("T")[1].slice(0, -1);
-                    const [end_hour, end_minute] = end_sell_time.split(":");
-                    this.stop_time = `${end_hour}:${end_minute}`;
-                    this.stop_date = end_sell_date.split("T")[0];
+                    // const end_sell_date = this.date.stop_date;
+                    // const end_sell_time = end_sell_date.split("T")[1].slice(0, -1);
+                    // const [end_hour, end_minute] = end_sell_time.split(":");
+                    // this.stop_time = `${end_hour}:${end_minute}`;
+                    const stop_date_temp = new Date(this.date.stop_date);
+                    this.stop_date = stop_date_temp.toLocaleDateString();;
+                    this.stop_time = stop_date_temp.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', hour12: false});
 
-                    const [door_open_hour, door_open_minute] = this.date.door_open.split(':');
-                    this.door_open = `${door_open_hour}:${door_open_minute}`;
+                    //const [door_open_hour, door_open_minute] = this.date.door_open.split(':');
+                    this.door_open = this.date.door_open;
 
-                    const [door_close_hour, door_close_minute] = this.date.door_close.split(':');
-                    this.door_close = `${door_close_hour}:${door_close_minute}`;
+                    //const [door_close_hour, door_close_minute] = this.date.door_close.split(':');
+                    this.door_close = this.date.door_close;
 
-                    const [early_closure_hour, early_closure_minute] = this.date.early_closure_time.split(':');
-                    this.early_closure_time = `${early_closure_hour}:${early_closure_minute}`;
+                    //const [early_closure_hour, early_closure_minute] = this.date.early_closure_time.split(':');
+                    this.early_closure_time = this.date.early_closure_time;
                     
 
                     
@@ -627,7 +641,8 @@ export default {
                 startDate: this.event_date,
             })[0];
             this.calendar1.on('select', e => {
-                this.event_date = e.data.datePicker._date.start ? e.data.datePicker._date.start.toLocaleDateString() : null;
+                this.event_date = e.data.datePicker._date.start ? e.data.datePicker._date.start.toISOString().split('T')[0] : null;
+
                 console.log(this.event_date);
             });
 
@@ -635,7 +650,8 @@ export default {
                 startTime: this.event_time,
             })[0];
             this.calendar2.on('select', e => {
-                this.event_time = e.data.timePicker._time.start ? new Date(e.data.timePicker._time.start).toLocaleTimeString() : null;
+                this.event_time = e.data.timePicker._time.start ? new Date(e.data.timePicker._time.start).toLocaleTimeString('en-US', {hour12: false, hour: '2-digit', minute: '2-digit'}) : null;
+
                 console.log(this.event_time);
             });
 
@@ -643,17 +659,18 @@ export default {
                 startTime: this.event_end_time,
             })[0];
             this.calendar3.on('select', e => {
-                this.event_end_time = e.data.timePicker._time.start ? new Date(e.data.timePicker._time.start).toLocaleTimeString() : null;
+                this.event_end_time = e.data.timePicker._time.start ? new Date(e.data.timePicker._time.start).toLocaleTimeString('en-US', {hour12: false, hour: '2-digit', minute: '2-digit'}) : null;
                 console.log(this.event_end_time);
             });
 
             this.calendar4 = bulmaCalendar.attach(this.$refs.calendarTrigger4, {
                 startDate: this.sell_date,
                 startTime: this.sell_time,
+                //startTime: this.sell_time,
             })[0];
             this.calendar4.on('select', e => {
-                const date = e.data.datePicker._date.start ? e.data.datePicker._date.start.toLocaleDateString() : null;
-                const time = e.data.timePicker._time.start ? new Date(e.data.timePicker._time.start).toLocaleTimeString() : null;
+                const date = e.data.datePicker._date.start ? e.data.datePicker._date.start.toISOString().split('T')[0] : null;
+                const time = e.data.timePicker._time.start ? new Date(e.data.timePicker._time.start).toLocaleTimeString('en-US', {hour12: false, hour: '2-digit', minute: '2-digit'}) : null;
                 const datetime = date && time ? `${date} ${time}` : null;
                 this.sell_date = datetime;
                 console.log(this.sell_date);
@@ -662,10 +679,12 @@ export default {
             this.calendar5 = bulmaCalendar.attach(this.$refs.calendarTrigger5, {
                 startDate: this.stop_date,
                 startTime: this.stop_time,
+
+                //startTime: this.stop_time,
             })[0];
             this.calendar5.on('select', e => {
-                const date = e.data.datePicker._date.start ? e.data.datePicker._date.start.toLocaleDateString() : null;
-                const time = e.data.timePicker._time.start ? new Date(e.data.timePicker._time.start).toLocaleTimeString() : null;
+                const date = e.data.datePicker._date.start ? e.data.datePicker._date.start.toISOString().split('T')[0] : null;
+                const time = e.data.timePicker._time.start ? new Date(e.data.timePicker._time.start).toLocaleTimeString('en-US', {hour12: false, hour: '2-digit', minute: '2-digit'}) : null;
                 const datetime = date && time ? `${date} ${time}` : null;
                 this.stop_date = datetime;
                 console.log(this.stop_date);
@@ -675,7 +694,7 @@ export default {
                 startTime: this.door_open,
             })[0];
             this.calendar6.on('select', e => {
-                this.door_open = e.data.timePicker._time.start ? new Date(e.data.timePicker._time.start).toLocaleTimeString() : null;
+                this.door_open = e.data.timePicker._time.start ? new Date(e.data.timePicker._time.start).toLocaleTimeString('en-US', {hour12: false, hour: '2-digit', minute: '2-digit'}) : null;
                 console.log(this.door_open);
             });
 
@@ -683,7 +702,7 @@ export default {
                 startTime: this.door_close,
             })[0];
             this.calendar7.on('select', e => {
-                this.door_close = e.data.timePicker._time.start ? new Date(e.data.timePicker._time.start).toLocaleTimeString() : null;
+                this.door_close = e.data.timePicker._time.start ? new Date(e.data.timePicker._time.start).toLocaleTimeString('en-US', {hour12: false, hour: '2-digit', minute: '2-digit'}) : null;
                 console.log(this.door_close);
             });
 
@@ -691,7 +710,7 @@ export default {
                 startTime: this.early_closure_time,
             })[0];
             this.calendar8.on('select', e => {
-                this.early_closure_time = e.data.timePicker._time.start ? new Date(e.data.timePicker._time.start).toLocaleTimeString() : null;
+                this.early_closure_time = e.data.timePicker._time.start ? new Date(e.data.timePicker._time.start).toLocaleTimeString('en-US', {hour12: false, hour: '2-digit', minute: '2-digit'}) : null;
                 console.log(this.early_closure_time);
             });
         },
@@ -710,8 +729,14 @@ export default {
                 entrance: this.event.entrance,
                 gr_required: this.event.gr_required,
                 early_closure: this.event.early_closure,
-                
-                date_time: {"event_date": "2023-04-15"}
+                date_time: {"event_date": this.event_date,
+                            "event_time": this.event_time,
+                            "event_end_time": this.event_end_time,
+                            "sell_date": this.sell_date.includes(":") ? this.sell_date : this.date.sell_date,
+                            "stop_date": this.stop_date.includes(":") ? this.stop_date : this.date.stop_date,
+                            "door_open": this.door_open,
+                            "door_close": this.door_close,
+                            "early_closure_time": this.early_closure_time,}
     
 
             }
