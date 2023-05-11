@@ -173,7 +173,7 @@
                                 <tr v-for="(record, rowIndex) in records" :key="rowIndex">
                                     <td>{{record.name ? record.name : record.row}}</td>
                                     <td v-for="(detail, index) in record.details" :key="index">
-                                        <input type="text" class="input" v-model="detail.value">
+                                        <input type="number" class="input" v-model="detail.value">
                                     </td>
                                 </tr>
                                 <tr>
@@ -185,19 +185,19 @@
                             </tbody>
                             <div class="select" style="display: inline-block; vertical-align: middle;" >
                                 <select v-model="selectedName">
-                                    <option v-for="name in all_pricetypes" :key="name" :value="name.name">{{ name.name }}</option>
+                                    <option v-for="name in all_pricelayers" :key="name" :value="name">{{ name }}</option>
                                 </select>
                             </div>
                             <div style="display: inline-block;">
-                                <button @click="addRow" class="button is-primary is-small">Add Price Type</button>
+                                <button @click="addRow" class="button is-primary is-small">Add Price Layer</button>
                             </div>
                             <div class="select" style="display: inline-block; vertical-align: middle;">
                                 <select v-model="selectedColumn">
-                                    <option v-for="name in all_pricelayers" :key="name" :value="name.name">{{ name.name }}</option>
+                                    <option v-for="name in all_pricetypes" :key="name" :value="name">{{ name }}</option>
                                 </select>
                             </div>
                             <div style="display: inline-block;">
-                                <button @click="addColumn" class="button is-primary is-small">Add Price Layer</button>
+                                <button @click="addColumn" class="button is-primary is-small">Add Price Type</button>
                             </div>
                             
                         </table>
@@ -354,6 +354,7 @@ export default {
             rows: '', //["1", "2", "3", "4"],
             records: [],
             new_prices: [],
+            new_price_layer_price: [],
 
 
             selectedName: "",
@@ -418,6 +419,36 @@ export default {
       this.capacity_held_total = { capacity: totalCapacity, held: totalHeld }
     },
     deep: true
+  },
+
+  records: {
+    handler(newRecords) {
+      const priceLayerPrice = [];
+
+      // loop through each row in the records array
+      newRecords.forEach((record) => {
+        // loop through each detail in the row
+        record.details.forEach((detail) => {
+          // only push an entry if the price is greater than 0
+          if (detail.value > 0) {
+            // create a new price object and add it to the priceLayerPrice array
+            priceLayerPrice.push({
+  price: detail.value,
+  price_layer: {
+    name: record.row
+  },
+  price_type: {
+    name: detail.column
+  }
+});
+          }
+        });
+      });
+
+      // update the price_layer_price data property with the new array
+      this.new_price_layer_price = priceLayerPrice;
+    },
+    deep: true,
   },
 
 
@@ -781,10 +812,12 @@ export default {
                             "door_open": this.door_open,
                             "door_close": this.door_close,
                             "early_closure_time": this.early_closure_time,},
-                timeslot_set: this.time_slots,
+                timeslot_set: this.time_slots, 
+                price_layer_price: this.new_price_layer_price,
     
 
             }
+            console.log(JSON.stringify(payload));
             await axios
                 .patch('/api/v1/editevent/1/', payload)
                 .then(response => {

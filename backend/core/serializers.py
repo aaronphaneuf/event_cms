@@ -19,9 +19,25 @@ class LocationSerializer(serializers.ModelSerializer):
     model = Location
     fields = ['location_name']
 
+class PriceTypeSerializer(serializers.ModelSerializer):
+  class Meta:
+        model = PriceType
+        fields = '__all__'
+
+  def to_representation(self, instance):
+      return str(instance)
+
+class PriceLayerSerializer(serializers.ModelSerializer):
+  class Meta:
+        model = PriceLayer
+        fields = '__all__'
+
+  def to_representation(self, instance):
+      return str(instance)
+
 class PriceLayerPriceSerializer(serializers.ModelSerializer):
-  price_type = serializers.StringRelatedField()
-  price_layer = serializers.StringRelatedField()
+  price_type = PriceTypeSerializer()
+  price_layer = PriceLayerSerializer()
   class Meta:
     model = PriceLayerPrice
     fields = ['price_type', 'price_layer', 'price']
@@ -86,15 +102,7 @@ class DateTimeSerializer(serializers.ModelSerializer):
     ]
    
 
-class PriceTypeSerializer(serializers.ModelSerializer):
-  class Meta:
-    model = PriceType
-    fields =  ['name']
 
-class PriceLayerSerializer(serializers.ModelSerializer):
-  class Meta:
-    model = PriceLayer
-    fields =  ['name']
 
   
     
@@ -132,7 +140,7 @@ class EventSerializer(serializers.ModelSerializer):
 class EditEventSerializer(serializers.ModelSerializer):
   timeslot_set = TimeSlotSerializer(many=True)
   date_time = DateTimeSerializer()
-  price_layer_price = PriceLayerPriceSerializer(many=True, read_only=True)
+  price_layer_price = PriceLayerPriceSerializer(many=True)
   gl_account = GLAccountSerializer(many=True, read_only=True)
   discount = DiscountSerializer(many=True, read_only=True)
   
@@ -164,6 +172,7 @@ class EditEventSerializer(serializers.ModelSerializer):
         return {'event_date': obj.date_time.strftime('%Y-%m-%d %H:%M:%S')}
 
   def update(self, instance, validated_data):
+        print(validated_data)
         instance.name = validated_data.get('name', instance.name)
         instance.description = validated_data.get('description', instance.description)
         instance.capacity = validated_data.get('capacity', instance.capacity)
@@ -210,6 +219,45 @@ class EditEventSerializer(serializers.ModelSerializer):
                 timeslot.capacity = timeslot_data['capacity']
                 timeslot.held = timeslot_data['held']
                 timeslot.save()
+        
+    # Update the PriceLayer, PriceType, and PriceLayerPrice models
+        price_layer_price_set_data = validated_data.get('price_layer_price')
+        if price_layer_price_set_data:
+            for price_layer_price_data in price_layer_price_set_data:
+                price_type_name = price_layer_price_data['price_type']['name']
+                price_layer_name = price_layer_price_data['price_layer']['name']
+                try:
+                    # Try to get an existing PriceType object with the same name
+                    price_type = PriceType.objects.get(name=price_type_name)
+                except PriceType.DoesNotExist:
+                    # If no existing object was found, create a new one
+                    price_type = PriceType(name=price_type_name)
+                    price_type.save()
+
+                try:
+                    # Try to get an existing PriceLayer object with the same name
+                    price_layer = PriceLayer.objects.get(name=price_layer_name)
+                except PriceLayer.DoesNotExist:
+                    # If no existing object was found, create a new one
+                    price_layer = PriceLayer(name=price_layer_name)
+                    price_layer.save()
+
+                try:
+                    # Try to get an existing PriceLayerPrice object with the same price_type and price_layer
+                    price_layer_price = instance.price_layer_price.get(price_type=price_type, price_layer=price_layer)
+                except PriceLayerPrice.DoesNotExist:
+                    # If no existing object was found, create a new one
+                    price_layer_price = PriceLayerPrice(event=instance, price_type=price_type, price_layer=price_layer)
+
+                # Update the price field of the PriceLayerPrice object
+                if price_layer_price_data['price'] > 0:
+                    price_layer_price.price = price_layer_price_data['price']
+                    price_layer_price.save()
+                elif price_layer_price.id:
+                    price_layer_price.delete()
+
+
+
 
         return instance
   
