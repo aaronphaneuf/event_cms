@@ -2,11 +2,21 @@ from rest_framework import serializers, generics
 from .models import *
 from datetime import datetime
 
+
+class PriceTypeSerializer(serializers.ModelSerializer):
+  class Meta:
+        model = PriceType
+        fields = '__all__'
+
+  def to_representation(self, instance):
+      return str(instance)
+
 class DiscountSerializer(serializers.ModelSerializer):
-  price_type = serializers.StringRelatedField()
+  price_type = PriceTypeSerializer()
   class Meta:
     model = Discount
     fields = ['price_type', 'discount', 'description']
+    
 
 class GLAccountSerializer(serializers.ModelSerializer):
   price_layer = serializers.StringRelatedField()
@@ -19,13 +29,7 @@ class LocationSerializer(serializers.ModelSerializer):
     model = Location
     fields = ['location_name']
 
-class PriceTypeSerializer(serializers.ModelSerializer):
-  class Meta:
-        model = PriceType
-        fields = '__all__'
 
-  def to_representation(self, instance):
-      return str(instance)
 
 class PriceLayerSerializer(serializers.ModelSerializer):
   class Meta:
@@ -142,7 +146,7 @@ class EditEventSerializer(serializers.ModelSerializer):
   date_time = DateTimeSerializer()
   price_layer_price = PriceLayerPriceSerializer(many=True)
   gl_account = GLAccountSerializer(many=True, read_only=True)
-  discount = DiscountSerializer(many=True, read_only=True)
+  discount = DiscountSerializer(many=True)
   
   
   price_type = PriceTypeSerializer(many=True, read_only=True)
@@ -255,6 +259,30 @@ class EditEventSerializer(serializers.ModelSerializer):
                     price_layer_price.save()
                 elif price_layer_price.id:
                     price_layer_price.delete()
+
+        discount_data = validated_data.get('discount')
+        if discount_data:
+            for discount in discount_data:
+                price_type_data = discount.get('price_type')
+                price_type_name = price_type_data.get('name')
+                try:
+                    # Try to get an existing PriceType object with the same name
+                    price_type = PriceType.objects.get(name=price_type_name)
+                except PriceType.DoesNotExist:
+                    # If no existing object was found, raise a validation error
+                    raise serializers.ValidationError({'price_type': ['Invalid price type.']})
+
+                try:
+                    # Try to get an existing Discount object with the same price_type
+                    discount_obj = instance.discount.get(price_type=price_type)
+                except Discount.DoesNotExist:
+                    # If no existing object was found, create a new one
+                    discount_obj = Discount(event=instance, price_type=price_type)
+
+                # Update the discount and description fields of the Discount object
+                discount_obj.discount = discount['discount']
+                discount_obj.description = discount['description']
+                discount_obj.save()
 
 
 

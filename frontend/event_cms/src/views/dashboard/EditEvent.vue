@@ -216,17 +216,21 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="discount in event.discount">
+                        <tr v-for="slot in event.discount">
                                 <td>
                                     <div class="select">
-                                        <select v-model="event.discount.description">
-                                            <option v-for="name in all_pricetypes" :key="name" :value="name.name">{{ name.name }}</option>
+                                        <select v-model="slot.price_type">
+                                            <option>{{slot.price_type}}</option>
+                                            <option v-for="choice in all_pricetypes">{{choice}}</option>
                                         </select>
                                     </div>
                                 </td>
-                                <td>{{discount.discount }}</td>
-                                <td>{{discount.description }}</td>
+                                <td><input type="text" class="input" v-model="slot.discount"></td>
+                                <td><input type="text" class="input" v-model="slot.description"></td>
                             </tr>
+                            <div class="form-group">
+                                <button @click="addDiscount" type="button" class="button is-primary is-small">Add Discount</button>
+                            </div>
                         </tbody>
                     </table>
                 </div>
@@ -333,6 +337,9 @@ export default {
             selectedDate: null,
             selectedTime: null,
 
+
+            discounts: null, 
+
             event_date: null,
             event_time: null,
             event_end_time: null,
@@ -343,7 +350,6 @@ export default {
             stop_date: null,
             stop_time: null,
             early_closure_time: null,
-
 
             unique_prices: '',
             unique_price_types: '',
@@ -452,6 +458,22 @@ export default {
   },
 
 
+// THIS PART ISN"T WORKING!!!!
+  'event.discount': function(newDiscounts) {
+    this.discounts = newDiscounts.map(obj => {
+      return {
+        price_type: {
+          name: obj.price_type
+        },
+        discount: obj.discount,
+        description: obj.description
+      };
+    });
+  }
+
+
+
+
         
     },
 
@@ -477,6 +499,11 @@ export default {
 
     },
     methods: {
+
+        // Button to add a discount
+        addDiscount() {
+            this.event.discount.push({})
+        },
 
         // Button to add a time slot
         addTimeSlot() {
@@ -545,6 +572,9 @@ export default {
                     this.time_slots = this.event.timeslot_set;
 
                     this.event_date = this.date.event_date
+
+                    //this.discounts = this.event.discount
+                    
 
 
                     //const [event_start_hour, event_start_minute] = this.date.event_time.split(':');
@@ -675,6 +705,10 @@ export default {
                             }
                         }
                         }
+
+
+
+                    
 
                 })
                 .catch(error => {
@@ -814,10 +848,21 @@ export default {
                             "early_closure_time": this.early_closure_time,},
                 timeslot_set: this.time_slots, 
                 price_layer_price: this.new_price_layer_price,
+                discount: this.discounts,
+        //         discount: [
+        // {
+        //     "price_type": {"name": "Adult 18+"},
+        //     "discount": "50%",
+        //     "description": "2 Tickets"
+        // },
+        // {
+        //     "price_type": {"name": "Child (3-15)"},
+        //     "discount": "50%",
+        //     "description": "2 Tickets"
+        // }]
     
 
             }
-            console.log(JSON.stringify(payload));
             await axios
                 .patch('/api/v1/editevent/1/', payload)
                 .then(response => {
