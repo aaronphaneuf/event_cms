@@ -132,5 +132,31 @@ class Discount(models.Model):
     price_type = models.ForeignKey(PriceType, on_delete=models.PROTECT)
     discount = models.CharField(max_length=255)
     description = models.CharField(max_length=255)
+
+
+class Discount2(models.Model):
+    event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name='discount2')
+    price_type = models.ForeignKey(PriceType, on_delete=models.PROTECT)
+    discount = models.CharField(max_length=255)
+    description = models.CharField(max_length=255)
+
+
+class Account(models.Model):
+    gl_account = models.CharField(max_length=255)
+    description = models.CharField(max_length=255)
+
+    @property
+    def full_name(self):
+        return f"{self.gl_account} - {self.description}"
+
+    # Shows the name on the admin page and on the serializer page
+    def __str__(self) -> str:
+        return self.description
     
+
+class AccountLayer(models.Model):
+    account = models.ForeignKey(Account, on_delete=models.CASCADE)
+    event = models.ManyToManyField(Event, related_name='account')
+    price_layer = models.ForeignKey(PriceLayer, on_delete=models.CASCADE)
+
     

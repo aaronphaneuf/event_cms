@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .models import Event, Facility, Location, PriceType, PriceLayerPrice
+from .models import Event, Facility, Location, PriceType, PriceLayerPrice, Account
 from .serializers import *
 from rest_framework import viewsets
 
@@ -34,3 +34,7 @@ class PriceLayerViewSet(viewsets.ModelViewSet):
 class PriceLayerPriceViewSet(viewsets.ModelViewSet):
   queryset = PriceLayerPrice.objects.all()
   serializer_class = PriceLayerPriceSerializer
+
+class AccountViewSet(viewsets.ModelViewSet):
+  queryset = Account.objects.all()
+  serializer_class = AccountSerializer

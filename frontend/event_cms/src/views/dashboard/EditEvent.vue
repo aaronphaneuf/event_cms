@@ -216,7 +216,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                        <tr v-for="slot in event.discount">
+                        <tr v-for="slot in event.discount2">
                                 <td>
                                     <div class="select">
                                         <select v-model="slot.price_type">
@@ -243,15 +243,26 @@
                             <tr>
                                 <th>Price Layer</th>
                                 <th>GL Account</th>
-                                <th>Description</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="account in event.gl_account">
-                                <td>{{account.price_layer}}</td>
-                                <td>{{account.gl_account }}</td>
-                                <td>{{account.description }}</td>
+                            <tr v-for="acc in account">
+                                <td><div class="select">
+                                        <select v-model="acc.price_layer">
+                                            <option>{{acc.price_layer}}</option>
+                                            <option v-for="choice in all_pricelayers">{{choice}}</option>
+                                        </select>
+                                    </div></td>
+                                <td><div class="select">
+  <select v-model="acc.account.full_name" @change="updateAccountFields($index)">
+    <option v-if="acc.account">{{acc.account.full_name}}</option>
+    <option v-for="choice in all_accounts">{{choice.full_name}}</option>
+  </select>
+</div></td>
                             </tr>
+                            <div class="form-group">
+                                <button @click="addAccount" type="button" class="button is-primary is-small">Add Account</button>
+                            </div>
                         </tbody>
                     </table>
                 </div>
@@ -350,6 +361,9 @@ export default {
             stop_date: null,
             stop_time: null,
             early_closure_time: null,
+
+            account: null,
+            all_accounts: null,
 
             unique_prices: '',
             unique_price_types: '',
@@ -459,17 +473,17 @@ export default {
 
 
 // THIS PART ISN"T WORKING!!!!
-  'event.discount': function(newDiscounts) {
-    this.discounts = newDiscounts.map(obj => {
-      return {
-        price_type: {
-          name: obj.price_type
-        },
-        discount: obj.discount,
-        description: obj.description
-      };
-    });
-  }
+//   'event.discount': function(newDiscounts) {
+//     this.discounts = newDiscounts.map(obj => {
+//       return {
+//         price_type: {
+//           name: obj.price_type
+//         },
+//         discount: obj.discount,
+//         description: obj.description
+//       };
+//     });
+//   }
 
 
 
@@ -502,8 +516,18 @@ export default {
 
         // Button to add a discount
         addDiscount() {
-            this.event.discount.push({})
+            this.event.discount2.push({})
         },
+
+        // Button to add an Account
+        addAccount() {
+  this.account.push({
+    account: { full_name: '', gl_account: '', description: '' },
+    price_layer: ''
+  });
+},
+
+
 
         // Button to add a time slot
         addTimeSlot() {
@@ -550,6 +574,21 @@ export default {
             });
         },
 
+        updateAccountFields(index) {
+  const selectedFullName = this.account[index].account.full_name;
+
+  if (selectedFullName) {
+    const [glAccount, description] = selectedFullName.split(" - ");
+
+    const updatedAccount = {
+      ...this.account[index].account,
+      description: description,
+      gl_account: glAccount
+    };
+
+    this.$set(this.account, index, { ...this.account[index], account: updatedAccount });
+  }
+},
 
         // This is to get the data from Django
 
@@ -572,6 +611,8 @@ export default {
                     this.time_slots = this.event.timeslot_set;
 
                     this.event_date = this.date.event_date
+
+                    this.account = this.event.account;
 
                     //this.discounts = this.event.discount
                     
@@ -719,13 +760,15 @@ export default {
                     axios.get('api/v1/facility/'),
                     axios.get('api/v1/location/'),
                     axios.get('api/v1/pricetype/'),
-                    axios.get('api/v1/pricelayer/')
+                    axios.get('api/v1/pricelayer/'),
+                    axios.get('api/v1/account/')
                 ])
-                .then(([facilityResponse, locationResponse, pricetypeResponse, pricelayerResponse]) => {
+                .then(([facilityResponse, locationResponse, pricetypeResponse, pricelayerResponse, accountResponse]) => {
                     this.all_facilities = facilityResponse.data.reverse();
                     this.all_locations = locationResponse.data.reverse();
                     this.all_pricetypes = pricetypeResponse.data.reverse();
                     this.all_pricelayers = pricelayerResponse.data.reverse();
+                    this.all_accounts = accountResponse.data.reverse();
                 })
                 .catch(error => {
                     console.log(error);
@@ -848,7 +891,17 @@ export default {
                             "early_closure_time": this.early_closure_time,},
                 timeslot_set: this.time_slots, 
                 price_layer_price: this.new_price_layer_price,
-                discount: this.discounts,
+
+                discount2: this.event.discount2.map(obj => {
+                            return {
+                                price_type: { name: obj.price_type },
+                                discount: obj.discount,
+                                description: obj.description
+                            };
+                            })
+
+
+                
         //         discount: [
         // {
         //     "price_type": {"name": "Adult 18+"},
