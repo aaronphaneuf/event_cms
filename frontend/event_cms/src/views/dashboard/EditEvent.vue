@@ -257,11 +257,11 @@
                                         </select>
                                     </div></td>
                                 <td><div class="select">
-  <select v-model="acc.account.gl_account">
-    <option v-if="acc.account">{{acc.account.gl_account}}</option>
-    <option v-for="choice in all_accounts">{{choice.gl_account}}</option>
-  </select>
-</div></td>
+                                <select v-model="acc.account.gl_account">
+                                    <option v-if="acc.account">{{acc.account.gl_account}}</option>
+                                    <option v-for="choice in all_accounts">{{choice.gl_account}}</option>
+                                </select>
+                                </div></td>
                             </tr>
                             <div class="form-group">
                                 <button @click="addAccount" type="button" class="button is-primary is-small">Add Account</button>

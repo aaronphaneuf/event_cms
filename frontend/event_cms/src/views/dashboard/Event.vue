@@ -65,21 +65,20 @@
                         <table class="table is-fullwidth is-striped">
                             <thead>
                                 <tr>
-                                    <th>Price Layer</th>
-                                    <th>Ticket Layer</th>
-                                    <th>Food</th>
-                                    <th>Grats 1</th>
-                                    <th>Grats 2</th>
-                                    <th>Bar</th>
-                                    <th>COGS</th>
-                                    <th>Total</th>
+                                <tr></tr>
+                                    <th v-for="(column, columnIndex) in columns" :key="columnIndex">{{column}}</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr v-for="(price, y) in event.prices">
-                                    <td v-for="x in price">{{x}}
+                                <tr v-for="(record, rowIndex) in records" :key="rowIndex">
+                                <td>{{record.name ? record.name : record.row}}</td>
+                                    <td v-for="(detail, index) in record.details" :key="index">${{detail.value}}</td>
+                                </tr>
+                                <tr>
+                                 <td><strong>Total</strong></td>
+                                    <td v-for="(column, index) in columns" :key="index">
+                                        <strong>${{ columnSums[column] }}</strong>
                                     </td>
-                                    <td><strong>${{prices_sum[y]}}</strong></td>
                                 </tr>
                             </tbody>
                         </table>
@@ -194,8 +193,33 @@ export default {
             location_name: '',
             facility_name: '',
             prices_sum: '',
+
+
+            columns: '', 
+            rows: '',
+            records: [],
+            new_prices: [],
+            new_price_layer_price: [],
+           
         }
     },
+
+
+     computed: {
+
+
+        columnSums() {
+            const sums = {};
+
+            this.columns.forEach(column => {
+                sums[column] = this.records.reduce((acc, record) => {
+                    const detail = record.details.find(detail => detail.column === column);
+                    return acc + Number(detail.value);
+                }, 0);
+            });
+
+            return sums;
+        },},
 
     // This is to get the data from Django
     mounted() {
@@ -215,6 +239,61 @@ export default {
                     this.facility_name = this.event.facility.facility_name;
                     this.date = this.event.date_time;
                     this.time_slots = this.event.timeslot_set;
+                    
+
+                    // Assign unique values to use as the pricing table column headers
+                    this.columns = [...new Set(this.event.price_layer_price.map(x => x.price_type))];
+
+                    // Assign unique values to use as the pricing table column rows
+                    this.rows = [...new Set(this.event.price_layer_price.map(x => x.price_layer))];    
+
+                    this.rows.forEach(row => {
+                        this.records.push({
+                            row: row,
+                            details: []
+                        });
+                    })
+
+                    this.records.forEach(record => {
+                        this.columns.forEach(column => {
+                            record.details.push({
+                                column: column,
+                                value: 0
+                            });
+                        });
+                    });
+
+                   for (let i = 0; i < this.event.price_layer_price.length; i++) {
+                        const myObject = this.event.price_layer_price[i];
+                        const row = myObject.price_layer;
+                        const column = myObject.price_type;
+                        const value = myObject.price;
+
+                        let record = this.new_prices.find(record => record.row === row);
+
+                        if (!record) {
+                            record = {
+                            row,
+                            details: []
+                            };
+
+                            this.new_prices.push(record);
+                        }
+
+                        record.details.push({
+                            column,
+                            value
+                        });
+
+                        // Check if there's a match in records and update the value
+                        const recordToUpdate = this.records.find(record => record.row === row && record.details.some(detail => detail.column === column));
+                        if (recordToUpdate) {
+                            const detailToUpdate = recordToUpdate.details.find(detail => detail.column === column);
+                            if (detailToUpdate) {
+                            detailToUpdate.value = value;
+                            }
+                        }
+                        }
 
                     // Assign unique values to use as the pricing table column headers
                     //this.unique_price_types = [...new Set(this.event.price_layer_price.map(x => x.price_type))];
