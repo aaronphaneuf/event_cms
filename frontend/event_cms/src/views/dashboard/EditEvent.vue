@@ -207,6 +207,7 @@
             <div class="column is-12">
                 <div class="box">
                     <h2 class="subtitle">Discounts</h2>
+                    <div class="table-container">
                     <table class="table is-fullwidth is-striped">
                         <thead>
                             <tr>
@@ -234,10 +235,12 @@
                         </tbody>
                     </table>
                 </div>
+                </div>
             </div>
             <div class="column is-12">
                 <div class="box">
                     <h2 class="subtitle">GL Accounts</h2>
+                    <div class="table-container">
                     <table class="table is-fullwidth is-striped">
                         <thead>
                             <tr>
@@ -254,9 +257,9 @@
                                         </select>
                                     </div></td>
                                 <td><div class="select">
-  <select v-model="acc.account.full_name" @change="updateAccountFields($index)">
-    <option v-if="acc.account">{{acc.account.full_name}}</option>
-    <option v-for="choice in all_accounts">{{choice.full_name}}</option>
+  <select v-model="acc.account.gl_account">
+    <option v-if="acc.account">{{acc.account.gl_account}}</option>
+    <option v-for="choice in all_accounts">{{choice.gl_account}}</option>
   </select>
 </div></td>
                             </tr>
@@ -265,6 +268,7 @@
                             </div>
                         </tbody>
                     </table>
+                </div>
                 </div>
             </div>
             <div class="column is-12">
@@ -279,10 +283,23 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>{{event.csi_needed}}</td>
-                                <td>{{event.csi_mandatory}}</td>
-                                <td>{{event.csi_notes}}</td>
+                            <tr><td>
+                                <div class="select">
+                                <select v-model="event.csi_needed">
+                                    <option>Yes</option>
+                                    <option>No</option>
+                                </select>
+                                </div></td>
+                                <td>
+                                <div class="select">
+                                <select v-model="event.csi_mandatory">
+                                    <option>Yes</option>
+                                    <option>No</option>
+                                </select>
+                                </div></td>
+                                <td><div class="control">
+                                <input type="text" class="input" v-model="event.csi_notes">
+                            </div></td>
                             </tr>
                         </tbody>
                     </table>
@@ -291,7 +308,9 @@
             <div class="column is-12">
                 <div class="box">
                     <h2 class="subtitle">Additional Notes</h2>
-                    <p> {{ event.additional_notes }} </p>
+                    <div class="control">
+                                <textarea class="textarea" v-model="event.additional_notes"></textarea>
+                            </div>
                 </div>
             </div>
             <div class="column is-12">
@@ -307,11 +326,13 @@
                         <tbody>
                             <tr>
                                 <td>Website:</td>
-                                <td>{{event.website_link}}</td>
+                                <td>
+                                <input type="text" class="input" v-model="event.website_link">
+                            </td>
                             </tr>
                             <tr>
                                 <td>Websales:</td>
-                                <td>{{event.websales_link}}</td>
+                                <td><input type="text" class="input" v-model="event.websales_link"></td>
                             </tr>
                         </tbody>
                     </table>
@@ -522,7 +543,7 @@ export default {
         // Button to add an Account
         addAccount() {
   this.account.push({
-    account: { full_name: '', gl_account: '', description: '' },
+    account: { gl_account: ''},
     price_layer: ''
   });
 },
@@ -574,21 +595,21 @@ export default {
             });
         },
 
-        updateAccountFields(index) {
-  const selectedFullName = this.account[index].account.full_name;
+//         updateAccountFields(index) {
+//   const selectedFullName = this.account[index].account.full_name;
 
-  if (selectedFullName) {
-    const [glAccount, description] = selectedFullName.split(" - ");
+//   if (selectedFullName) {
+//     const [glAccount, description] = selectedFullName.split(" - ");
 
-    const updatedAccount = {
-      ...this.account[index].account,
-      description: description,
-      gl_account: glAccount
-    };
+//     const updatedAccount = {
+//       ...this.account[index].account,
+//       description: description,
+//       gl_account: glAccount
+//     };
 
-    this.$set(this.account, index, { ...this.account[index], account: updatedAccount });
-  }
-},
+//     this.$set(this.account, index, { ...this.account[index], account: updatedAccount });
+//   }
+// },
 
         // This is to get the data from Django
 
@@ -613,6 +634,8 @@ export default {
                     this.event_date = this.date.event_date
 
                     this.account = this.event.account;
+
+                    
 
                     //this.discounts = this.event.discount
                     
@@ -746,6 +769,8 @@ export default {
                             }
                         }
                         }
+
+                        
 
 
 
@@ -881,6 +906,12 @@ export default {
                 entrance: this.event.entrance,
                 gr_required: this.event.gr_required,
                 early_closure: this.event.early_closure,
+                csi_needed: this.event.csi_needed,
+                csi_mandatory: this.event.csi_mandatory,
+                csi_notes: this.event.csi_notes,
+                additional_notes: this.event.additional_notes,
+                website_link: this.event.website_link,
+                websales_link: this.event.websales_link,
                 date_time: {"event_date": this.event_date,
                             "event_time": this.event_time,
                             "event_end_time": this.event_end_time,
@@ -898,7 +929,24 @@ export default {
                                 discount: obj.discount,
                                 description: obj.description
                             };
-                            })
+                            }),
+
+                account: this.event.account.map(item => {
+                    return {
+                        account: {
+                        gl_account: item.account.gl_account
+                        },
+                        price_layer: {
+                        name: item.price_layer
+                        }
+                    };
+                    }),
+
+                
+
+                
+
+                
 
 
                 
@@ -916,7 +964,9 @@ export default {
     
 
             }
+            console.log(JSON.stringify(payload));
             await axios
+                
                 .patch('/api/v1/editevent/1/', payload)
                 .then(response => {
                     console.log(response)
@@ -925,7 +975,7 @@ export default {
                 .catch(error => {
                     console.log(error)
                 })
-
+            
             this.$store.commit('setIsLoading', false) }
         },
     },

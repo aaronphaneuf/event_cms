@@ -3,10 +3,9 @@ from .models import *
 from datetime import datetime
 
 class AccountSerializer(serializers.ModelSerializer):
-  full_name = serializers.CharField()
   class Meta:
         model = Account
-        fields = ['full_name', 'gl_account', 'description']
+        fields = ['gl_account']
   
   
 class PriceTypeSerializer(serializers.ModelSerializer):
@@ -166,6 +165,8 @@ class EditEventSerializer(serializers.ModelSerializer):
   gl_account = GLAccountSerializer(many=True, read_only=True)
   discount2 = Discount2Serializer(many=True)
 
+  
+  #account = AccountLayerSerializer(many=True)
   account = AccountLayerSerializer(many=True)
   
   
@@ -181,7 +182,7 @@ class EditEventSerializer(serializers.ModelSerializer):
     
     fields = ['id', 'name', 'description', 'capacity', 'held', 'entrance', 'gr_required', 'early_closure', 'csi_needed', 'csi_mandatory', 'csi_notes', 
               'location', 'date_time', 'timeslot_set', 'price_type', 'price_layer', 'price_layer_price', 'status', 'website_link', 'websales_link', 'facility',
-              'gl_account', 'discount2', 'additional_notes', 'account']
+              'gl_account', 'discount2', 'additional_notes', 'account',] #'account_layer_set']
     
     
   def create(self, validated_data):
@@ -196,7 +197,7 @@ class EditEventSerializer(serializers.ModelSerializer):
         return {'event_date': obj.date_time.strftime('%Y-%m-%d %H:%M:%S')}
 
   def update(self, instance, validated_data):
-        print(validated_data)
+        
         instance.name = validated_data.get('name', instance.name)
         instance.description = validated_data.get('description', instance.description)
         instance.capacity = validated_data.get('capacity', instance.capacity)
@@ -204,6 +205,12 @@ class EditEventSerializer(serializers.ModelSerializer):
         instance.entrance = validated_data.get('entrance', instance.entrance)
         instance.gr_required = validated_data.get('gr_required', instance.gr_required)
         instance.early_closure = validated_data.get('early_closure', instance.early_closure)
+        instance.csi_needed = validated_data.get('csi_needed', instance.csi_needed)
+        instance.csi_mandatory = validated_data.get('csi_mandatory', instance.csi_mandatory)
+        instance.csi_notes = validated_data.get('csi_notes', instance.csi_notes)
+        instance.additional_notes = validated_data.get('additional_notes', instance.additional_notes)
+        instance.website_link = validated_data.get('website_link', instance.website_link)
+        instance.websales_link = validated_data.get('websales_link', instance.websales_link)
         #instance.date_time = validated_data.get('date_time', instance.date_time)
         location_name = validated_data.get('location', {}).get('location_name')
         
@@ -303,6 +310,42 @@ class EditEventSerializer(serializers.ModelSerializer):
                 discount_obj.discount = discount['discount']
                 discount_obj.description = discount['description']
                 discount_obj.save()
+
+        account_layer_set_data = validated_data.get('account')
+        if account_layer_set_data:
+            for account_layer_data in account_layer_set_data:
+                account_data = account_layer_data.get('account')
+                price_layer_data = account_layer_data.get('price_layer')
+                if account_data and price_layer_data:
+                    gl_account = account_data.get('gl_account')
+                    price_layer_name = price_layer_data.get('name')
+                    if gl_account and price_layer_name:
+                        try:
+                            # Get the existing Account object with the specified gl_account
+                            account = Account.objects.get(gl_account=gl_account)
+                        except Account.DoesNotExist:
+                            # If the Account does not exist, raise an exception or handle it as desired
+                            raise serializers.ValidationError(f"Account with gl_account '{gl_account}' does not exist.")
+
+                        try:
+                            # Try to get an existing AccountLayer object with the same account
+                            account_layer = AccountLayer.objects.get(event=instance, account=account)
+                        except AccountLayer.DoesNotExist:
+                            # If no existing object was found, create a new one
+                            price_layer = PriceLayer.objects.get(name=price_layer_name)
+                            account_layer = AccountLayer.objects.create(event=instance, account=account, price_layer=price_layer)
+
+                        # Update the price_layer field of the AccountLayer object
+                        price_layer = PriceLayer.objects.get(name=price_layer_name)
+                        account_layer.price_layer = price_layer
+                        account_layer.save()
+
+
+
+
+
+
+
 
 
 
