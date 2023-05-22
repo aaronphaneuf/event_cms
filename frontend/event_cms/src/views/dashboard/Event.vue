@@ -35,6 +35,7 @@
                     <p><strong>Stop Sell Date: </strong> {{ date.stop_date }} </p>
                     <p><strong>Doors Open: </strong> {{ date.door_open }} </p>
                     <p><strong>Doors Close: </strong> {{ date.door_close }} </p>
+                    <br>
                 </div>
             </div>
             <div class="column is-12">
@@ -54,6 +55,7 @@
                                 <td>{{slot.capacity }}</td>
                                 <td>{{slot.held }}</td>
                             </tr>
+                            <tr><td><strong>Total</strong></td><td><strong>{{ this.event.capacity }}</strong></td><td><strong>{{ this.event.held }}</strong></td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -166,11 +168,11 @@
                         </thead>
                         <tbody>
                             <tr>
-                                <td>Website:</td>
+                                <td>Website</td>
                                 <td>{{event.website_link}}</td>
                             </tr>
                             <tr>
-                                <td>Websales:</td>
+                                <td>Websales</td>
                                 <td>{{event.websales_link}}</td>
                             </tr>
                         </tbody>
@@ -200,6 +202,7 @@ export default {
             records: [],
             new_prices: [],
             new_price_layer_price: [],
+
            
         }
     },
@@ -219,7 +222,13 @@ export default {
             });
 
             return sums;
-        },},
+        },
+
+        
+        
+        
+        
+        },
 
     // This is to get the data from Django
     mounted() {
@@ -332,13 +341,16 @@ export default {
                     // }) => price.reduce(sum));
 
                     this.prices_sum = this.event.prices.map(a => Object.values(a).filter(v => typeof v === 'number').reduce((p, c) => p + c))
+
+                    this.$store.commit('setIsLoading', false);
                     
                 })
                 .catch(error => {
                     console.log(error)
+                    this.$store.commit('setIsLoading', false)
                 })
 
-            this.$store.commit('setIsLoading', false)
+            
         }
     }
 }

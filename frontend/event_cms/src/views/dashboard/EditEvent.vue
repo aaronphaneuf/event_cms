@@ -964,19 +964,23 @@ export default {
     
 
             }
-            console.log(JSON.stringify(payload));
+            //console.log(JSON.stringify(payload));
+            this.$store.commit('setIsLoading', true);
             await axios
                 
                 .patch('/api/v1/editevent/1/', payload)
                 .then(response => {
                     console.log(response)
+                    this.$store.commit('setIsLoading', false)
                     this.$router.push(this.$router.go())
+                    
                 })
                 .catch(error => {
                     console.log(error)
+                    this.$store.commit('setIsLoading', false)
                 })
             
-            this.$store.commit('setIsLoading', false) }
+             }
         },
     },
 
