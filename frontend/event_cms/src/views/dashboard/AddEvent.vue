@@ -27,9 +27,7 @@
         </div>
       </div>
     </div>
-  </div>
-
-  <div class="columns is-multiline">
+    <div class="columns is-multiline">
             <div class="column is-6">
                 <div class="box">
                     <h2 class="subtitle">Details</h2>
@@ -99,15 +97,87 @@
                             </div>
                         </div>
                     </div>
+
+
+
+                    
+
+                    
                     
                 </div>
+
+                
             </div>
+            <div class="column is-6">
+                <div class="box">
+                    <h2 class="subtitle">Dates & Times</h2>
+                    <label>Event Date(s)</label>
+                    <input type="date" v-model="event_date">
+                    <label>Event Start Time:</label>
+                    <input type="text" data-type="time" v-model="event_time" ref="calendarTrigger2">
+                    <label>Event End Time: </label>
+                    <input type="text" data-type="time" v-model="event_end_time" ref="calendarTrigger3">
+                     <label>Start Sell Date: </label>
+                    <input type="text" data-type="datetime" v-model="sell_date" ref="calendarTrigger4">
+                    <label>Stop Sell Date:</label>
+                    <input type="text" data-type="datetime" v-model="stop_date" ref="calendarTrigger5">
+                    <label>Doors Open: </label>
+                    <input type="text" data-type="time" v-model="door_open" ref="calendarTrigger6">
+                    <label>Doors Close: </label>
+                    <input type="text" data-type="time"  v-model="door_close" ref="calendarTrigger7">
+                    <label>Early Closure Time: </label>
+                    <input type="text" data-type="time"  v-model="early_closure_time" ref="calendarTrigger8">
+                </div>
+            </div>
+
+            <div class="column is-12">
+                <div class="box">
+                    <h2 class="subtitle">Time Slots</h2>
+                    
+                    <table class="table is-fullwidth is-striped">
+                        <thead>
+                            <tr>
+                                <th>Time Slot</th>
+                                
+                                <th>Cap</th>
+                                <th>Held</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="slot in time_slots">
+                                <td>
+                                    <div class="select">
+                                        <select v-model="slot.time_range">
+                                            <option>{{slot.time_range}}</option>
+                                            <option v-for="choice in time_slot_choices">{{choice}}</option>
+                                        </select>
+                                    </div>
+                                </td>
+                                <td><input type="number" class="input" v-model="slot.capacity"></td>
+                                <td><input type="number" class="input" v-model="slot.held"></td>
+                            </tr>
+                            
+                            <div class="form-group">
+                                <button @click="addTimeSlot" type="button" class="button is-primary is-small">Add Time Slot</button>
+                            </div>
+                            
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+  </div>
+
+  
+
+
+            
         </div>
 </template>
 
 
 <script>
 import axios from 'axios'
+import bulmaCalendar from '../../../node_modules/bulma-calendar/dist/js/bulma-calendar.min.js'
 
 export default {
   name: 'Events',
@@ -128,14 +198,36 @@ export default {
       additional_notes: '',
       website_link: '',
       websales_link: '',
+      event_date: '',
+      event_time:  '',
+      event_end_time: '',
+      door_open:  '',
+      door_close:  '',
+      sell_date:  '',
+      sell_time: '',
+      stop_date:  '',
+      stop_time:  '',
+      early_closure_time:  '',
       all_locations: [], // Added property for storing all locations
       all_facilities: [], // Added property for storing all facilities
+      time_slots: '',
+      time_slot_choices: [    '6:00 - 6:30 AM',    '6:30 - 7:00 AM',    '7:00 - 7:30 AM',    '7:30 - 8:00 AM',    '8:00 - 8:30 AM',    '8:30 - 9:00 AM',    '9:00 - 9:30 AM',    '9:30 - 10:00 AM',    '10:00 - 10:30 AM',    '10:30 - 11:00 AM',    '11:00 - 11:30 AM',    '11:30 - 12:00 PM',    '12:00 - 12:30 PM',    '12:30 - 1:00 PM',    '1:00 - 1:30 PM',    '1:30 - 2:00 PM',    '2:00 - 2:30 PM',    '2:30 - 3:00 PM',    '3:00 - 3:30 PM',    '3:30 - 4:00 PM',    '4:00 - 4:30 PM',    '4:30 - 5:00 PM',    '5:00 - 5:30 PM',    '5:30 - 6:00 PM',    '6:00 - 6:30 PM',    '6:30 - 7:00 PM',    '7:00 - 7:30 PM',    '7:30 - 8:00 PM',    '8:00 - 8:30 PM',    '8:30 - 9:00 PM',    '9:00 - 9:30 PM',    '9:30 - 10:00 PM',    '10:00 - 10:30 PM',    '10:30 - 11:00 PM',    '11:00 - 11:30 PM',    '11:30 - 12:00 AM',    '12:00 - 12:30 AM'],
+      capacity_held_total: { capacity: 0, held: 0 },
+
     }
   },
   mounted() {
     this.fetchLocations()
     this.fetchFacilities()
+    this.initCalendar()
   },
+
+  
+    
+  
+
+  
+  
   methods: {
     async fetchLocations() {
       try {
@@ -153,6 +245,25 @@ export default {
         console.log(error)
       }
     },
+
+    addTimeSlot() {
+      this.time_slots = [...this.time_slots, {
+        time_range: '',
+        capacity: 0,
+        held: 0,
+      }];
+    },
+
+        // Button to add a time slot
+
+        // submit() {
+        //     const data = {
+        //         addTimeSlot: this.time_slots
+        //     }
+        //     alert(JSON.stringify(data, null, 2))
+        // },
+
+    
     async addEvent() {
       this.$store.commit('setIsLoading', true)
 
@@ -173,8 +284,18 @@ export default {
         additional_notes: this.additional_notes,
         website_link: this.website_link,
         websales_link: this.websales_link,
-        // Example: title, description, date, etc.
+        date_time: {"event_date": this.event_date,
+                            "event_time": this.event_time,
+                            "event_end_time": this.event_end_time,
+                            "sell_date": this.sell_date.includes(":") ? this.sell_date : this.date.sell_date,
+                            "stop_date": this.stop_date.includes(":") ? this.stop_date : this.date.stop_date,
+                            "door_open": this.door_open,
+                            "door_close": this.door_close,
+                            "early_closure_time": this.early_closure_time,},
+        timeslot_set: this.time_slots, 
+
       }
+      
 
       try {
         await axios.post('api/v1/events/', payload)
@@ -186,7 +307,72 @@ export default {
         console.log(error)
         this.$store.commit('setIsLoading', false)
       }
-    }
+
+      
+    },
+
+    initCalendar() {
+            this.calendar1 = bulmaCalendar.attach(this.$refs.calendarTrigger1)[0];
+            this.calendar1.on('select', e => {
+                this.event_date = e.data.datePicker._date.start ? e.data.datePicker._date.start.toISOString().split('T')[0] : null;
+
+                console.log(this.event_date);
+            });
+
+            this.calendar2 = bulmaCalendar.attach(this.$refs.calendarTrigger2)[0];
+            this.calendar2.on('select', e => {
+                this.event_time = e.data.timePicker._time.start ? new Date(e.data.timePicker._time.start).toLocaleTimeString('en-US', {hour12: false, hour: '2-digit', minute: '2-digit'}) : null;
+
+                console.log(this.event_time);
+            });
+
+            this.calendar3 = bulmaCalendar.attach(this.$refs.calendarTrigger3)[0];
+            this.calendar3.on('select', e => {
+                this.event_end_time = e.data.timePicker._time.start ? new Date(e.data.timePicker._time.start).toLocaleTimeString('en-US', {hour12: false, hour: '2-digit', minute: '2-digit'}) : null;
+                console.log(this.event_end_time);
+            });
+
+            this.calendar4 = bulmaCalendar.attach(this.$refs.calendarTrigger4)[0];
+            this.calendar4.on('select', e => {
+                const date = e.data.datePicker._date.start ? e.data.datePicker._date.start.toISOString().split('T')[0] : null;
+                const time = e.data.timePicker._time.start ? new Date(e.data.timePicker._time.start).toLocaleTimeString('en-US', {hour12: false, hour: '2-digit', minute: '2-digit'}) : null;
+                const datetime = date && time ? `${date} ${time}` : null;
+                this.sell_date = datetime;
+                console.log(this.sell_date);
+            });
+
+            this.calendar5 = bulmaCalendar.attach(this.$refs.calendarTrigger5)[0];
+            this.calendar5.on('select', e => {
+                const date = e.data.datePicker._date.start ? e.data.datePicker._date.start.toISOString().split('T')[0] : null;
+                const time = e.data.timePicker._time.start ? new Date(e.data.timePicker._time.start).toLocaleTimeString('en-US', {hour12: false, hour: '2-digit', minute: '2-digit'}) : null;
+                const datetime = date && time ? `${date} ${time}` : null;
+                this.stop_date = datetime;
+                console.log(this.stop_date);
+            });
+
+            this.calendar6 = bulmaCalendar.attach(this.$refs.calendarTrigger6)[0];
+            this.calendar6.on('select', e => {
+                this.door_open = e.data.timePicker._time.start ? new Date(e.data.timePicker._time.start).toLocaleTimeString('en-US', {hour12: false, hour: '2-digit', minute: '2-digit'}) : null;
+                console.log(this.door_open);
+            });
+
+            this.calendar7 = bulmaCalendar.attach(this.$refs.calendarTrigger7)[0];
+            this.calendar7.on('select', e => {
+                this.door_close = e.data.timePicker._time.start ? new Date(e.data.timePicker._time.start).toLocaleTimeString('en-US', {hour12: false, hour: '2-digit', minute: '2-digit'}) : null;
+                console.log(this.door_close);
+            });
+
+            this.calendar8 = bulmaCalendar.attach(this.$refs.calendarTrigger8)[0];
+            this.calendar8.on('select', e => {
+                this.early_closure_time = e.data.timePicker._time.start ? new Date(e.data.timePicker._time.start).toLocaleTimeString('en-US', {hour12: false, hour: '2-digit', minute: '2-digit'}) : null;
+                console.log(this.early_closure_time);
+            });
+  
+
+  
+},
+
+
   }
 }
 </script>
