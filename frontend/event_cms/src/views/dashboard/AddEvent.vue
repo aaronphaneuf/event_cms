@@ -1,7 +1,13 @@
-// Leads.vue
-
 <template>
   <div class="container">
+  <section class="hero">
+            <div class="hero-body">
+                <p class="title">
+                   Create a New Event
+                </p>
+                
+            </div>
+        </section>
     <div class="columns is-multiline">
       <div class="column is-12">
         <form @submit.prevent="submitForm" class="mb-4">
@@ -97,13 +103,6 @@
                             </div>
                         </div>
                     </div>
-
-
-
-                    
-
-                    
-                    
                 </div>
 
                 
@@ -157,12 +156,59 @@
                                 <td><input type="number" class="input" v-model="slot.held"></td>
                             </tr>
                             
-                            <div class="form-group">
-                                <button @click="addTimeSlot" type="button" class="button is-primary is-small">Add Time Slot</button>
-                            </div>
+                            
                             
                         </tbody>
                     </table>
+                    <div class="form-group">
+                                <button @click="addTimeSlot" type="button" class="button is-primary is-small">Add Time Slot</button>
+                            </div>
+                </div>
+            </div>
+            <div class="column is-12">
+                <div class="box">
+                    <h2 class="subtitle">Pricing</h2>
+                    <div class="table-container">
+                        <table class="table is-fullwidth is-striped">
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th v-for="(column, columnIndex) in columns" :key="columnIndex">{{column}}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="(record, rowIndex) in records" :key="rowIndex">
+                                    <td>{{record.name ? record.name : record.row}}</td>
+                                    <td v-for="(detail, index) in record.details" :key="index">
+                                        <input type="number" class="input" v-model="detail.value">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Total</strong></td>
+                                    <td v-for="(column, index) in columns" :key="index">
+                                        <strong>${{ columnSums[column] }}</strong>
+                                    </td>
+                                </tr>
+                            </tbody>
+                            <div class="select" style="display: inline-block; vertical-align: middle;" >
+                                <select v-model="selectedName">
+                                    <option v-for="name in all_price_layers" :key="name" :value="name">{{ name }}</option>
+                                </select>
+                            </div>
+                            <div style="display: inline-block;">
+                                <button @click="addRow" class="button is-primary is-small">Add Price Layer</button>
+                            </div>
+                            <div class="select" style="display: inline-block; vertical-align: middle;">
+                                <select v-model="selectedColumn">
+                                    <option v-for="name in all_price_types" :key="name" :value="name">{{ name }}</option>
+                                </select>
+                            </div>
+                            <div style="display: inline-block;">
+                                <button @click="addColumn" class="button is-primary is-small">Add Price Type</button>
+                            </div>
+                            
+                        </table>
+                    </div>
                 </div>
             </div>
   </div>
@@ -210,21 +256,87 @@ export default {
       early_closure_time:  '',
       all_locations: [], // Added property for storing all locations
       all_facilities: [], // Added property for storing all facilities
+      all_price_layers: [], // Added property for storing all price layers
+      all_price_types: [], //Added property for storing all price types
+      new_price_layer_price: [],
+      columns: [],
+      rows: [],
+      records: [],
       time_slots: '',
       time_slot_choices: [    '6:00 - 6:30 AM',    '6:30 - 7:00 AM',    '7:00 - 7:30 AM',    '7:30 - 8:00 AM',    '8:00 - 8:30 AM',    '8:30 - 9:00 AM',    '9:00 - 9:30 AM',    '9:30 - 10:00 AM',    '10:00 - 10:30 AM',    '10:30 - 11:00 AM',    '11:00 - 11:30 AM',    '11:30 - 12:00 PM',    '12:00 - 12:30 PM',    '12:30 - 1:00 PM',    '1:00 - 1:30 PM',    '1:30 - 2:00 PM',    '2:00 - 2:30 PM',    '2:30 - 3:00 PM',    '3:00 - 3:30 PM',    '3:30 - 4:00 PM',    '4:00 - 4:30 PM',    '4:30 - 5:00 PM',    '5:00 - 5:30 PM',    '5:30 - 6:00 PM',    '6:00 - 6:30 PM',    '6:30 - 7:00 PM',    '7:00 - 7:30 PM',    '7:30 - 8:00 PM',    '8:00 - 8:30 PM',    '8:30 - 9:00 PM',    '9:00 - 9:30 PM',    '9:30 - 10:00 PM',    '10:00 - 10:30 PM',    '10:30 - 11:00 PM',    '11:00 - 11:30 PM',    '11:30 - 12:00 AM',    '12:00 - 12:30 AM'],
       capacity_held_total: { capacity: 0, held: 0 },
+
+      selectedName: "",
+      selectedColumn: "",
 
     }
   },
   mounted() {
     this.fetchLocations()
     this.fetchFacilities()
+    this.fetchPriceLayers()
+    this.fetchPriceTypes()
     this.initCalendar()
   },
 
   
-    
+    computed: {
+
+
+
+        columnSums() {
+            const sums = {};
+
+            this.columns.forEach(column => {
+                sums[column] = this.records.reduce((acc, record) => {
+                    const detail = record.details.find(detail => detail.column === column);
+                    return acc + Number(detail.value);
+                }, 0);
+            });
+
+            return sums;
+        },
+
+            
+
+
+    },
+
+
+    watch: { 
+records: {
+    handler(newRecords) {
+      const priceLayerPrice = [];
+
+      // loop through each row in the records array
+      newRecords.forEach((record) => {
+        // loop through each detail in the row
+        record.details.forEach((detail) => {
+          // only push an entry if the price is greater than 0
+          if (detail.value > 0) {
+            // create a new price object and add it to the priceLayerPrice array
+            priceLayerPrice.push({
+  price: detail.value,
+  price_layer: {
+    name: record.row
+  },
+  price_type: {
+    name: detail.column
+  }
+});
+          }
+        });
+      });
+
+      // update the price_layer_price data property with the new array
+      this.new_price_layer_price = priceLayerPrice;
+    },
+    deep: true,
+  },
+
+    },
   
+
 
   
   
@@ -245,6 +357,22 @@ export default {
         console.log(error)
       }
     },
+    async fetchPriceLayers() {
+      try {
+        const response = await axios.get('api/v1/pricelayer/')
+        this.all_price_layers = response.data
+      } catch (error) {
+        console.log(error)
+      }
+    },
+    async fetchPriceTypes() {
+      try {
+        const response = await axios.get('api/v1/pricetype/')
+        this.all_price_types = response.data
+      } catch (error) {
+        console.log(error)
+      }
+    },
 
     addTimeSlot() {
       this.time_slots = [...this.time_slots, {
@@ -253,6 +381,36 @@ export default {
         held: 0,
       }];
     },
+
+    addRow() {
+            const newRow = {
+                row: this.selectedName,
+
+                details: []
+            };
+            this.columns.forEach(column => {
+                newRow.details.push({
+                    column: column,
+                    value: 0
+                });
+            });
+            this.records.push(newRow);
+        },
+
+
+        addColumn() {
+            const newColumn = {
+
+                column: this.selectedColumn,
+            };
+            this.columns.push(this.selectedColumn);
+            this.records.forEach(record => {
+                record.details.push({
+                    column: this.selectedColumn,
+                    value: 0
+                });
+            });
+        },
 
         // Button to add a time slot
 
@@ -293,7 +451,7 @@ export default {
                             "door_close": this.door_close,
                             "early_closure_time": this.early_closure_time,},
         timeslot_set: this.time_slots, 
-
+        price_layer_price: this.new_price_layer_price,
       }
       
 

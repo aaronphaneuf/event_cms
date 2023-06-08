@@ -150,12 +150,13 @@
                             <div v-if="showError" class="notification is-danger">
                                 Capacity and held values do not match above in the 'Details' section.
                             </div>
-                            <div class="form-group">
-                                <button @click="addTimeSlot" type="button" class="button is-primary is-small">Add Time Slot</button>
-                            </div>
+                            
                             
                         </tbody>
                     </table>
+                    <div class="form-group">
+                                <button @click="addTimeSlot" type="button" class="button is-primary is-small">Add Time Slot</button>
+                            </div>
                 </div>
             </div>
             <div class="column is-12">
@@ -229,11 +230,12 @@
                                 <td><input type="text" class="input" v-model="slot.discount"></td>
                                 <td><input type="text" class="input" v-model="slot.description"></td>
                             </tr>
-                            <div class="form-group">
-                                <button @click="addDiscount" type="button" class="button is-primary is-small">Add Discount</button>
-                            </div>
+                            
                         </tbody>
                     </table>
+                    <div class="form-group">
+                                <button @click="addDiscount" type="button" class="button is-primary is-small">Add Discount</button>
+                            </div>
                 </div>
                 </div>
             </div>
@@ -263,11 +265,12 @@
                                 </select>
                                 </div></td>
                             </tr>
-                            <div class="form-group">
-                                <button @click="addAccount" type="button" class="button is-primary is-small">Add Account</button>
-                            </div>
+                           
                         </tbody>
                     </table>
+                     <div class="form-group">
+                                <button @click="addAccount" type="button" class="button is-primary is-small">Add Account</button>
+                            </div>
                 </div>
                 </div>
             </div>
