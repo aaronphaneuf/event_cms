@@ -1,14 +1,17 @@
 <template>
     <div class="container">
         <section class="hero">
+        
             <div class="hero-body">
+             <div class="hero-overlay"></div>
                 <p class="title">
                     {{ event.name }}
                 </p>
                 <p class="subtitle">
                     {{ event.description }}
-                    <router-link :to="{ name: 'EditEvent', params: { id: '1'}}" class="button is-light">Edit</router-link>
+                    
                 </p>
+                <router-link :to="{ name: 'EditEvent', params: { id: '1'}}" class="button is-light">Edit</router-link>
             </div>
         </section>
         <div class="columns is-multiline">

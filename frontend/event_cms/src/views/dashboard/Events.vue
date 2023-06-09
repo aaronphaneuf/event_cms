@@ -2,6 +2,7 @@
     <div class="container">
     <section class="hero">
   <div class="hero-body">
+  <div class="hero-overlay"></div>
     <h1 class="title">Events</h1>
     <div class="field is-grouped">
   <div class="control">
@@ -13,7 +14,7 @@
 </div>
   </div>
   <div class="control">
-    <router-link to="/dashboard/events/add" class="button is-primary is-small">Add New Event</router-link>
+    <router-link to="/dashboard/events/add" class="button is-light">Add New Event</router-link>
   </div>
 
 

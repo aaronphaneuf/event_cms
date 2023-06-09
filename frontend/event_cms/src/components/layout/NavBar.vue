@@ -5,7 +5,9 @@
         integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ" 
         crossorigin="anonymous">
         <nav class="navbar is-primary" role="navigation" aria-label="main navigation">
+        
     <div class="navbar-brand">
+    <div class="image-overlay"></div>
         <router-link to="/" class="navbar-item">
                    <strong><i class="fa fa-calendar fa-2x" aria-hidden="true"></i> Event CMS </strong>
                 </router-link>
@@ -18,8 +20,9 @@
 
         
     </div>
-
+    
     <div class="navbar-menu" id="navMenu">
+    
                 <div class="navbar-end">
                     <router-link to="/dashboard/events" class="navbar-item">Events</router-link>
                     

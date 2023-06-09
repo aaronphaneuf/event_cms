@@ -1,22 +1,27 @@
 <template>
   <div class="container">
   <section class="hero">
+  
             <div class="hero-body">
+            <div class="hero-overlay"></div>
                 <p class="title">
                    Create a New Event
                 </p>
+
+                <form @submit.prevent="submitForm" class="mb-4">
+          <div class="field">
+            <div class="control">
+              <button class="button is-light">Submit</button>
+            </div>
+          </div>
+        </form>
+                
                 
             </div>
         </section>
     <div class="columns is-multiline">
       <div class="column is-12">
-        <form @submit.prevent="submitForm" class="mb-4">
-          <div class="field">
-            <div class="control">
-              <button class="button is-primary">Submit</button>
-            </div>
-          </div>
-        </form>
+        
         <div class="box">
           <div class="field">
             <label>Name</label>

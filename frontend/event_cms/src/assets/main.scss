@@ -5,7 +5,7 @@
 
 
 // Set your brand colors
-$purple: #8246AF;
+$purple: rgb(130, 70, 175);
 $beige-lighter: #EFF0EB;
 $brown: #757763;
 $beige-light: #D0D1CD;
@@ -25,6 +25,33 @@ $fullhd-enabled: false;
 
 // Update some of Bulma's component variables
 $body-background-color: $beige-lighter;
+
+
+// .navbar {
+//     background-image: url(giraffe.png);
+//     background-size: repeat;
+//     background-opacity: 0.1;
+//     filter: brightness(40%) saturate(10%);
+    
+//   }
+
+
+  .image-overlay {
+  position:absolute;
+  top: 0;
+  left:0;
+  width: 100%;
+  height: 100%;
+  background-image: url(giraffe_rotated.png);
+  background-repeat: repeat;
+  background-position: center;
+  mix-blend-mode: screen ;
+  opacity: 0.1;
+  transform-origin: top left;
+//   transform: scale(0.5, 0.5);
+  }
+
+
 
 .lds-dual-ring { 
     display: inline-block;
@@ -77,9 +104,58 @@ P {
     color: #363636;
 }
 .navbar { 
-    border-bottom: 2px solid #373737;
+    //height: 100px;
+    border-bottom: 2px solid #314650;
 }
 
+
+.hero-body .title,
+{
+  color: white;
+}
+
+.hero-body .subtitle { 
+    color: white;
+}
+
+.hero-body {
+    position: relative;
+    background-color:  #314650;
+    border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+  }
+
+  
+  
+  .hero-overlay {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    //background-color:  #314650;
+    background-image: url('zebra_rotated.png'); /* Replace with the path to your background image */
+    background-repeat: no-repeat;
+    background-size: cover;
+    opacity: 0.1; /* Adjust the opacity value as desired */
+    mix-blend-mode: multiply;
+
+
+    
+  //background-position: center;
+  //mix-blend-mode: overlay;
+  
+  //transform-origin: top left;
+    
+  }
+
+   
+ 
+  
+ 
 
 
 @import "../../node_modules/bulma";
