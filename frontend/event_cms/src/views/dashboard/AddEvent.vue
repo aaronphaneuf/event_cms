@@ -216,6 +216,79 @@
                     </div>
                 </div>
             </div>
+
+           <div class="column is-12">
+                <div class="box">
+                    <h2 class="subtitle">Discounts</h2>
+                    <div class="table-container">
+                    <table class="table is-fullwidth is-striped">
+                        <thead>
+                            <tr>
+                                <th>Price Type</th>
+                                <th>Discount</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        <tr v-for="slot in discounts">
+                                <td>
+                                    <div class="select">
+                                       <select v-model="slot.price_type">
+                                            <option>{{slot.price_type}}</option>
+                                        
+                                             <option v-for="name in all_price_types" :key="name" :value="name">{{ name }}</option>
+                                        </select>
+                                    </div>
+                                </td>
+                                <td><input type="text" class="input" v-model="slot.discount"></td>
+                                <td><input type="text" class="input" v-model="slot.description"></td>
+                            </tr>
+                            
+                        </tbody>
+                    </table>
+                    <div class="form-group">
+                                <button @click="addDiscount" type="button" class="button is-primary is-small">Add Discount</button>
+                            </div>
+                </div>
+                </div>
+            </div>
+
+
+            <div class="column is-12">
+                <div class="box">
+                    <h2 class="subtitle">GL Accounts</h2>
+                    <div class="table-container">
+                    <table class="table is-fullwidth is-striped">
+                        <thead>
+                            <tr>
+                                <th>Price Layer</th>
+                                <th>GL Account</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="acc in account">
+                                <td><div class="select">
+                                        <select v-model="acc.price_layer">
+                                            <option>{{acc.price_layer}}</option>
+                                            <option v-for="choice in all_price_layers">{{choice}}</option>
+                                        </select>
+                                    </div></td>
+                                <td><div class="select">
+                                <select v-model="acc.account.gl_account">
+                                    <option v-if="acc.account">{{acc.account.gl_account}}</option>
+                                    <option v-for="choice in all_accounts">{{choice.gl_account}}</option>
+                                </select>
+                                </div></td>
+                            </tr>
+                           
+                        </tbody>
+                    </table>
+                     <div class="form-group">
+                                <button @click="addAccount" type="button" class="button is-primary is-small">Add Account</button>
+                            </div>
+                </div>
+                </div>
+            </div>
   </div>
 
   
@@ -274,6 +347,12 @@ export default {
       selectedName: "",
       selectedColumn: "",
 
+
+      discounts: [],
+
+      account: [],
+      all_accounts: null,
+
     }
   },
   mounted() {
@@ -281,6 +360,7 @@ export default {
     this.fetchFacilities()
     this.fetchPriceLayers()
     this.fetchPriceTypes()
+    this.fetchGLAccounts()
     this.initCalendar()
   },
 
@@ -378,6 +458,14 @@ records: {
         console.log(error)
       }
     },
+    async fetchGLAccounts() {
+      try {
+        const response = await axios.get('api/v1/account/')
+        this.all_accounts = response.data
+      } catch (error) {
+        console.log(error)
+      }
+    },
 
     addTimeSlot() {
       this.time_slots = [...this.time_slots, {
@@ -417,6 +505,11 @@ records: {
             });
         },
 
+
+        // Button to add a discount
+        addDiscount() {
+            this.discounts.push({})
+        },
         // Button to add a time slot
 
         // submit() {
@@ -425,6 +518,13 @@ records: {
         //     }
         //     alert(JSON.stringify(data, null, 2))
         // },
+
+        addAccount() {
+  this.account.push({
+    account: { gl_account: ''},
+    price_layer: ''
+  });
+},
 
     
     async addEvent() {
@@ -457,6 +557,8 @@ records: {
                             "early_closure_time": this.early_closure_time,},
         timeslot_set: this.time_slots, 
         price_layer_price: this.new_price_layer_price,
+        discount2: this.discounts,
+        account: this.account
       }
       
 
