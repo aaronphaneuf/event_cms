@@ -218,7 +218,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                        <tr v-for="slot in event.discount2">
+                        <tr v-for="slot in event.discount">
                                 <td>
                                     <div class="select">
                                         <select v-model="slot.price_type">
@@ -519,6 +519,7 @@ export default {
     computed: {
 
 
+
         columnSums() {
             const sums = {};
 
@@ -540,7 +541,7 @@ export default {
 
         // Button to add a discount
         addDiscount() {
-            this.event.discount2.push({})
+            this.event.discount.push({})
         },
 
         // Button to add an Account
@@ -926,7 +927,7 @@ export default {
                 timeslot_set: this.time_slots, 
                 price_layer_price: this.new_price_layer_price,
 
-                discount2: this.event.discount2.map(obj => {
+                discount: this.event.discount.map(obj => {
                             return {
                                 price_type: { name: obj.price_type },
                                 discount: obj.discount,

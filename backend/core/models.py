@@ -105,7 +105,7 @@ class TimeSlot(models.Model):
 
 
 class PriceLayerPrice(models.Model):
-    price = models.IntegerField()
+    price = price = models.DecimalField(max_digits=5, decimal_places=2)
     event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name='price_layer_price')
     price_type = models.ForeignKey(PriceType, on_delete=models.PROTECT)
     price_layer = models.ForeignKey(PriceLayer, on_delete=models.PROTECT)
@@ -128,17 +128,17 @@ class GLAccount(models.Model):
 
 
 class Discount(models.Model):
-    event = models.ManyToManyField(Event, related_name='discount')
+    event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name='discount')
     price_type = models.ForeignKey(PriceType, on_delete=models.PROTECT)
     discount = models.CharField(max_length=255)
     description = models.CharField(max_length=255)
 
 
-class Discount2(models.Model):
-    event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name='discount2')
-    price_type = models.ForeignKey(PriceType, on_delete=models.PROTECT)
-    discount = models.CharField(max_length=255)
-    description = models.CharField(max_length=255)
+# class Discount2(models.Model):
+#     event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name='discount2')
+#     price_type = models.ForeignKey(PriceType, on_delete=models.PROTECT)
+#     discount = models.CharField(max_length=255)
+#     description = models.CharField(max_length=255)
 
 
 class Account(models.Model):
@@ -149,5 +149,3 @@ class AccountLayer(models.Model):
     account = models.ForeignKey(Account, on_delete=models.CASCADE)
     event = models.ForeignKey(Event,  on_delete=models.CASCADE, related_name='account')
     price_layer = models.ForeignKey(PriceLayer, on_delete=models.CASCADE)
-
-    
