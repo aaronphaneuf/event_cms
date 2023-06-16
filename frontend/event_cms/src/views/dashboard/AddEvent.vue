@@ -289,6 +289,85 @@
                 </div>
                 </div>
             </div>
+
+            <div class="column is-12">
+                <div class="box">
+                    <h2 class="subtitle">CSI</h2>
+                    <table class="table is-fullwidth">
+                        <thead>
+                            <tr>
+                                <th>CSI Needed?</th>
+                                <th>CSI Mandatory?</th>
+                                <th>Notes</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>
+                                <div class="select">
+                                <select v-model="csi_needed">
+                                    <option>Yes</option>
+                                    <option>No</option>
+                                </select>
+                                </div></td>
+                                <td>
+                                <div class="select">
+                                <select v-model="csi_mandatory">
+                                    <option>Yes</option>
+                                    <option>No</option>
+                                </select>
+                                </div></td>
+                                <td><div class="control">
+                                <input type="text" class="input" v-model="csi_notes">
+                            </div></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="column is-12">
+                <div class="box">
+                    <h2 class="subtitle">Additional Notes</h2>
+                    <div class="control">
+                                <textarea class="textarea" v-model="additional_notes"></textarea>
+                            </div>
+                </div>
+            </div>
+            <div class="column is-12">
+                <div class="box">
+                    <h2 class="subtitle">Web Links</h2>
+                    <table class="table is-fullwidth is-striped">
+                        <thead>
+                            <tr>
+                                <th>Description</th>
+                                <th>Link</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Website:</td>
+                                <td>
+                                <input type="text" class="input" v-model="website_link">
+                            </td>
+                            </tr>
+                            <tr>
+                                <td>Websales:</td>
+                                <td><input type="text" class="input" v-model="websales_link"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    
+                </div>
+
+                 <form @submit.prevent="submitForm" class="mb-4">
+          <div class="field">
+            <div class="control">
+              <button class="button is-primary">Submit</button>
+            </div>
+          </div>
+        </form>
+            </div>
   </div>
 
   
@@ -353,6 +432,7 @@ export default {
       account: [],
       all_accounts: null,
 
+      
     }
   },
   mounted() {
@@ -527,7 +607,8 @@ records: {
 },
 
     
-    async addEvent() {
+    async submitForm() {
+      
       this.$store.commit('setIsLoading', true)
 
       // Prepare the payload data for the new event
@@ -558,12 +639,31 @@ records: {
         timeslot_set: this.time_slots, 
         price_layer_price: this.new_price_layer_price,
         discount2: this.discounts,
-        account: this.account
-      }
+        account: this.account,
+        csi_needed: this.csi_needed,
+        csi_mandatory: this.csi_mandatory,
+        csi_notes: this.csi_notes,
+        additional_notes: this.additional_notes,
+        websales_link: this.websales_link,
+        website_link: this.website_link,
+        
+
+      };
+
+      // Adjust 24:00 to 00:00 for sell_date
+    if (payload.date_time.sell_date && payload.date_time.sell_date.includes(" 24:00")) {
+    payload.date_time.sell_date = payload.date_time.sell_date.replace(" 24:00", " 00:00");
+    }
+
+    // Adjust 24:00 to 00:00 for stop_date
+    if (payload.date_time.stop_date && payload.date_time.stop_date.includes(" 24:00")) {
+    payload.date_time.stop_date = payload.date_time.stop_date.replace(" 24:00", " 00:00");
+    }
       
 
       try {
-        await axios.post('api/v1/events/', payload)
+        console.log(JSON.stringify(payload));
+        await axios.post('api/v1/editevent/', payload)
         // Handle the success case
         console.log('Event added successfully!')
         this.$store.commit('setIsLoading', false)
