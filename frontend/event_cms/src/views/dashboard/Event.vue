@@ -18,7 +18,7 @@
             <div class="column is-6">
                 <div class="box">
                     <h2 class="subtitle">Details</h2>
-                    <p><strong>Status </strong> {{ event.status }} </p>
+                    <p><strong>Status </strong> {{ statusLabel }} </p>
                     <p><strong>Location: </strong> {{ location_name }} </p>
                     <p><strong>Facility: </strong> {{ facility_name }} </p>
                     <p><strong>Entrance: </strong> {{ event.entrance }} </p>
@@ -226,6 +226,19 @@ export default {
 
             return sums;
         },
+
+       statusLabel() {
+      // Map the Django status value to the corresponding label
+      const statusMap = {
+        OS: 'On Sale',
+        P: 'Pending',
+        S: 'Setup',
+        AN: 'Action Needed',
+        C: 'Concluded',
+      };
+
+      return this.event && this.event.status ? statusMap[this.event.status] : '';
+    },
 
         
         

@@ -82,7 +82,6 @@ class Event(models.Model):
     website_link = models.CharField(max_length=255)
     websales_link = models.CharField(max_length=255)
 
-
 class DateTime(models.Model):
     event = models.OneToOneField(Event, on_delete=models.CASCADE, primary_key=True, related_name='date_time') # related_name allows us to reference this in the reverse relationship.
     event_date = models.DateField(auto_now_add=False)
@@ -132,13 +131,6 @@ class Discount(models.Model):
     price_type = models.ForeignKey(PriceType, on_delete=models.PROTECT)
     discount = models.CharField(max_length=255)
     description = models.CharField(max_length=255)
-
-
-# class Discount2(models.Model):
-#     event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name='discount2')
-#     price_type = models.ForeignKey(PriceType, on_delete=models.PROTECT)
-#     discount = models.CharField(max_length=255)
-#     description = models.CharField(max_length=255)
 
 
 class Account(models.Model):
