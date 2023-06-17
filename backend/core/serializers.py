@@ -356,7 +356,7 @@ class SimpleEventSerializer(serializers.ModelSerializer):
   date_time = SimpleDateTimeSerializer()
   class Meta:
     model = Event
-    fields = ['id', 'name', 'date_time']
+    fields = ['id', 'name', 'date_time', 'status']
 
 
 

@@ -638,8 +638,17 @@ records: {
                             "early_closure_time": this.early_closure_time,},
         timeslot_set: this.time_slots, 
         price_layer_price: this.new_price_layer_price,
-        discount2: this.discounts,
-        account: this.account,
+        discount: this.discounts,
+        account: this.account.map(item => {
+                    return {
+                        account: {
+                        gl_account: item.account.gl_account
+                        },
+                        price_layer: {
+                        name: item.price_layer
+                        }
+                    };
+                    }),
         csi_needed: this.csi_needed,
         csi_mandatory: this.csi_mandatory,
         csi_notes: this.csi_notes,

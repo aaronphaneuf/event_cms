@@ -11,7 +11,9 @@
                     {{ event.description }}
                     
                 </p>
-                <router-link :to="{ name: 'EditEvent', params: { id: '1'}}" class="button is-light">Edit</router-link>
+                 <router-link :to="editEventLink" class="button is-light">Edit</router-link>
+
+
             </div>
         </section>
         <div class="columns is-multiline">
@@ -225,6 +227,14 @@ export default {
             });
 
             return sums;
+        },
+
+        editEventLink() {
+      const EventID = this.$route.params.id;
+      return {
+        name: 'EditEvent',
+        params: { id: EventID }
+      };
         },
 
        statusLabel() {

@@ -26,6 +26,7 @@
   <div class="column is-12">
     <div class="box">
       <div class="column is-12">
+      <div class="table-container">
         <table class="table is-fullwidth is-striped is-hoverable">
           <thead>
             <tr>
@@ -41,12 +42,20 @@
                 <router-link :to="{ name: 'Event', params: { id: event.id}}">{{ event.name }}</router-link>
               </td>
               <td>{{ event.date_time.event_date }}</td>
-              <td><button class="button is-success is-light">On Sale</button></td>
+              <td> <div>
+    <button v-if="event && event.status === 'OS'" class="button is-primary is-light equal-width">On Sale</button>
+    <button v-else-if="event && event.status === 'P'" class="button is-info is-light equal-width">Pending</button>
+    <button v-else-if="event && event.status === 'S'" class="button is-warning is-light equal-width">Setup</button>
+    <button v-else-if="event && event.status === 'AN'" class="button is-danger is-light equal-width">Action Needed</button>
+    <button v-else-if="event && event.status === 'C'" class="button is-success is-light equal-width">Concluded</button>
+    <button v-else class="button equal-width">Unknown</button>
+  </div></td>
               <td>{{ dates[y] }}</td>
               <td></td>
             </tr>
           </tbody>
         </table>
+      </div>
       </div>
     </div>
   </div>

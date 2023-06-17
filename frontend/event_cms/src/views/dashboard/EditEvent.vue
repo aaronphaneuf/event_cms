@@ -1,15 +1,28 @@
 <template>
     <div class="container">
-        <div class="columns is-multiline">
-            <div class="column is-12">
-                <div class="box">
-                    <form @submit.prevent="submitForm">
+     <section class="hero">
+  
+            <div class="hero-body">
+            <div class="hero-overlay"></div>
+                <p class="title">
+                   Edit Event
+                </p>
+
+                <form @submit.prevent="submitForm">
                     <div class="field">
                             <div class="control">
-                                <button class="button is-primary">Submit</button>
+                                <button class="button is-light">Submit</button>
                             </div>
                         </div>
                         </form>
+            </div>
+
+        
+    </section>
+        <div class="columns is-multiline">
+            <div class="column is-12">
+                <div class="box">
+                    
                         <div class="field">
                             <label>Name</label>
                             <div class="control">
@@ -133,26 +146,29 @@
                                 <th>Held</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr v-for="slot in time_slots">
-                                <td>
-                                    <div class="select">
-                                        <select v-model="slot.time_range">
-                                            <option>{{slot.time_range}}</option>
-                                            <option v-for="choice in time_slot_choices">{{choice}}</option>
-                                        </select>
-                                    </div>
-                                </td>
-                                <td><input type="number" class="input" v-model="slot.capacity"></td>
-                                <td><input type="number" class="input" v-model="slot.held"></td>
-                            </tr>
-                            <tr><td><strong>Total</strong></td><td><strong>{{ capacity_held_total.capacity }}</strong></td><td><strong>{{ capacity_held_total.held }}</strong></td></tr>
-                            <div v-if="showError" class="notification is-danger">
-                                Capacity and held values do not match above in the 'Details' section.
-                            </div>
-                            
-                            
-                        </tbody>
+                       <tbody>
+    <tr v-for="(slot, index) in time_slots" :key="index">
+      <td>
+        <div class="select">
+          <select v-model="slot.time_range">
+            <option>{{ slot.time_range }}</option>
+            <option v-for="choice in time_slot_choices">{{ choice }}</option>
+          </select>
+        </div>
+      </td>
+      <td><input type="number" class="input" v-model="slot.capacity"></td>
+      <td><input type="number" class="input" v-model="slot.held"></td>
+      <td><button class="delete" @click="removeTimeSlot(index)"></button></td>
+    </tr>
+    <tr>
+      <td><strong>Total</strong></td>
+      <td><strong>{{ capacity_held_total.capacity }}</strong></td>
+      <td><strong>{{ capacity_held_total.held }}</strong></td>
+    </tr>
+    <div v-if="showError" class="notification is-danger">
+      Capacity and held values do not match above in the 'Details' section.
+    </div>
+  </tbody>
                     </table>
                     <div class="form-group">
                                 <button @click="addTimeSlot" type="button" class="button is-primary is-small">Add Time Slot</button>
@@ -164,115 +180,136 @@
                     <h2 class="subtitle">Pricing</h2>
                     <div class="table-container">
                         <table class="table is-fullwidth is-striped">
-                            <thead>
-                                <tr>
-                                    <th></th>
-                                    <th v-for="(column, columnIndex) in columns" :key="columnIndex">{{column}}</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr v-for="(record, rowIndex) in records" :key="rowIndex">
-                                    <td>{{record.name ? record.name : record.row}}</td>
-                                    <td v-for="(detail, index) in record.details" :key="index">
-                                        <input type="number" class="input" v-model="detail.value">
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td><strong>Total</strong></td>
-                                    <td v-for="(column, index) in columns" :key="index">
-                                        <strong>${{ columnSums[column] }}</strong>
-                                    </td>
-                                </tr>
-                            </tbody>
-                            <div class="select" style="display: inline-block; vertical-align: middle;" >
-                                <select v-model="selectedName">
-                                    <option v-for="name in all_pricelayers" :key="name" :value="name">{{ name }}</option>
-                                </select>
-                            </div>
-                            <div style="display: inline-block;">
-                                <button @click="addRow" class="button is-primary is-small">Add Price Layer</button>
-                            </div>
-                            <div class="select" style="display: inline-block; vertical-align: middle;">
-                                <select v-model="selectedColumn">
-                                    <option v-for="name in all_pricetypes" :key="name" :value="name">{{ name }}</option>
-                                </select>
-                            </div>
-                            <div style="display: inline-block;">
-                                <button @click="addColumn" class="button is-primary is-small">Add Price Type</button>
-                            </div>
-                            
-                        </table>
+  <thead>
+    <tr>
+      <th></th>
+      <th v-for="(column, columnIndex) in columns" :key="columnIndex">
+        {{ column }}
+        <button class="delete is-small" @click="removeColumn(columnIndex)"></button>
+      </th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr v-for="(record, rowIndex) in records" :key="rowIndex">
+      <td>
+        {{ record.name ? record.name : record.row }}
+      </td>
+      <td v-for="(detail, index) in record.details" :key="index">
+        <input type="number" class="input" v-model="detail.value">
+      </td>
+      <td>
+        <button class="delete is-small" @click="removeRow(rowIndex)"></button>
+      </td>
+    </tr>
+    <tr>
+      <td><strong>Total</strong></td>
+      <td v-for="(column, index) in columns" :key="index">
+        <strong>${{ columnSums[column] }}</strong>
+      </td>
+      <td></td>
+    </tr>
+  </tbody>
+  <div class="select" style="display: inline-block; vertical-align: middle;">
+    <select v-model="selectedName">
+      <option v-for="name in all_pricelayers" :key="name" :value="name">{{ name }}</option>
+    </select>
+  </div>
+  <div style="display: inline-block;">
+    <button @click="addRow" class="button is-primary is-small">Add Price Layer</button>
+  </div>
+  <div class="select" style="display: inline-block; vertical-align: middle;">
+    <select v-model="selectedColumn">
+      <option v-for="name in all_pricetypes" :key="name" :value="name">{{ name }}</option>
+    </select>
+  </div>
+  <div style="display: inline-block;">
+    <button @click="addColumn" class="button is-primary is-small">Add Price Type</button>
+  </div>
+</table>
+
                     </div>
                 </div>
             </div>
             <div class="column is-12">
                 <div class="box">
-                    <h2 class="subtitle">Discounts</h2>
-                    <div class="table-container">
-                    <table class="table is-fullwidth is-striped">
-                        <thead>
-                            <tr>
-                                <th>Price Type</th>
-                                <th>Discount</th>
-                                <th>Description</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        <tr v-for="slot in event.discount">
-                                <td>
-                                    <div class="select">
-                                        <select v-model="slot.price_type">
-                                            <option>{{slot.price_type}}</option>
-                                            <option v-for="choice in all_pricetypes">{{choice}}</option>
-                                        </select>
-                                    </div>
-                                </td>
-                                <td><input type="text" class="input" v-model="slot.discount"></td>
-                                <td><input type="text" class="input" v-model="slot.description"></td>
-                            </tr>
-                            
-                        </tbody>
-                    </table>
-                    <div class="form-group">
-                                <button @click="addDiscount" type="button" class="button is-primary is-small">Add Discount</button>
-                            </div>
-                </div>
-                </div>
+  <h2 class="subtitle">Discounts</h2>
+  <div class="table-container">
+    <table class="table is-fullwidth is-striped">
+      <thead>
+        <tr>
+          <th>Price Type</th>
+          <th>Discount</th>
+          <th>Description</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="(slot, index) in event.discount">
+          <td>
+            <div class="select">
+              <select v-model="slot.price_type">
+                <option>{{ slot.price_type }}</option>
+                <option v-for="choice in all_pricetypes">{{ choice }}</option>
+              </select>
+            </div>
+          </td>
+          <td><input type="text" class="input" v-model="slot.discount"></td>
+          <td><input type="text" class="input" v-model="slot.description"></td>
+          <td>
+            <button @click="removeDiscount(index)" class="delete is-small"></button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="form-group">
+      <button @click="addDiscount" type="button" class="button is-primary is-small">Add Discount</button>
+    </div>
+  </div>
+</div>
             </div>
             <div class="column is-12">
                 <div class="box">
-                    <h2 class="subtitle">GL Accounts</h2>
-                    <div class="table-container">
-                    <table class="table is-fullwidth is-striped">
-                        <thead>
-                            <tr>
-                                <th>Price Layer</th>
-                                <th>GL Account</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-for="acc in account">
-                                <td><div class="select">
-                                        <select v-model="acc.price_layer">
-                                            <option>{{acc.price_layer}}</option>
-                                            <option v-for="choice in all_pricelayers">{{choice}}</option>
-                                        </select>
-                                    </div></td>
-                                <td><div class="select">
-                                <select v-model="acc.account.gl_account">
-                                    <option v-if="acc.account">{{acc.account.gl_account}}</option>
-                                    <option v-for="choice in all_accounts">{{choice.gl_account}}</option>
-                                </select>
-                                </div></td>
-                            </tr>
-                           
-                        </tbody>
-                    </table>
-                     <div class="form-group">
-                                <button @click="addAccount" type="button" class="button is-primary is-small">Add Account</button>
-                            </div>
-                </div>
-                </div>
+  <h2 class="subtitle">GL Accounts</h2>
+  <div class="table-container">
+    <table class="table is-fullwidth is-striped">
+      <thead>
+        <tr>
+          <th>Price Layer</th>
+          <th>GL Account</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="(acc, index) in account">
+          <td>
+            <div class="select">
+              <select v-model="acc.price_layer">
+                <option>{{ acc.price_layer }}</option>
+                <option v-for="choice in all_pricelayers">{{ choice }}</option>
+              </select>
+            </div>
+          </td>
+          <td>
+            <div class="select">
+              <select v-model="acc.account.gl_account">
+                <option v-if="acc.account">{{ acc.account.gl_account }}</option>
+                <option v-for="choice in all_accounts">{{ choice.gl_account }}</option>
+              </select>
+            </div>
+          </td>
+          <td>
+            <button @click="removeAccount(index)" class="delete is-small"></button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="form-group">
+      <button @click="addAccount" type="button" class="button is-primary is-small">Add Account</button>
+    </div>
+  </div>
+</div>
+
             </div>
             <div class="column is-12">
                 <div class="box">
@@ -544,6 +581,10 @@ export default {
             this.event.discount.push({})
         },
 
+        removeDiscount(index) {
+  this.event.discount.splice(index, 1);
+},
+
         // Button to add an Account
         addAccount() {
   this.account.push({
@@ -552,12 +593,20 @@ export default {
   });
 },
 
+removeAccount(index) {
+  this.account.splice(index, 1);
+},
+
 
 
         // Button to add a time slot
         addTimeSlot() {
             this.time_slots.push({})
         },
+
+        removeTimeSlot(index) {
+      this.time_slots.splice(index, 1);
+    },
 
         // Button to add a time slot
 
@@ -584,6 +633,12 @@ export default {
             this.records.push(newRow);
         },
 
+        removeRow(rowIndex) {
+      this.records.splice(rowIndex, 1);
+    },
+
+    
+
 
         addColumn() {
             const newColumn = {
@@ -598,6 +653,13 @@ export default {
                 });
             });
         },
+
+        removeColumn(columnIndex) {
+      const removedColumn = this.columns.splice(columnIndex, 1);
+      this.records.forEach((record) => {
+        record.details.splice(columnIndex, 1);
+      });
+    },
 
 //         updateAccountFields(index) {
 //   const selectedFullName = this.account[index].account.full_name;
