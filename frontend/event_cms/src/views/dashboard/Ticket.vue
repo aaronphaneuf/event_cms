@@ -234,7 +234,7 @@ export default {
   },
   methods: {
     fetchTicket() {
-  axios.get(`http://localhost:8000/ticket_detail/${this.$route.params.id}`)
+  axios.get(`http://localhost:8000/api/v1/ticket_detail/${this.$route.params.id}`)
     .then(response => {
       this.ticket = response.data;
     })
