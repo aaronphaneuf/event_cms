@@ -66,7 +66,7 @@ class PriceSerializer(serializers.ModelSerializer):
 class TimeSlotSerializer(serializers.ModelSerializer):
   class Meta:
     model = TimeSlot
-    fields = ['event', 'time_range', 'capacity', 'held']
+    fields = ['time_range', 'capacity', 'held']
 
 class FacilitySerializer(serializers.ModelSerializer):
    class Meta:
@@ -150,7 +150,39 @@ class EventSerializer(serializers.ModelSerializer):
         DateTime.objects.create(event=event, **date_data)
         
         return event
-  
+
+class AddEventSerializer(serializers.ModelSerializer):
+    facility = serializers.PrimaryKeyRelatedField(queryset=Facility.objects.all())
+    location = serializers.PrimaryKeyRelatedField(queryset=Location.objects.all())
+    date_time = DateTimeSerializer()
+    timeslot_set = TimeSlotSerializer(many=True, write_only=True)
+    price_layer_price = PriceLayerPriceSerializer(many=True)
+    price_type = PriceTypeSerializer(many=True, read_only=True)
+    price_layer = PriceLayerSerializer(many=True, read_only=True)
+
+
+
+    class Meta:
+        model = Event
+        fields = ['name', 'description', 'capacity', 'held', 'entrance', 'gr_required', 'early_closure',
+                  'csi_needed', 'csi_mandatory', 'csi_notes', 'facility', 'location', 'date_time', 'timeslot_set', 
+                  'price_layer_price', 'price_type', 'price_layer']
+
+    def create(self, validated_data):
+        timeslot_data = validated_data.pop('timeslot_set')
+        date_data = validated_data.pop('date_time')
+
+        event = Event.objects.create(**validated_data)
+
+        # Create TimeSlot instances
+        timeslots = []
+        for timeslot in timeslot_data:
+            timeslot_obj = TimeSlot.objects.create(event=event, **timeslot)
+            timeslots.append(timeslot_obj)
+
+        DateTime.objects.create(event=event, **date_data)
+        return event
+
 
 class EditEventSerializer(serializers.ModelSerializer):
   timeslot_set = TimeSlotSerializer(many=True)
@@ -345,7 +377,7 @@ class EditEventSerializer(serializers.ModelSerializer):
 
 
         return instance
-  
+
 
 class SimpleDateTimeSerializer(serializers.ModelSerializer):
   class Meta:

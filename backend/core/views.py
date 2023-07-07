@@ -11,6 +11,10 @@ class EditEventViewSet(viewsets.ModelViewSet):
   queryset = Event.objects.all()
   serializer_class = EditEventSerializer
 
+class AddEventViewSet(viewsets.ModelViewSet):
+    queryset = Event.objects.all()
+    serializer_class = AddEventSerializer
+
 class SimpleEventViewSet(viewsets.ModelViewSet):
   queryset = Event.objects.all()
   serializer_class = SimpleEventSerializer

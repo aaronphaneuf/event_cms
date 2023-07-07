@@ -606,13 +606,59 @@ records: {
       
       this.$store.commit('setIsLoading', true)
 
-      	const payload2 =  
+      // Prepare the payload data for the new event
+      const payload = {
+        name: this.name,
+        description: this.description,
+        location: this.location,
+        facility: this.facility,
+        capacity: this.capacity,
+        held: this.held,
+        entrance: this.entrance,
+        gr_required: this.gr_required,
+        early_closure: this.early_closure,
+        csi_needed: this.csi_needed,
+        csi_mandatory: this.csi_mandatory,
+        csi_notes: this.csi_notes,
+        additional_notes: this.additional_notes,
+        website_link: this.website_link,
+        websales_link: this.websales_link,
+        date_time: {"event_date": this.event_date,
+                            "event_time": this.event_time,
+                            "event_end_time": this.event_end_time,
+                            "sell_date": this.sell_date.includes(":") ? this.sell_date : this.date.sell_date,
+                            "stop_date": this.stop_date.includes(":") ? this.stop_date : this.date.stop_date,
+                            "door_open": this.door_open,
+                            "door_close": this.door_close,
+                            "early_closure_time": this.early_closure_time,},
+        timeslot_set: this.time_slots, 
+        price_layer_price: this.new_price_layer_price,
+        discount: this.discounts,
+        account: this.account.map(item => {
+                    return {
+                        account: {
+                        gl_account: item.account.gl_account
+                        },
+                        price_layer: {
+                        name: item.price_layer
+                        }
+                    };
+                    }),
+        csi_needed: this.csi_needed,
+        csi_mandatory: this.csi_mandatory,
+        csi_notes: this.csi_notes,
+        additional_notes: this.additional_notes,
+        websales_link: this.websales_link,
+        website_link: this.website_link,
+        
+
+      };
+
+	const payload2 =  
 	{"name":"Test Event 1",
 	"description":"This is a test, so let's get lots of text here.",
-		//"location":{ "location_name" : "Zoo Grounds"},
-		//"facility":{ "facility_name" : "Zoo Events TT"},
-	location: 1,
-	facility: 1,
+	"location":"Zoo Grounds",
+	"facility":"Zoo Events TT",
 	"capacity":1000,
 	"held":500,"entrance":
 	"North Entrance",
@@ -630,7 +676,15 @@ records: {
 	"discount":[{"price_type":"Adult 18+","discount":"20% off","description":"2 tickets"}],"account":[{"account":{"gl_account":"01-43000-1223"},"price_layer":{"name":"Ticket"}}]}
      
 
-    
+      // Adjust 24:00 to 00:00 for sell_date
+    if (payload.date_time.sell_date && payload.date_time.sell_date.includes(" 24:00")) {
+    payload.date_time.sell_date = payload.date_time.sell_date.replace(" 24:00", " 00:00");
+    }
+
+    // Adjust 24:00 to 00:00 for stop_date
+    if (payload.date_time.stop_date && payload.date_time.stop_date.includes(" 24:00")) {
+    payload.date_time.stop_date = payload.date_time.stop_date.replace(" 24:00", " 00:00");
+    }
 
     // Delete these two blocks later along with payload2
      // Adjust 24:00 to 00:00 for sell_date
@@ -645,7 +699,7 @@ records: {
 
       try {
         console.log(JSON.stringify(payload2));
-        await axios.post('api/v1/addevent/', payload2)
+        await axios.post('api/v1/editevent/', payload2)
         // Handle the success case
         console.log('Event added successfully!')
         this.$store.commit('setIsLoading', false)
