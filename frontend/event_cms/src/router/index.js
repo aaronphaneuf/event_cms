@@ -10,6 +10,7 @@ import Event from '../views/dashboard/Event.vue'
 import AddEvent from '../views/dashboard/AddEvent.vue'
 import EditEvent from '../views/dashboard/EditEvent.vue'
 import Test from '../views/dashboard/Test.vue'
+import Ticket from '../views/dashboard/Ticket.vue'
 
 const routes = [
   {
@@ -76,6 +77,14 @@ const routes = [
   path: '/dashboard/test/:id',
   name: 'Test',
   component: Test,
+  meta: { 
+    requireLogin: true
+  }
+},
+{
+  path: '/dashboard/ticket/:id',
+  name: 'Ticket',
+  component: Ticket, 
   meta: { 
     requireLogin: true
   }

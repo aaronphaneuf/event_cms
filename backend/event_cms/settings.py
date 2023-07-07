@@ -60,6 +60,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'djoser',
     "core",
+    'ticket',
 ]
 
 MIDDLEWARE = [
