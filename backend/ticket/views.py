@@ -56,7 +56,7 @@ class TicketPDFView(APIView):
 
         # Define the layout
         layout = [
-            {'rows': 1, 'cols': [{'width': 0.75, 'image': 'staticfiles/images/zoo_logo.png'}, {'width': 0.25}], 'height': 0.10},
+            {'rows': 1, 'cols': [{'width': 0.75, 'image': 'static/images/zoo_logo.png'}, {'width': 0.25}], 'height': 0.10},
             {'rows': 1, 'cols': [{'width': 0.25}, {'width': 0.75}], 'height': 0.05},
             {'rows': 1, 'cols': [{'width': 0.10}, {'width': 0.40}, {'width': 0.10}, {'width': 0.40}], 'height': 0.05},
             {'rows': 1, 'cols': [{'width': 0.15}, {'width': 0.45}, {'width': 0.10}, {'width': 0.30}], 'height': 0.05},

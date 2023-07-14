@@ -1,8 +1,13 @@
 from django.db import models
 from core.models import Event
 
+class CustomTicketFields(models.Model):
+    name = models.CharField(max_length=255, blank=True)
+    value = models.CharField(max_length=255, blank=True)
+
 class Ticket(models.Model):
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
+    custom_fields = models.ManyToManyField(CustomTicketFields, blank=True)
     name = models.CharField(max_length=255, blank=True)
     date = models.CharField(max_length=255, blank=True)
     time = models.CharField(max_length=255, blank=True)

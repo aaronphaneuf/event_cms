@@ -245,7 +245,7 @@ export default {
     downloadPdf() {
       axios({
         method: 'get',
-        url: `http://localhost:8000/ticket_view/${this.$route.params.id}`,
+        url: `http://localhost:8000/api/v1/ticket_view/${this.$route.params.id}`,
         responseType: 'blob',
         params: this.ticket
       })
