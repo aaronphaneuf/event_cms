@@ -240,6 +240,7 @@ class AddEventSerializer(serializers.ModelSerializer):
               account_layer_instance.event.add(event)
 
           # now that you have an Event, you can add the related Discounts
+          
           for discount in discount_data:
               price_type_name = discount['price_type']
 
