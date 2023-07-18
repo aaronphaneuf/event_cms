@@ -626,8 +626,13 @@ records: {
 	"websales_link":"www.test2.com",
 	"date_time":{"event_date":"2023-08-31","event_time":"18:00","event_end_time":"21:05","sell_date":"2023-07-13 01:00","stop_date":"2023-08-24 00:00","door_open":"18:00","door_close":"21:00","early_closure_time":"15:00"},
 	"timeslot_set":[{"time_range":"6:00 - 6:30 PM","capacity":500,"held":250},{"time_range":"7:00 - 7:30 PM","capacity":500,"held":250}],
-	"price_layer_price":[{"price":43,"price_layer":{"name":"Ticket"},"price_type":{"name":"Adult 18+"}},{"price":24,"price_layer":{"name":"Ticket"},"price_type":{"name":"Engage General"}},{"price":19,"price_layer":{"name":"Ticket"},"price_type":{"name":"Engage General"}},{"price":30,"price_layer":{"name":"Food"},"price_type":{"name":"Adult 18+"}},{"price":30,"price_layer":{"name":"Food"},"price_type":{"name":"Engage General"}},{"price":30,"price_layer":{"name":"Food"},"price_type":{"name":"Engage General"}}],
-	"discount":[{"price_type":"Adult 18+","discount":"20% off","description":"2 tickets"}],"account":[{"account":{"gl_account":"01-43000-1223"},"price_layer":{"name":"Ticket"}}]}
+	"price_layer_price":[{"price":43,"price_layer":{"name":"Ticket Price"},"price_type":{"name":"Adult 18+"}},{"price":24,"price_layer":{"name":"Ticket Price"},"price_type":{"name":"Engage General"}},{"price":19,"price_layer":{"name":"Ticket Price"},"price_type":{"name":"Engage General"}},{"price":30,"price_layer":{"name":"Food"},"price_type":{"name":"Adult 18+"}},{"price":30,"price_layer":{"name":"Food"},"price_type":{"name":"Engage General"}},{"price":30,"price_layer":{"name":"Food"},"price_type":{"name":"Engage General"}}],
+	
+
+
+    "account":[{"gl_account":{"gl_account":"01-43000-1223"},"price_layer":{"name":"Ticket Price"}}],
+
+    "discount":[{"price_type": "Adult 18+","discount":"29% off","description":"2 tickets", "hey": 99} ],}
      
 
     

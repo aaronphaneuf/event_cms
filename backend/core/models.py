@@ -2,7 +2,7 @@ from django.db import models
 
 
 class PriceType(models.Model):
-    name = models.CharField(max_length=255) 
+    name = models.CharField(max_length=255, unique=True) 
 
     # Shows the name on the admin page and on the serializer page
     def __str__(self) -> str:
@@ -109,6 +109,7 @@ class PriceLayerPrice(models.Model):
     price_type = models.ForeignKey(PriceType, on_delete=models.PROTECT)
     price_layer = models.ForeignKey(PriceLayer, on_delete=models.PROTECT)
 
+
 class Price(models.Model):
     event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name='prices')
     price_type = models.ForeignKey(PriceType, on_delete=models.PROTECT)
@@ -118,6 +119,7 @@ class Price(models.Model):
     price_4 = models.FloatField()
     price_5 = models.FloatField()
     price_6 = models.FloatField()
+
 
 class GLAccount(models.Model):
     event = models.ManyToManyField(Event, related_name='gl_account')
@@ -138,6 +140,6 @@ class Account(models.Model):
     
 
 class AccountLayer(models.Model):
-    account = models.ForeignKey(Account, on_delete=models.CASCADE)
-    event = models.ForeignKey(Event,  on_delete=models.CASCADE, related_name='account')
+    gl_account = models.ForeignKey(Account, on_delete=models.CASCADE)
+    event = models.ManyToManyField(Event, related_name='account')
     price_layer = models.ForeignKey(PriceLayer, on_delete=models.CASCADE)

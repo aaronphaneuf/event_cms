@@ -1,6 +1,8 @@
 from rest_framework import serializers, generics
 from .models import *
 from datetime import datetime
+from django.db import transaction
+
 
 class AccountSerializer(serializers.ModelSerializer):
   class Meta:
@@ -17,7 +19,7 @@ class PriceTypeSerializer(serializers.ModelSerializer):
       return str(instance)
 
 class DiscountSerializer(serializers.ModelSerializer):
-  price_type = PriceTypeSerializer()
+  price_type = serializers.CharField()
   class Meta:
     model = Discount
     fields = ['price_type', 'discount', 'description']
@@ -45,10 +47,10 @@ class PriceLayerSerializer(serializers.ModelSerializer):
   
 class AccountLayerSerializer(serializers.ModelSerializer):
   price_layer = PriceLayerSerializer()
-  account = AccountSerializer()
+  gl_account = AccountSerializer()
   class Meta:
         model = AccountLayer
-        fields = ['account', 'price_layer']
+        fields = ['gl_account', 'price_layer']
 
 class PriceLayerPriceSerializer(serializers.ModelSerializer):
   price_type = PriceTypeSerializer()
@@ -117,11 +119,6 @@ class DateTimeSerializer(serializers.ModelSerializer):
     ]
    
 
-
-
-  
-    
-    
 class EventSerializer(serializers.ModelSerializer):
   timeslot_set = TimeSlotSerializer(many=True, read_only=True)
   date_time = DateTimeSerializer()
@@ -156,32 +153,114 @@ class AddEventSerializer(serializers.ModelSerializer):
     location = serializers.PrimaryKeyRelatedField(queryset=Location.objects.all())
     date_time = DateTimeSerializer()
     timeslot_set = TimeSlotSerializer(many=True, write_only=True)
-    price_layer_price = PriceLayerPriceSerializer(many=True)
-    price_type = PriceTypeSerializer(many=True, read_only=True)
-    price_layer = PriceLayerSerializer(many=True, read_only=True)
-
-
+    price_layer_price = serializers.ListSerializer(child=serializers.DictField(), write_only=True)
+    account = AccountLayerSerializer(many=True)
+    discount = DiscountSerializer(many=True)
 
     class Meta:
         model = Event
         fields = ['name', 'description', 'capacity', 'held', 'entrance', 'gr_required', 'early_closure',
-                  'csi_needed', 'csi_mandatory', 'csi_notes', 'facility', 'location', 'date_time', 'timeslot_set', 
-                  'price_layer_price', 'price_type', 'price_layer']
+                  'csi_needed', 'csi_mandatory', 'csi_notes', 'facility', 'location', 'date_time', 'timeslot_set',
+                  'price_layer_price', 'account', 'discount']
+
 
     def create(self, validated_data):
-        timeslot_data = validated_data.pop('timeslot_set')
-        date_data = validated_data.pop('date_time')
+      timeslot_data = validated_data.pop('timeslot_set')
+      date_data = validated_data.pop('date_time')
+      price_layer_price_data = validated_data.pop('price_layer_price')
+      account_layer_data = validated_data.pop('account')
+      discount_data = validated_data.pop('discount', [])  # remove the 'discount' field
+      event = Event.objects.create(**validated_data)
+    
 
-        event = Event.objects.create(**validated_data)
+      
 
-        # Create TimeSlot instances
-        timeslots = []
-        for timeslot in timeslot_data:
-            timeslot_obj = TimeSlot.objects.create(event=event, **timeslot)
-            timeslots.append(timeslot_obj)
 
-        DateTime.objects.create(event=event, **date_data)
-        return event
+      with transaction.atomic():
+
+
+          event = Event.objects.create(**validated_data)
+
+
+
+          # Create TimeSlot instances
+          for timeslot in timeslot_data:
+              TimeSlot.objects.create(event=event, **timeslot)
+
+          
+
+          DateTime.objects.create(event=event, **date_data)
+
+
+
+          # Create PriceLayerPrice instances
+          price_layer_prices = []
+          for price_layer_price in price_layer_price_data:
+              price_layer_name = price_layer_price['price_layer']['name']
+              price_type_name = price_layer_price['price_type']['name']
+
+              try:
+                  price_layer = PriceLayer.objects.get(name=price_layer_name)
+              except PriceLayer.DoesNotExist:
+                  raise serializers.ValidationError(f"PriceLayer '{price_layer_name}' does not exist.")
+
+              # Check if PriceType already exists
+              try:
+                  price_type = PriceType.objects.get(name=price_type_name)
+              except PriceType.DoesNotExist:
+                  # Create a new PriceType if it doesn't exist
+                  price_type = PriceType.objects.create(name=price_type_name)
+
+              price_layer_price_instance = PriceLayerPrice.objects.create(
+                  event=event,
+                  price=price_layer_price['price'],
+                  price_layer=price_layer,
+                  price_type=price_type
+              )
+              price_layer_prices.append(price_layer_price_instance)
+
+          event.price_layer_price.set(price_layer_prices)
+
+
+
+          # Create AccountLayer instances
+          for account_layer in account_layer_data:
+              account_data = account_layer['gl_account']
+              price_layer_data = account_layer['price_layer']
+              price_layer_name = price_layer_data['name']
+
+              account, created = Account.objects.get_or_create(gl_account=account_data['gl_account'])
+
+              try:
+                  price_layer = PriceLayer.objects.get(name=price_layer_name)
+              except PriceLayer.DoesNotExist:
+                  raise serializers.ValidationError(f"PriceLayer '{price_layer_name}' does not exist.")
+
+              account_layer_instance = AccountLayer.objects.create(gl_account=account, price_layer=price_layer)
+              account_layer_instance.event.add(event)
+
+          # now that you have an Event, you can add the related Discounts
+          for discount in discount_data:
+              price_type_name = discount['price_type']
+
+              try:
+                  price_type = PriceType.objects.get(name=price_type_name)
+              except PriceType.DoesNotExist:
+                  raise serializers.ValidationError(f"PriceType '{price_type_name}' does not exist.")
+
+              Discount.objects.create(
+                  event=event,
+                  price_type=price_type,
+                  discount=discount['discount'],
+                  description=discount['description']
+              )
+          return event
+
+
+
+      return event
+
+
 
 
 class EditEventSerializer(serializers.ModelSerializer):
@@ -366,16 +445,6 @@ class EditEventSerializer(serializers.ModelSerializer):
                         account_layer.price_layer = price_layer
                         account_layer.save()
 
-
-
-
-
-
-
-
-
-
-
         return instance
 
 
@@ -389,6 +458,3 @@ class SimpleEventSerializer(serializers.ModelSerializer):
   class Meta:
     model = Event
     fields = ['id', 'name', 'date_time', 'status']
-
-
-
