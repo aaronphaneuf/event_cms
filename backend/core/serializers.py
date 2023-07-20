@@ -24,12 +24,6 @@ class DiscountSerializer(serializers.ModelSerializer):
     model = Discount
     fields = ['price_type', 'discount', 'description']
 
-class GLAccountSerializer(serializers.ModelSerializer):
-  price_layer = serializers.StringRelatedField()
-  class Meta:
-    model = GLAccount
-    fields = ['price_layer', 'gl_account', 'description']
-
 class LocationSerializer(serializers.ModelSerializer):
   class Meta:
     model = Location
@@ -123,12 +117,9 @@ class EventSerializer(serializers.ModelSerializer):
   timeslot_set = TimeSlotSerializer(many=True, read_only=True)
   date_time = DateTimeSerializer()
   price_layer_price = PriceLayerPriceSerializer(many=True, read_only=True)
-  gl_account = GLAccountSerializer(many=True, read_only=True)
+  account = AccountLayerSerializer(many=True, read_only=True)
   discount = DiscountSerializer(many=True, read_only=True)
   prices = PriceSerializer(many=True)
-  
-  #all_facilities = FacilitySerializer(many=True, read_only=True, source="all_options")
-  #facility = serializers.PrimaryKeyRelatedField(queryset=Facility.objects.all())
   facility = FacilitySerializer()
   location = LocationSerializer()
   price_type = PriceTypeSerializer(many=True, read_only=True)
@@ -138,7 +129,7 @@ class EventSerializer(serializers.ModelSerializer):
     
     fields = ['id', 'name', 'description', 'capacity', 'held', 'entrance', 'gr_required', 'early_closure', 'csi_needed', 'csi_mandatory', 'csi_notes', 'facility',
               'location', 'date_time', 'timeslot_set', 'price_type', 'price_layer', 'price_layer_price', 'status', 'website_link', 'websales_link',
-              'gl_account', 'discount', 'additional_notes', 'prices', 'price_layer_price']
+              'discount', 'additional_notes', 'prices', 'price_layer_price', 'account']
     
   def create(self, validated_data):
         date_data = validated_data.pop('date_time')
@@ -268,11 +259,9 @@ class EditEventSerializer(serializers.ModelSerializer):
   timeslot_set = TimeSlotSerializer(many=True)
   date_time = DateTimeSerializer()
   price_layer_price = PriceLayerPriceSerializer(many=True)
-  gl_account = GLAccountSerializer(many=True, read_only=True)
   discount = DiscountSerializer(many=True)
 
   
-  #account = AccountLayerSerializer(many=True)
   account = AccountLayerSerializer(many=True)
   
   
@@ -288,7 +277,7 @@ class EditEventSerializer(serializers.ModelSerializer):
     
     fields = ['id', 'name', 'description', 'capacity', 'held', 'entrance', 'gr_required', 'early_closure', 'csi_needed', 'csi_mandatory', 'csi_notes', 
               'location', 'date_time', 'timeslot_set', 'price_type', 'price_layer', 'price_layer_price', 'status', 'website_link', 'websales_link', 'facility',
-              'gl_account', 'discount', 'additional_notes', 'account',] #'account_layer_set']
+              'discount', 'additional_notes', 'account',] #'account_layer_set']
     
     
   def create(self, validated_data):

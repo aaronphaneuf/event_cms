@@ -121,14 +121,12 @@
                             <tr>
                                 <th>Price Layer</th>
                                 <th>GL Account</th>
-                                <th>Description</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="account in event.gl_account">
+                            <tr v-for="account in event.account">
                                 <td>{{account.price_layer}}</td>
-                                <td>{{account.gl_account }}</td>
-                                <td>{{account.description }}</td>
+                                <td>{{account.gl_account.gl_account }}</td>
                             </tr>
                         </tbody>
                     </table>

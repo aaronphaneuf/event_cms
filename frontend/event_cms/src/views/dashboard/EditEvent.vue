@@ -292,8 +292,8 @@
           </td>
           <td>
             <div class="select">
-              <select v-model="acc.account.gl_account">
-                <option v-if="acc.account">{{ acc.account.gl_account }}</option>
+              <select v-model="acc.gl_account.gl_account">
+                <option v-if="acc.gl_account.gl_account">{{ acc.gl_account.gl_account }}</option>
                 <option v-for="choice in all_accounts">{{ choice.gl_account }}</option>
               </select>
             </div>
@@ -303,7 +303,7 @@
           </td>
         </tr>
       </tbody>
-    </table>
+   </table> 
     <div class="form-group">
       <button @click="addAccount" type="button" class="button is-primary is-small">Add Account</button>
     </div>
@@ -588,7 +588,7 @@ export default {
         // Button to add an Account
         addAccount() {
   this.account.push({
-    account: { gl_account: ''},
+    gl_account: { gl_account: ''},
     price_layer: ''
   });
 },

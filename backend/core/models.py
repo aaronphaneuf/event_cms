@@ -121,12 +121,9 @@ class Price(models.Model):
     price_6 = models.FloatField()
 
 
-class GLAccount(models.Model):
-    event = models.ManyToManyField(Event, related_name='gl_account')
-    price_layer = models.ForeignKey(PriceLayer, on_delete=models.PROTECT)
+class Account(models.Model):
     gl_account = models.CharField(max_length=255)
-    description = models.CharField(max_length=255)
-
+ 
 
 class Discount(models.Model):
     event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name='discount')
@@ -134,10 +131,6 @@ class Discount(models.Model):
     discount = models.CharField(max_length=255)
     description = models.CharField(max_length=255)
 
-
-class Account(models.Model):
-    gl_account = models.CharField(max_length=255)
-    
 
 class AccountLayer(models.Model):
     gl_account = models.ForeignKey(Account, on_delete=models.CASCADE)
