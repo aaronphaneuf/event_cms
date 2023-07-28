@@ -509,6 +509,16 @@ computed: {
         return sums;
     },
 
+   editEventLink() {
+      const EventID = this.$route.params.id;
+      return {
+        name: 'EditEvent',
+        params: { id: EventID }
+      };
+        },
+
+
+
 },
 
 methods: {
@@ -933,8 +943,8 @@ removeAccount(index) {
 
                 account: this.event.account.map(item => {
                     return {
-                        account: {
-                        gl_account: item.account.gl_account
+                       account: {
+                        gl_account: item.gl_account
                         },
                         price_layer: {
                         name: item.price_layer
@@ -942,33 +952,12 @@ removeAccount(index) {
                     };
                     }),
 
-                
-
-                
-
-                
-
-
-                
-        //         discount: [
-        // {
-        //     "price_type": {"name": "Adult 18+"},
-        //     "discount": "50%",
-        //     "description": "2 Tickets"
-        // },
-        // {
-        //     "price_type": {"name": "Child (3-15)"},
-        //     "discount": "50%",
-        //     "description": "2 Tickets"
-        // }]
-    
-
             }
-            //console.log(JSON.stringify(payload));
+            console.log(JSON.stringify(payload));
             this.$store.commit('setIsLoading', true);
             await axios
                 
-                .patch('/api/v1/editevent/1/', payload)
+                .patch('/api/v1/editevent/3/', payload)
                 .then(response => {
                     console.log(response)
                     this.$store.commit('setIsLoading', false)

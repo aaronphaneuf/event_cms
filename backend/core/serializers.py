@@ -18,11 +18,38 @@ class PriceTypeSerializer(serializers.ModelSerializer):
   def to_representation(self, instance):
       return str(instance)
 
+class EditPriceTypeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PriceType
+        fields = ['name']
+
+    def to_internal_value(self, data):
+        if isinstance(data, dict) and 'name' in data:
+            name = data['name']
+            try:
+                # Retrieve the existing PriceType instance from the database based on the provided name
+                return PriceType.objects.get(name=name)
+            except PriceType.DoesNotExist:
+                raise serializers.ValidationError(f"PriceType '{name}' does not exist.")
+        return super().to_internal_value(data)
+
+    def to_representation(self, instance):
+        return str(instance)
+
+
 class DiscountSerializer(serializers.ModelSerializer):
   price_type = serializers.CharField()
   class Meta:
     model = Discount
     fields = ['price_type', 'discount', 'description']
+
+# Because DiscountSerializer doesn't work with EditEventSerializer, declaring a new one
+
+class EditDiscountSerializer(serializers.ModelSerializer):
+    price_type = EditPriceTypeSerializer()
+    class Meta:
+        model = Discount
+        fields = ['price_type', 'discount', 'description']
 
 class LocationSerializer(serializers.ModelSerializer):
   class Meta:
@@ -53,6 +80,13 @@ class PriceLayerPriceSerializer(serializers.ModelSerializer):
     model = PriceLayerPrice
     fields = ['price_type', 'price_layer', 'price']
 
+class EditPriceLayerPriceSerializer(serializers.ModelSerializer):
+    price_type = EditPriceTypeSerializer()
+    price_layer = PriceLayerSerializer()
+    class Meta:
+        model = PriceLayerPrice
+        fields = ['price_type', 'price_layer', 'price']
+    
 class PriceSerializer(serializers.ModelSerializer):
   price_type = serializers.StringRelatedField()
   class Meta:
@@ -168,7 +202,7 @@ class AddEventSerializer(serializers.ModelSerializer):
 
 
       with transaction.atomic():
-
+                            
 
           event = Event.objects.create(**validated_data)
 
@@ -256,43 +290,38 @@ class AddEventSerializer(serializers.ModelSerializer):
 
 
 class EditEventSerializer(serializers.ModelSerializer):
-  timeslot_set = TimeSlotSerializer(many=True)
-  date_time = DateTimeSerializer()
-  price_layer_price = PriceLayerPriceSerializer(many=True)
-  discount = DiscountSerializer(many=True)
-
-  
-  account = AccountLayerSerializer(many=True)
-  
-  
-  price_type = PriceTypeSerializer(many=True, read_only=True)
-  price_layer = PriceLayerSerializer(many=True, read_only=True)
-
-  location = serializers.CharField(source='location.location_name')
-  facility = serializers.CharField(source='facility.facility_name')
+    print('this is getting called')
+    timeslot_set = TimeSlotSerializer(many=True)
+    date_time = DateTimeSerializer()
+    price_layer_price = EditPriceLayerPriceSerializer(many=True)
+    #price_layer_price = serializers.ListSerializer(child=serializers.DictField())
+    discount = EditDiscountSerializer(many=True)
+    account = AccountLayerSerializer(many=True)
+    price_type = EditPriceTypeSerializer(many=True, read_only=True)
+    price_layer = PriceLayerSerializer(many=True, read_only=True)
+    location = serializers.CharField(source='location.location_name')
+    facility = serializers.CharField(source='facility.facility_name')
  
-  class Meta:
-    model = Event
+    class Meta:
+        model = Event
+        fields = ['id', 'name', 'description', 'capacity', 'held', 'entrance', 'gr_required', 'early_closure', 'csi_needed', 'csi_mandatory', 'csi_notes', 
+                'location', 'date_time', 'timeslot_set', 'price_type', 'price_layer',  'status', 'website_link', 'websales_link', 'facility',
+                'discount', 'additional_notes', 'account', 'price_layer_price'] #'account_layer_set']
     
-    
-    fields = ['id', 'name', 'description', 'capacity', 'held', 'entrance', 'gr_required', 'early_closure', 'csi_needed', 'csi_mandatory', 'csi_notes', 
-              'location', 'date_time', 'timeslot_set', 'price_type', 'price_layer', 'price_layer_price', 'status', 'website_link', 'websales_link', 'facility',
-              'discount', 'additional_notes', 'account',] #'account_layer_set']
-    
-    
-  def create(self, validated_data):
-        date_data = validated_data.pop('date_time')
-        event = Event.objects.create(**validated_data)
-        # The event must be created first since the foreign key lives on the DateTime model. We need an event to insert. 
-        DateTime.objects.create(event=event, **date_data)
-        return event
+    def create(self, validated_data):
+            date_data = validated_data.pop('date_time')
+            event = Event.objects.create(**validated_data)
+            # The event must be created first since the foreign key lives on the DateTime model. We need an event to insert. 
+            DateTime.objects.create(event=event, **date_data)
+            return event
   
 
-  def get_date_time(self, obj):
-        return {'event_date': obj.date_time.strftime('%Y-%m-%d %H:%M:%S')}
+    def get_date_time(self, obj):
+            return {'event_date': obj.date_time.strftime('%Y-%m-%d %H:%M:%S')}
 
-  def update(self, instance, validated_data):
-        
+
+    def update(self, instance, validated_data):
+        print('This is getting called')
         instance.name = validated_data.get('name', instance.name)
         instance.description = validated_data.get('description', instance.description)
         instance.capacity = validated_data.get('capacity', instance.capacity)
@@ -330,27 +359,12 @@ class EditEventSerializer(serializers.ModelSerializer):
                     setattr(instance.date_time, field_name, field_value)
             instance.date_time.save()
 
-        # Update the TimeSlot model
-        timeslot_set_data = validated_data.get('timeslot_set')
-        if timeslot_set_data:
-            for timeslot_data in timeslot_set_data:
-                time_range = timeslot_data['time_range']
-                try:
-                    # Try to get an existing TimeSlot object with the same time_range
-                    timeslot = instance.timeslot_set.get(time_range=time_range)
-                except TimeSlot.DoesNotExist:
-                    # If no existing object was found, create a new one
-                    timeslot = TimeSlot(event=instance, time_range=time_range)
-                # Update the capacity and held fields of the TimeSlot object
-                timeslot.capacity = timeslot_data['capacity']
-                timeslot.held = timeslot_data['held']
-                timeslot.save()
-        
-    # Update the PriceLayer, PriceType, and PriceLayerPrice models
+
+        # Update the PriceLayer, PriceType, and PriceLayerPrice models
         price_layer_price_set_data = validated_data.get('price_layer_price')
         if price_layer_price_set_data:
             for price_layer_price_data in price_layer_price_set_data:
-                price_type_name = price_layer_price_data['price_type']['name']
+                price_type_name = price_layer_price_data['price_type'].name
                 price_layer_name = price_layer_price_data['price_layer']['name']
                 try:
                     # Try to get an existing PriceType object with the same name
@@ -383,10 +397,13 @@ class EditEventSerializer(serializers.ModelSerializer):
                     price_layer_price.delete()
 
         discount_data = validated_data.get('discount')
+        print(discount_data)
         if discount_data:
             for discount in discount_data:
-                price_type_data = discount.get('price_type')
-                price_type_name = price_type_data.get('name')
+
+                price_type_name = discount.get('price_type')
+                #price_type_name = price_type_data.get('name')
+                #price_type_name = price_type_data['price_type'].name
                 try:
                     # Try to get an existing PriceType object with the same name
                     price_type = PriceType.objects.get(name=price_type_name)
@@ -434,7 +451,9 @@ class EditEventSerializer(serializers.ModelSerializer):
                         price_layer = PriceLayer.objects.get(name=price_layer_name)
                         account_layer.price_layer = price_layer
                         account_layer.save()
-
+        
+                     
+        instance.save()
         return instance
 
 

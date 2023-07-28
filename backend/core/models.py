@@ -75,12 +75,12 @@ class Event(models.Model):
     csi_needed = models.CharField(max_length=3, choices=YES_OR_NO_CHOICES, default='NO_CHOICE')
     csi_mandatory = models.CharField(max_length=3, choices=YES_OR_NO_CHOICES, default='NO_CHOICE')
     csi_notes = models.TextField()
-    additional_notes = models.TextField()
+    additional_notes = models.TextField(blank=True)
     facility = models.ForeignKey(Facility, on_delete=models.PROTECT, null=True)
     location = models.ForeignKey(Location, on_delete=models.PROTECT, null=True)
     status = models.CharField(max_length=2, choices=STATUS_CHOICES, default='STATUS_PENDING')
-    website_link = models.CharField(max_length=255)
-    websales_link = models.CharField(max_length=255)
+    website_link = models.CharField(max_length=255, blank=True)
+    websales_link = models.CharField(max_length=255, blank=True)
 
 class DateTime(models.Model):
     event = models.OneToOneField(Event, on_delete=models.CASCADE, primary_key=True, related_name='date_time') # related_name allows us to reference this in the reverse relationship.
