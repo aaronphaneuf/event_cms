@@ -32,15 +32,24 @@ class TicketDetailView(APIView):
 
 class TicketPDFView(APIView):
     def get(self, request, *args, **kwargs):
+        # .get('field', 'default')
         ticket_number = request.GET.get('ticket_number', '00')  
-        event_name = request.GET.get('event_name', '00')# Replace 'default_value' with what you want to use if no ticket_number is provided
+        name = request.GET.get('name', '00')
         date = request.GET.get('date', '00') 
         time = request.GET.get('time', '00')
-        price_type = request.GET.get('price_type', '00')
+        ticket_type = request.GET.get('ticket_type', '00')
         price = request.GET.get('price', '00')
         order_number = request.GET.get('order_number', '00')
         order_date = request.GET.get('order_date', '00')
+        location = request.GET.get('location', '00')
+        custom_1 = request.GET.get('custom_1', '00')
+        barcode = request.GET.get('barcode', '00')
         text_field_1 = request.GET.get('text_field_1', '00')
+        text_field_2 = request.GET.get('text_field_2', '00')
+        text_field_3 = request.GET.get('text_field_3', '00')
+        text_field_4 = request.GET.get('text_field_4', '00')
+        text_field_5 = request.GET.get('text_field_5', '00')
+
         # Create a file-like buffer to receive PDF data.
         buffer = io.BytesIO()
 
@@ -57,15 +66,23 @@ class TicketPDFView(APIView):
         # Define the layout
         layout = [
             {'rows': 1, 'cols': [{'width': 0.75, 'image': 'static/images/zoo_logo.png'}, {'width': 0.25}], 'height': 0.10},
-            {'rows': 1, 'cols': [{'width': 0.25}, {'width': 0.75}], 'height': 0.05},
-            {'rows': 1, 'cols': [{'width': 0.10}, {'width': 0.40}, {'width': 0.10}, {'width': 0.40}], 'height': 0.05},
-            {'rows': 1, 'cols': [{'width': 0.15}, {'width': 0.45}, {'width': 0.10}, {'width': 0.30}], 'height': 0.05},
-            {'rows': 1, 'cols': [{'width': 0.15}, {'width': 0.35}, {'width': 0.15}, {'width': 0.35}], 'height': 0.05},
+            {'rows': 1, 'cols': [{'width': 0.25}, {'width': 0.75}], 'height': 0.04},
+            {'rows': 1, 'cols': [{'width': 0.10}, {'width': 0.40}, {'width': 0.10}, {'width': 0.40}], 'height': 0.04},
+            {'rows': 1, 'cols': [{'width': 0.15}, {'width': 0.45}, {'width': 0.10}, {'width': 0.30}], 'height': 0.04},
+            {'rows': 1, 'cols': [{'width': 0.15}, {'width': 0.35}, {'width': 0.15}, {'width': 0.35}], 'height': 0.04},
+            {'rows': 1, 'cols': [{'width': 0.15}, {'width': 0.35}, {'width': 0.15}, {'width': 0.35}], 'height': 0.04},
             {'rows': 1, 'cols': [{'width': 1}], 'height': 0.10},
-            {'rows': 1, 'cols': [{'width': 1}], 'height': 0.10},
+            {'rows': 1, 'cols': [{'width': 1}], 'height': 0.05},
+            {'rows': 1, 'cols': [{'width': 1}], 'height': 0.06},
+            {'rows': 1, 'cols': [{'width': 1}], 'height': 0.30},
+            {'rows': 1, 'cols': [{'width': 1}], 'height': 0.04},
+            {'rows': 1, 'cols': [{'width': 1}], 'height': 0.15},
         ]
 
+        # Variable definitions
         zoo_blue = colors.Color(red=(0.0/255), green=(159.0/255), blue=(223.0/255))
+
+        box_height = 22.094488188976385
 
         # Initialize the y-coordinate
         y = A4[1]
@@ -105,7 +122,7 @@ class TicketPDFView(APIView):
 
                     c.drawImage(image_path, x_position, y_position, width=desired_width, height=desired_height, preserveAspectRatio=True)
 
-                # Writing text in the first column of the second row
+                # Writing text in the second column of the first row
                 if section_index == 0 and col_index == 1:
                     text = 'The Calgary Zoological Society<br />1300 Zoo Road NE<br />Calgary, AB T2E 7V6<br /><u><font color="blue"><link href="http://www.calgaryzoo.com">www.calgaryzoo.com</link></font></u>'
                     style = ParagraphStyle(name='Text', fontSize=8, leading=14, textColor='black', allowWidows=1, allowOrphans=1,
@@ -121,58 +138,116 @@ class TicketPDFView(APIView):
                 # Adding a text box in the second column of the second row
                 if section_index == 1 and col_index == 1:
                     form = c.acroForm
-                    form.textfield(name=event_name, fillColor=zoo_blue, x=x + 10, y=y + 10, width=cell_width - 20, height=cell_height - 20)
+                    form.textfield(name=name, fillColor=zoo_blue, x=x + 10, y=y + 10, width=cell_width - 20, height=box_height)
 
                 if section_index == 2 and col_index == 0:
                     c.drawString(x + 10, (y + cell_height / 2) - 5, 'Date : ')
 
                 if section_index == 2 and col_index == 1:
                     form = c.acroForm
-                    form.textfield(name=date, fillColor=zoo_blue, x=x + 10, y=y + 10, width=cell_width - 20, height=cell_height - 20)
+                    form.textfield(name=date, fillColor=zoo_blue, x=x + 10, y=y + 10, width=cell_width - 20, height=box_height)
 
                 if section_index == 2 and col_index == 2:
                     c.drawString(x + 10, (y + cell_height / 2) - 5, 'Time : ')
 
                 if section_index == 2 and col_index == 3:
                     form = c.acroForm
-                    form.textfield(name=time, fillColor=zoo_blue, x=x + 10, y=y + 10, width=cell_width - 20, height=cell_height - 20)
+                    form.textfield(name=time, fillColor=zoo_blue, x=x + 10, y=y + 10, width=cell_width - 20, height=box_height)
 
                 if section_index == 3 and col_index == 0:
                     c.drawString(x + 10, (y + cell_height / 2) - 5, 'Price Type : ')
 
                 if section_index == 3 and col_index == 1:
                     form = c.acroForm
-                    form.textfield(name=price_type, fillColor=zoo_blue, x=x + 10, y=y + 10, width=cell_width - 20, height=cell_height - 20)
+                    form.textfield(name=ticket_type, fillColor=zoo_blue, x=x + 10, y=y + 10, width=cell_width - 20, height=box_height)
 
                 if section_index == 3 and col_index == 2:
                     c.drawString(x + 10, (y + cell_height / 2) - 5, 'Price : ')
 
                 if section_index == 3 and col_index == 3:
                     form = c.acroForm
-                    form.textfield(name=price, fillColor=zoo_blue, x=x + 10, y=y + 10, width=cell_width - 20, height=cell_height - 20)
+                    form.textfield(name=price, fillColor=zoo_blue, x=x + 10, y=y + 10, width=cell_width - 20, height=box_height)
 
                 if section_index == 4 and col_index == 0:
-                    c.drawString(x + 10, (y + cell_height / 2) - 5, 'Order # : ')
+                    c.drawString(x + 10, (y + cell_height / 2) - 5, 'Order Date :')
 
                 if section_index == 4 and col_index == 1:
                     form = c.acroForm
-                    form.textfield(name=order_number, fillColor=zoo_blue, x=x + 10, y=y + 10, width=cell_width - 20, height=cell_height - 20)
+                    form.textfield(name=order_date, fillColor=zoo_blue, x=x + 10, y=y + 10, width=cell_width - 20, height=box_height)
 
                 if section_index == 4 and col_index == 2:
-                    c.drawString(x + 10, (y + cell_height / 2) - 5, 'Order Date :')
+                    c.drawString(x + 10, (y + cell_height / 2) - 5, 'Order # :')
 
                 if section_index == 4 and col_index == 3:
                     form = c.acroForm
-                    form.textfield(name=order_date, fillColor=zoo_blue, x=x + 10, y=y + 10, width=cell_width - 20, height=cell_height - 20)
+                    form.textfield(name=order_number, fillColor=zoo_blue, x=x + 10, y=y + 10, width=cell_width - 20, height=box_height)
 
+                if section_index == 5 and col_index == 0:
+                    c.drawString(x + 10, (y + cell_height / 2) - 5, 'Location : ')
+            
+                if section_index == 5 and col_index == 1:
+                    form = c.acroForm
+                    form.textfield(name=location, fillColor=zoo_blue, x=x + 6, y=y + 6, width=cell_width - 20, height=box_height)
+                    
+                if section_index == 5 and col_index == 2:
+                    if custom_1 == "":
+                        pass
+                    else:
+                        c.drawString(x + 10, (y + cell_height / 2) - 5, custom_1.split(',')[0])
+                    
+                if section_index == 5 and col_index == 3:
+                    if custom_1 == "":
+                        pass
+                    else:
+                        form = c.acroForm
+                        form.textfield(name=custom_1.split(',')[1], fillColor=zoo_blue, x=x + 10, y=y + 6, width=cell_width - 20, height=box_height)
+                    
                 if section_index == 6 and col_index == 0:
+                    form = c.acroForm
+                    form.textfield(name=barcode, fillColor=zoo_blue, x=x + 10, y=y + 6, width=cell_width - 20, height=box_height*3)
+
+                if section_index == 7 and col_index == 0:
                     text = text_field_1
-                    #text = 'This ticket is valid for ONE (1) entry to the Member only access to WildScapes at the Wilder Institute/Calgary Zoo for the specific date and time listed above. The Last entry will be at 12:00 pm'
+                    style = ParagraphStyle(name='Text', fontSize=9, leading=14, textColor='black', allowWidows=1, allowOrphans=1,
+                                           alignment=1, vAlign='TOP')
+                    p = Paragraph(text, style)
+                    p.wrap(cell_width - 20, cell_height - 20)
+                    p.drawOn(c, x + 10, y + cell_height - p.height)
+            
+                if section_index == 8 and col_index == 0:
+                    text = text_field_2
+                    style = ParagraphStyle(name='Text', fontSize=9, leading=14, textColor='black', allowWidows=1, allowOrphans=1,
+                                           alignment=1, vAlign='TOP')
+                    p = Paragraph(text, style)
+                    p.wrap(cell_width - 20, cell_height - 20)
+                    p.drawOn(c, x + 10, y + cell_height - p.height)
+                    
+            
+                if section_index == 9 and col_index == 0:
+                    text = text_field_3
+                    style = ParagraphStyle(name='Text', fontSize=9, leading=14, textColor='black', allowWidows=1, allowOrphans=1,
+                                           alignment=0, vAlign='TOP', fontName='Helvetica')
+                    p = Paragraph(text, style)
+                    p.wrap(cell_width - 20 , cell_height - 20)
+                    p.drawOn(c, x+10, y)
+                    
+            
+                if section_index == 10 and col_index == 0:
+                    text = text_field_4 + """<br /> __________________________________________________________________________"""
                     style = ParagraphStyle(name='Text', fontSize=9, leading=14, textColor='black', allowWidows=1, allowOrphans=1,
                                            alignment=1, vAlign='TOP')
                     p = Paragraph(text, style)
                     p.wrap(cell_width - 20, cell_height - 20)
                     p.drawOn(c, x + 10, y + cell_height - p.height - 10)
+                    
+            
+                if section_index == 11 and col_index == 0:
+                    text = text_field_5
+                    style = ParagraphStyle(name='Text', fontSize=9, leading=14, textColor='black', allowWidows=1, allowOrphans=1,
+                                           alignment=0, vAlign='TOP')
+                    p = Paragraph(text, style)
+                    p.wrap(cell_width - 20, cell_height - 20)
+                    p.drawOn(c, x + 10, y + cell_height - p.height- 20)
 
                 x += cell_width  # Move to the right by one cell
 

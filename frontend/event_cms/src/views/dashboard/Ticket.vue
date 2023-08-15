@@ -23,7 +23,7 @@
   <div class="column">
     <div class="field">
       <div class="control">
-        <input class="input is-fullwidth" v-model="ticket.name" type="number" placeholder="Enter ticket number">
+        <input class="input is-fullwidth" v-model="ticket.name" type="text" placeholder="Enter ticket number">
       </div>
     </div>
   </div>
@@ -151,7 +151,31 @@
       </div>
     </td>
     </tr>
+
+
     <tr>
+                      <td colspan="2">
+                        <div class="columns is-vcentered">
+  <div class="column is-narrow">
+    <strong class="ticket-label">Barcode:</strong>
+  </div>
+  <div class="column">
+    <div class="field">
+      <div class="control">
+        <input class="input is-fullwidth" v-model="ticket.barcode" type="number" placeholder="Enter ticket number">
+      </div>
+    </div>
+  </div>
+</div>
+                      </td>
+                      <td></td>
+                    </tr>
+    <tr>
+
+
+
+
+
     <td colspan="2">
     <div class="column">
   <strong>Text Field 1:</strong>
@@ -194,6 +218,39 @@
 </td>
     </tr>
 
+    <tr>
+    <td colspan="2">
+    <div class="column">
+  <strong>Text Field 4:</strong>
+</div>
+<div class="column">
+  <div class="field">
+    <div class="control">
+      <textarea class="textarea" v-model="ticket.text_field_4" placeholder="Enter text"></textarea>
+    </div>
+  </div>
+</div>
+</td>
+    </tr>
+
+    <tr>
+    <td colspan="2">
+    <div class="column">
+  <strong>Text Field 5:</strong>
+</div>
+<div class="column">
+  <div class="field">
+    <div class="control">
+      <textarea class="textarea" v-model="ticket.text_field_5" placeholder="Enter text"></textarea>
+    </div>
+  </div>
+</div>
+</td>
+    </tr>
+
+
+
+
 
 
                   </tbody>
@@ -202,7 +259,16 @@
             </div>
           </div>
 
-          <button @click="downloadPdf">Download PDF</button>
+
+          <button class="button is-primary" @click="downloadPdf">Download PDF</button>
+
+          <form @submit.prevent="submitForm" class="mb-4">
+        <div class="field">
+         <div class="control">
+          <button class="button is-primary">Save Ticket</button>
+         </div>
+        </div>
+       </form>
         </div>
       </div>
   
@@ -217,15 +283,15 @@ export default {
   data() {
     return {
       ticket: {
-        ticket_number: '',
-        event_name: '',
-        date: '',
-        time: '',
-        price_type: '',
-        price: '',
-        order_number: '',
-        order_date: '',
-        text_field_1: ''
+        
+        //event_name: '',
+        //date: '',
+        //time: '',
+        //price_type: '',
+        //price: '',
+        //order_number: '',
+        //order_date: '',
+        //text_field_1: ''
       }
     };
   },
@@ -242,6 +308,23 @@ export default {
       console.error(error);
     });
 },
+async submitForm() {
+      
+      this.$store.commit('setIsLoading', true)
+const payload = this.ticket
+try {
+        
+        await axios.put('http://localhost:8000/api/v1/ticket/1/', payload)
+        // Handle the success case
+        this.$store.commit('setIsLoading', false)
+        this.$router.push(this.$router.go())
+      } catch (error) {
+        // Handle the error case
+        this.$store.commit('setIsLoading', false)
+      }
+},
+
+
     downloadPdf() {
       axios({
         method: 'get',
@@ -253,7 +336,7 @@ export default {
           const url = window.URL.createObjectURL(new Blob([response.data]));
           const link = document.createElement('a');
           link.href = url;
-          link.setAttribute('download', 'file.pdf');
+          link.setAttribute('download', 'PAHT.pdf');
           document.body.appendChild(link);
           link.click();
         })

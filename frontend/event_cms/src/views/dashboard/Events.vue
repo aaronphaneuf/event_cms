@@ -34,6 +34,7 @@
               <th>Date</th>
               <th>Status</th>
               <th>Days Until Event</th>
+              <th>Widgets</th>
             </tr>
           </thead>
           <tbody>
@@ -51,7 +52,10 @@
     <button v-else class="button equal-width">Unknown</button>
   </div></td>
               <td>{{ dates[y] }}</td>
-              <td></td>
+              <td>
+              <router-link :to="{ name: 'Ticket', params: { id: event.id}}"><i class="fa fa-chart-pie" aria-hidden="true"></i></router-link> &nbsp;
+              <router-link :to="{ name: 'Ticket', params: { id: event.id}}"><i class="fa fa-ticket-alt" aria-hidden="true"></i></router-link> 
+              </td>
             </tr>
           </tbody>
         </table>
