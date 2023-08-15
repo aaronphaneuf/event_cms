@@ -278,8 +278,8 @@
               </td>
               <td>
                 <div class="select">
-                  <select v-model="acc.gl_account.gl_account">
-                    <option v-if="acc.gl_account.gl_account">{{ acc.gl_account.gl_account }}</option>
+                  <select v-model="acc.account_data.gl_account">
+                    <option v-if="acc.account_data.gl_account">{{ acc.account_data.gl_account }}</option>
                     <option v-for="choice in all_accounts">{{ choice.gl_account }}</option>
                   </select>
                 </div>
@@ -941,10 +941,11 @@ removeAccount(index) {
                             };
                             }),
 
+
                 account: this.event.account.map(item => {
                     return {
-                       account: {
-                        gl_account: item.gl_account
+                        account_data: {
+                        gl_account: item.account_data.gl_account
                         },
                         price_layer: {
                         name: item.price_layer

@@ -8,8 +8,8 @@ class AccountSerializer(serializers.ModelSerializer):
   class Meta:
         model = Account
         fields = ['gl_account']
-  
-  
+
+ 
 class PriceTypeSerializer(serializers.ModelSerializer):
   class Meta:
         model = PriceType
@@ -65,7 +65,8 @@ class PriceLayerSerializer(serializers.ModelSerializer):
 
   def to_representation(self, instance):
       return str(instance)
-  
+
+
 class AccountLayerSerializer(serializers.ModelSerializer):
   price_layer = PriceLayerSerializer()
   gl_account = AccountSerializer()
@@ -73,6 +74,15 @@ class AccountLayerSerializer(serializers.ModelSerializer):
         model = AccountLayer
         fields = ['gl_account', 'price_layer']
 
+
+class EditAccountLayerSerializer(serializers.ModelSerializer):
+    price_layer = PriceLayerSerializer()
+    account_data = AccountSerializer(source="gl_account")
+    class Meta:
+          model = AccountLayer
+          fields = ['account_data', 'price_layer']
+  
+   
 class PriceLayerPriceSerializer(serializers.ModelSerializer):
   price_type = PriceTypeSerializer()
   price_layer = PriceLayerSerializer()
@@ -290,13 +300,12 @@ class AddEventSerializer(serializers.ModelSerializer):
 
 
 class EditEventSerializer(serializers.ModelSerializer):
-    print('this is getting called')
     timeslot_set = TimeSlotSerializer(many=True)
     date_time = DateTimeSerializer()
     price_layer_price = EditPriceLayerPriceSerializer(many=True)
     #price_layer_price = serializers.ListSerializer(child=serializers.DictField())
     discount = EditDiscountSerializer(many=True)
-    account = AccountLayerSerializer(many=True)
+    account = EditAccountLayerSerializer(many=True)
     price_type = EditPriceTypeSerializer(many=True, read_only=True)
     price_layer = PriceLayerSerializer(many=True, read_only=True)
     location = serializers.CharField(source='location.location_name')
@@ -321,7 +330,6 @@ class EditEventSerializer(serializers.ModelSerializer):
 
 
     def update(self, instance, validated_data):
-        print('This is getting called')
         instance.name = validated_data.get('name', instance.name)
         instance.description = validated_data.get('description', instance.description)
         instance.capacity = validated_data.get('capacity', instance.capacity)
@@ -397,7 +405,6 @@ class EditEventSerializer(serializers.ModelSerializer):
                     price_layer_price.delete()
 
         discount_data = validated_data.get('discount')
-        print(discount_data)
         if discount_data:
             for discount in discount_data:
 
@@ -423,35 +430,42 @@ class EditEventSerializer(serializers.ModelSerializer):
                 discount_obj.description = discount['description']
                 discount_obj.save()
 
-        account_layer_set_data = validated_data.get('account')
+          # Update the AccountLayer model
+        account_layer_set_data = validated_data.get('account', [])
+        print('Account Layer data')
+        print(account_layer_set_data)
+           
         if account_layer_set_data:
             for account_layer_data in account_layer_set_data:
-                account_data = account_layer_data.get('account')
+                account_data = account_layer_data.get('account_data')
                 price_layer_data = account_layer_data.get('price_layer')
+        
                 if account_data and price_layer_data:
                     gl_account = account_data.get('gl_account')
                     price_layer_name = price_layer_data.get('name')
+            
                     if gl_account and price_layer_name:
                         try:
-                            # Get the existing Account object with the specified gl_account
                             account = Account.objects.get(gl_account=gl_account)
                         except Account.DoesNotExist:
-                            # If the Account does not exist, raise an exception or handle it as desired
                             raise serializers.ValidationError(f"Account with gl_account '{gl_account}' does not exist.")
-
-                        try:
-                            # Try to get an existing AccountLayer object with the same account
-                            account_layer = AccountLayer.objects.get(event=instance, account=account)
-                        except AccountLayer.DoesNotExist:
-                            # If no existing object was found, create a new one
-                            price_layer = PriceLayer.objects.get(name=price_layer_name)
-                            account_layer = AccountLayer.objects.create(event=instance, account=account, price_layer=price_layer)
-
-                        # Update the price_layer field of the AccountLayer object
-                        price_layer = PriceLayer.objects.get(name=price_layer_name)
-                        account_layer.price_layer = price_layer
-                        account_layer.save()
         
+                        try:
+                            price_layer, created = PriceLayer.objects.get_or_create(name=price_layer_name)
+                    
+                            account_layer, _ = AccountLayer.objects.get_or_create(
+                                event=instance, 
+                                gl_account=account, 
+                                defaults={'price_layer': price_layer}
+                            )
+
+                            if not created:
+                                account_layer.price_layer = price_layer
+                                account_layer.save()
+                        
+                        except PriceLayer.DoesNotExist:
+                            raise serializers.ValidationError(f"PriceLayer with name '{price_layer_name}' does not exist.")
+            
                      
         instance.save()
         return instance
