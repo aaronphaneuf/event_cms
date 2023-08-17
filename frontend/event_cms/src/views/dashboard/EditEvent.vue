@@ -944,6 +944,7 @@ removeAccount(index) {
 
                 account: this.event.account.map(item => {
                     return {
+                    id: item.id,
                         account_data: {
                         gl_account: item.account_data.gl_account
                         },
@@ -958,7 +959,7 @@ removeAccount(index) {
             this.$store.commit('setIsLoading', true);
             await axios
                 
-                .patch('/api/v1/editevent/3/', payload)
+                .patch(`/api/v1/editevent/${this.$route.params.id}/`, payload)
                 .then(response => {
                     console.log(response)
                     this.$store.commit('setIsLoading', false)
