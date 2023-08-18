@@ -134,5 +134,5 @@ class Discount(models.Model):
 
 class AccountLayer(models.Model):
     gl_account = models.ForeignKey(Account, on_delete=models.CASCADE)
-    event = models.ManyToManyField(Event, related_name='account')
+    event = models.ForeignKey(Event, related_name='account', on_delete=models.CASCADE)
     price_layer = models.ForeignKey(PriceLayer, on_delete=models.CASCADE)
