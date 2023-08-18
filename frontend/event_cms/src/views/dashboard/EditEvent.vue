@@ -533,8 +533,9 @@ methods: {
     // Button to add an Account
     addAccount() {
         this.account.push({
-            gl_account: { gl_account: ''},
-            price_layer: ''
+           // id: null,
+            account_data: { gl_account: ''},
+          price_layer: ''  
         });
     },
 

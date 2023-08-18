@@ -314,7 +314,7 @@ async submitForm() {
 const payload = this.ticket
 try {
         
-        await axios.put('http://localhost:8000/api/v1/ticket/1/', payload)
+        await axios.put(`http://localhost:8000/api/v1/ticket/${this.$route.params.id}/`, payload)
         // Handle the success case
         this.$store.commit('setIsLoading', false)
         this.$router.push(this.$router.go())
