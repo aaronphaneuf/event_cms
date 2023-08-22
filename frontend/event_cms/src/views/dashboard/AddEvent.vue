@@ -42,7 +42,7 @@
                         <div class="control">
                             <div class="select">
                                 <select v-model="location">
-                                    <option v-for="location in all_locations">
+                                    <option v-for="location in all_locations" :value="location.id">
                                         {{location.location_name}}
                                     </option>
                                 </select>
@@ -54,7 +54,7 @@
                         <div class="control">
                             <div class="select">
                                 <select v-model="facility">
-                                    <option v-for="facility in all_facilities">
+                                    <option v-for="facility in all_facilities" :value="facility.id">
                                         {{facility.facility_name}}
                                     </option>
                                 </select>
@@ -606,6 +606,64 @@ records: {
       
       this.$store.commit('setIsLoading', true)
 
+      // Prepare the payload data for the new event
+      const payload = {
+        name: this.name,
+        description: this.description,
+        location: this.location,
+        facility: this.facility,
+        capacity: this.capacity,
+        held: this.held,
+        entrance: this.entrance,
+        gr_required: this.gr_required,
+        early_closure: this.early_closure,
+        csi_needed: this.csi_needed,
+        csi_mandatory: this.csi_mandatory,
+        csi_notes: this.csi_notes,
+        additional_notes: this.additional_notes,
+        website_link: this.website_link,
+        websales_link: this.websales_link,
+        date_time: {"event_date": this.event_date,
+                            "event_time": this.event_time,
+                            "event_end_time": this.event_end_time,
+                            "sell_date": this.sell_date.includes(":") ? this.sell_date : this.date.sell_date,
+                            "stop_date": this.stop_date.includes(":") ? this.stop_date : this.date.stop_date,
+                            "door_open": this.door_open,
+                            "door_close": this.door_close,
+                            "early_closure_time": this.early_closure_time,},
+        timeslot_set: this.time_slots, 
+        price_layer_price: this.new_price_layer_price,
+        discount: this.discounts,
+        account: this.account.map(item => {
+                    return {
+                        gl_account: {
+                        gl_account: item.account.gl_account
+                        },
+                        price_layer: {
+                        name: item.price_layer
+                        }
+                    };
+                    }),
+        csi_needed: this.csi_needed,
+        csi_mandatory: this.csi_mandatory,
+        csi_notes: this.csi_notes,
+        additional_notes: this.additional_notes,
+        websales_link: this.websales_link,
+        website_link: this.website_link,
+        
+
+      };
+
+        // Adjust 24:00 to 00:00 for sell_date
+    if (payload.date_time.sell_date && payload.date_time.sell_date.includes(" 24:00")) {
+    payload.date_time.sell_date = payload.date_time.sell_date.replace(" 24:00", " 00:00");
+    }
+
+    // Adjust 24:00 to 00:00 for stop_date
+    if (payload.date_time.stop_date && payload.date_time.stop_date.includes(" 24:00")) {
+    payload.date_time.stop_date = payload.date_time.stop_date.replace(" 24:00", " 00:00");
+    }
+
       	const payload2 =  
 	{"name":"Test Event 1",
 	"description":"This is a test, so let's get lots of text here.",
@@ -639,18 +697,18 @@ records: {
 
     // Delete these two blocks later along with payload2
      // Adjust 24:00 to 00:00 for sell_date
-     if (payload2.date_time.sell_date && payload2.date_time.sell_date.includes(" 24:00")) {
-     payload2.date_time.sell_date = payload2.date_time.sell_date.replace(" 24:00", " 00:00");
-     }
+     //if (payload2.date_time.sell_date && payload2.date_time.sell_date.includes(" 24:00")) {
+     //payload2.date_time.sell_date = payload2.date_time.sell_date.replace(" 24:00", " 00:00");
+     //}
 
      // Adjust 24:00 to 00:00 for stop_date
-     if (payload2.date_time.stop_date && payload2.date_time.stop_date.includes(" 24:00")) {
-     payload2.date_time.stop_date = payload2.date_time.stop_date.replace(" 24:00", " 00:00");
-     }  
+     //if (payload2.date_time.stop_date && payload2.date_time.stop_date.includes(" 24:00")) {
+     //payload2.date_time.stop_date = payload2.date_time.stop_date.replace(" 24:00", " 00:00");
+     //}  
 
       try {
-        console.log(JSON.stringify(payload2));
-        await axios.post('api/v1/addevent/', payload2)
+        console.log(JSON.stringify(payload));
+        await axios.post('api/v1/addevent/', payload)
         // Handle the success case
         console.log('Event added successfully!')
         this.$store.commit('setIsLoading', false)

@@ -82,6 +82,8 @@ class Event(models.Model):
     website_link = models.CharField(max_length=255, blank=True)
     websales_link = models.CharField(max_length=255, blank=True)
 
+
+
 class DateTime(models.Model):
     event = models.OneToOneField(Event, on_delete=models.CASCADE, primary_key=True, related_name='date_time') # related_name allows us to reference this in the reverse relationship.
     event_date = models.DateField(auto_now_add=False)
@@ -136,3 +138,18 @@ class AccountLayer(models.Model):
     gl_account = models.ForeignKey(Account, on_delete=models.CASCADE)
     event = models.ForeignKey(Event, related_name='account', on_delete=models.CASCADE)
     price_layer = models.ForeignKey(PriceLayer, on_delete=models.CASCADE)
+
+
+# This is what your change log model could look like.
+# Find the changes in Vue, and write those changes to this model.
+class ChangeLog(models.Model):
+    event = models.ForeignKey(Event, on_delete=models.CASCADE)
+    user = models.TextField()
+    description = models.TextField()
+
+class ChangeLogNotes(models.Model):
+    change_log = models.ForeignKey(ChangeLog, on_delete=models.CASCADE)
+    user = models.TextField()
+    note = models.TextField()
+
+

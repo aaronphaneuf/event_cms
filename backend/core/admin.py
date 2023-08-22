@@ -13,3 +13,5 @@ admin.site.register(models.Discount)
 admin.site.register(models.Price)
 admin.site.register(models.Account)
 admin.site.register(models.AccountLayer)
+
+admin.site.register(models.ChangeLog)

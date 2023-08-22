@@ -260,15 +260,26 @@
           </div>
 
 
-          <button class="button is-primary" @click="downloadPdf">Download PDF</button>
+         <div class="columns is-gapless">
+      <div class="column is-narrow">
 
-          <form @submit.prevent="submitForm" class="mb-4">
-        <div class="field">
-         <div class="control">
-          <button class="button is-primary">Save Ticket</button>
-         </div>
-        </div>
-       </form>
+<form @submit.prevent="submitForm" class="mb-4">
+          <div class="field">
+            <div class="control">
+              <button class="button is-primary">Save Ticket</button>
+            </div>
+          </div>
+        </form>
+       
+
+      </div>
+      <div class="column is-narrow">&nbsp;
+ <button class="button is-primary" @click="downloadPdf">Download PDF</button>
+        
+      </div>
+      </div>
+
+         
         </div>
       </div>
   
