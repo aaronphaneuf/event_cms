@@ -28,6 +28,7 @@
                     <p><strong>Held: </strong> {{ event.held }} </p>
                     <p><strong>GR Required? </strong> {{ event.gr_required }} </p>
                     <p><strong>Early Closure? </strong> {{ event.early_closure }} </p>
+                    <br />
                 </div>
             </div>
             <div class="column is-6">
@@ -35,11 +36,12 @@
                     <h2 class="subtitle">Dates & Times</h2>
                     <p><strong>Date(s): </strong> {{ date.event_date }} </p>
                     <p><strong>Event Start Time: </strong> {{ date.event_time }} </p>
-                    <p><strong>Event End Time: </strong> {{ date.event_time }} </p>
+                    <p><strong>Event End Time: </strong> {{ date.event_end_time }} </p>
                     <p><strong>Start Sell Date: </strong> {{ date.sell_date }} </p>
                     <p><strong>Stop Sell Date: </strong> {{ date.stop_date }} </p>
                     <p><strong>Doors Open: </strong> {{ date.door_open }} </p>
                     <p><strong>Doors Close: </strong> {{ date.door_close }} </p>
+                    <p><strong>Early Closure Time:</strong> {{ date.early_closure_time }} </p>
                     <br>
                 </div>
             </div>
