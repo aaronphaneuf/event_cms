@@ -68,7 +68,7 @@ class TicketPDFView(APIView):
             {'rows': 1, 'cols': [{'width': 0.75, 'image': 'static/images/zoo_logo.png'}, {'width': 0.25}], 'height': 0.10},
             {'rows': 1, 'cols': [{'width': 0.25}, {'width': 0.75}], 'height': 0.04},
             {'rows': 1, 'cols': [{'width': 0.10}, {'width': 0.40}, {'width': 0.10}, {'width': 0.40}], 'height': 0.04},
-            {'rows': 1, 'cols': [{'width': 0.15}, {'width': 0.45}, {'width': 0.10}, {'width': 0.30}], 'height': 0.04},
+            {'rows': 1, 'cols': [{'width': 0.15}, {'width': 0.35}, {'width': 0.15}, {'width': 0.35}], 'height': 0.04},
             {'rows': 1, 'cols': [{'width': 0.15}, {'width': 0.35}, {'width': 0.15}, {'width': 0.35}], 'height': 0.04},
             {'rows': 1, 'cols': [{'width': 0.15}, {'width': 0.35}, {'width': 0.15}, {'width': 0.35}], 'height': 0.04},
             {'rows': 1, 'cols': [{'width': 1}], 'height': 0.10},
@@ -138,56 +138,56 @@ class TicketPDFView(APIView):
                 # Adding a text box in the second column of the second row
                 if section_index == 1 and col_index == 1:
                     form = c.acroForm
-                    form.textfield(name=name, fillColor=zoo_blue, x=x + 10, y=y + 10, width=cell_width - 20, height=box_height)
+                    form.textfield(name=name, fillColor=zoo_blue, x=x + 10, y=y+2 , width=cell_width - 20, height=box_height)
 
                 if section_index == 2 and col_index == 0:
                     c.drawString(x + 10, (y + cell_height / 2) - 5, 'Date : ')
 
                 if section_index == 2 and col_index == 1:
                     form = c.acroForm
-                    form.textfield(name=date, fillColor=zoo_blue, x=x + 10, y=y + 10, width=cell_width - 20, height=box_height)
+                    form.textfield(name=date, fillColor=zoo_blue, x=x + 10, y=y+2 , width=cell_width - 20, height=box_height)
 
                 if section_index == 2 and col_index == 2:
                     c.drawString(x + 10, (y + cell_height / 2) - 5, 'Time : ')
 
                 if section_index == 2 and col_index == 3:
                     form = c.acroForm
-                    form.textfield(name=time, fillColor=zoo_blue, x=x + 10, y=y + 10, width=cell_width - 20, height=box_height)
+                    form.textfield(name=time, fillColor=zoo_blue, x=x + 10, y=y+2 , width=cell_width - 20, height=box_height)
 
                 if section_index == 3 and col_index == 0:
                     c.drawString(x + 10, (y + cell_height / 2) - 5, 'Price Type : ')
 
                 if section_index == 3 and col_index == 1:
                     form = c.acroForm
-                    form.textfield(name=ticket_type, fillColor=zoo_blue, x=x + 10, y=y + 10, width=cell_width - 20, height=box_height)
+                    form.textfield(name=ticket_type, fillColor=zoo_blue, x=x + 10, y=y+2, width=cell_width - 20, height=box_height)
 
                 if section_index == 3 and col_index == 2:
                     c.drawString(x + 10, (y + cell_height / 2) - 5, 'Price : ')
 
                 if section_index == 3 and col_index == 3:
                     form = c.acroForm
-                    form.textfield(name=price, fillColor=zoo_blue, x=x + 10, y=y + 10, width=cell_width - 20, height=box_height)
+                    form.textfield(name=price, fillColor=zoo_blue, x=x + 10, y=y+2 , width=cell_width - 20, height=box_height)
 
                 if section_index == 4 and col_index == 0:
                     c.drawString(x + 10, (y + cell_height / 2) - 5, 'Order Date :')
 
                 if section_index == 4 and col_index == 1:
                     form = c.acroForm
-                    form.textfield(name=order_date, fillColor=zoo_blue, x=x + 10, y=y + 10, width=cell_width - 20, height=box_height)
+                    form.textfield(name=order_date, fillColor=zoo_blue, x=x + 10, y=y+2 , width=cell_width - 20, height=box_height)
 
                 if section_index == 4 and col_index == 2:
                     c.drawString(x + 10, (y + cell_height / 2) - 5, 'Order # :')
 
                 if section_index == 4 and col_index == 3:
                     form = c.acroForm
-                    form.textfield(name=order_number, fillColor=zoo_blue, x=x + 10, y=y + 10, width=cell_width - 20, height=box_height)
+                    form.textfield(name=order_number, fillColor=zoo_blue, x=x + 10, y=y+2 , width=cell_width - 20, height=box_height)
 
                 if section_index == 5 and col_index == 0:
                     c.drawString(x + 10, (y + cell_height / 2) - 5, 'Location : ')
             
                 if section_index == 5 and col_index == 1:
                     form = c.acroForm
-                    form.textfield(name=location, fillColor=zoo_blue, x=x + 6, y=y + 6, width=cell_width - 20, height=box_height)
+                    form.textfield(name=location, fillColor=zoo_blue, x=x + 6, y=y+2 , width=cell_width - 20, height=box_height)
                     
                 if section_index == 5 and col_index == 2:
                     if custom_1 == "":
@@ -200,12 +200,14 @@ class TicketPDFView(APIView):
                         pass
                     else:
                         form = c.acroForm
-                        form.textfield(name=custom_1.split(',')[1], fillColor=zoo_blue, x=x + 10, y=y + 6, width=cell_width - 20, height=box_height)
+                        form.textfield(name=custom_1.split(',')[1], fillColor=zoo_blue, x=x + 10, y=y, width=cell_width - 20, height=box_height)
                     
                 if section_index == 6 and col_index == 0:
                     form = c.acroForm
-                    form.textfield(name=barcode, fillColor=zoo_blue, x=x + 10, y=y + 6, width=cell_width - 20, height=box_height*3)
-
+                    section_width = layout[section_index]['cols'][col_index]['width'] * drawing_width
+                    x_position = x + (section_width - 100) / 2
+                    form.textfield(name=barcode, fillColor=zoo_blue, x=x_position, y=y+10, width=100, height=box_height*3)
+                
                 if section_index == 7 and col_index == 0:
                     text = text_field_1
                     style = ParagraphStyle(name='Text', fontSize=9, leading=14, textColor='black', allowWidows=1, allowOrphans=1,
