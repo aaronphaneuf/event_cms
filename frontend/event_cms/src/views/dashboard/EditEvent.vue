@@ -902,6 +902,7 @@ removeAccount(index) {
       this.capacity_held_total.held !== this.event.held) {
     try {
       this.showError = true;
+      return;
     } catch (error) {
       // display error message in UI
       console.error(error.message);
@@ -957,6 +958,7 @@ removeAccount(index) {
 
             }
             console.log(JSON.stringify(payload));
+            console.log('Held value in timeslot_set:', this.time_slots);
             this.$store.commit('setIsLoading', true);
             await axios
                 

@@ -131,6 +131,13 @@ class TimeSlotSerializer(serializers.ModelSerializer):
         model = TimeSlot
         fields = ["time_range", "capacity", "held"]
 
+    def update(self, instance, validated_data):
+        instance.time_range = validated_data.get('time_range', instance.time_range)
+        instance.capacity = validated_data.get('capacity', instance.capacity)
+        instance.held = validated_data.get('held', instance.held)
+        instance.save()
+        return instance
+
 
 class FacilitySerializer(serializers.ModelSerializer):
     class Meta:
@@ -608,6 +615,13 @@ class EditEventSerializer(serializers.ModelSerializer):
                             raise serializers.ValidationError(
                                 f"PriceLayer with name '{price_layer_name}' does not exist."
                             )
+
+        timeslot_data = validated_data.pop('timeslot_set', None)
+        if timeslot_data:
+            # Assuming you want to replace existing timeslots
+            instance.timeslot_set.all().delete()
+            for timeslot in timeslot_data:
+                TimeSlot.objects.create(event=instance, **timeslot)
 
         instance.save()
         return instance
